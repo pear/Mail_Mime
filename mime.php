@@ -23,11 +23,11 @@
 require_once 'PEAR.php';
 require_once 'Mail/mimePart.php';
 
-/*
+/**
 * Mime mail composer class. Can handle: text and html bodies, embedded html
 * images and attachments.
-* Documentation and example of this class is avaible here:
-* http://vulcanonet.com/soft/mime/
+* Documentation and examples of this class are avaible here:
+* http://pear.php.net/manual/
 *
 * @notes This class is based on HTML Mime Mail class from
 *   Richard Heyes <richard@phpguru.org> which was based also
