@@ -257,7 +257,7 @@ class Mail_MimePart
 		// Convert trailing whitespace		
 		$output .= preg_replace('/(\x20+)$/e', 'str_replace(" ", "=20", "\1")', $input);
 
-		return str_replace('=0D=0A', "\r\n", $output);
+		return $output;
 	}
 } // End of Mail_MimePart
 ?>
