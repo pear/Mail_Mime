@@ -35,7 +35,7 @@
 //
 // $Id$
 
-require_once('./MimePart.php');
+require_once('Mail/Mime/Part.php');
 
 /**
 * @author Richard Heyes <richard@phpguru.org>
@@ -137,8 +137,8 @@ class Mail_Mime
             define('MAIL_MIME_CRLF', $crlf, true);
         }
 
-        $this->_buildParams = array('text_encoding' => MAIL_MIMEPART_7BIT,
-                                    'html_encoding' => MAIL_MIMEPART_QPRINT,
+        $this->_buildParams = array('text_encoding' => MAIL_MIME_PART_7BIT,
+                                    'html_encoding' => MAIL_MIME_PART_QPRINT,
                                     'text_wrap'     => 998,
                                     'html_charset'  => 'ISO-8859-1',
                                     'text_charset'  => 'ISO-8859-1',
@@ -433,7 +433,7 @@ class Mail_Mime
     */
     function &_addTextPart(&$obj){
 
-        $textPart = new Mail_MimePart();
+        $textPart = new Mail_Mime_Part();
 
         $ctype    = 'text/plain' . (!empty($this->_buildParams['text_charset']) ? '; charset="' . $this->_buildParams['text_charset'] . '"' : '');
         $textPart->addHeader('Content-Type', $ctype);
@@ -461,7 +461,7 @@ class Mail_Mime
     */
     function &_addHtmlPart(&$obj)
     {
-        $htmlPart = new Mail_MimePart();
+        $htmlPart = new Mail_Mime_Part();
 
         $ctype    = 'text/html' . (!empty($this->_buildParams['html_charset']) ? '; charset="' . $this->_buildParams['html_charset'] . '"' : '');
         $htmlPart->addHeader('Content-Type', $ctype);
@@ -488,7 +488,7 @@ class Mail_Mime
     */
     function &_addMixedPart()
     {
-        $obj = new Mail_MimePart();
+        $obj = new Mail_Mime_Part();
         $obj->addHeader('Content-Type', 'multipart/mixed');
 
         return $obj;
@@ -506,7 +506,7 @@ class Mail_Mime
     */
     function &_addAlternativePart(&$obj)
     {
-        $altPart = new Mail_MimePart();
+        $altPart = new Mail_Mime_Part();
         $altPart->addHeader('Content-Type', 'multipart/alternative');
 
         if (is_object($obj)) {
@@ -528,7 +528,7 @@ class Mail_Mime
     */
     function &_addRelatedPart(&$obj)
     {
-        $relPart = new Mail_MimePart();
+        $relPart = new Mail_Mime_Part();
         $relPart->addHeader('Content-Type', 'multipart/related');
 
         if (is_object($obj)) {
@@ -548,9 +548,9 @@ class Mail_Mime
     */
     function _addHtmlImagePart(&$obj, $value)
     {
-        $imagePart = new Mail_MimePart();
+        $imagePart = new Mail_Mime_Part();
         $imagePart->addHeader('Content-Type', $value['c_type']);
-        $imagePart->addHeader('Content-Transfer-Encoding', MAIL_MIMEPART_BASE64);
+        $imagePart->addHeader('Content-Transfer-Encoding', MAIL_MIME_PART_BASE64);
         $imagePart->addHeader('Content-Disposition', 'inline; filename="' . $value['name'] . '"');
         $imagePart->addHeader('Content-ID', '<' . $value['cid'] . '>');
         $imagePart->setBody($value['body']);
@@ -568,7 +568,7 @@ class Mail_Mime
     */
     function &_addAttachmentPart(&$obj, $value)
     {
-        $attachPart = new Mail_MimePart();
+        $attachPart = new Mail_Mime_Part();
         $attachPart->addHeader('Content-Type', $value['c_type']);
         $attachPart->addHeader('Content-Transfer-Encoding', $value['encoding']);
         $attachPart->addHeader('Content-Disposition', 'attachment; filename="' . $value['name'] . '"');
