@@ -25,6 +25,11 @@
 *  | you are STRONGLY recommended to use the php extensions.              |
 *  +----------------------------------------------------------------------+
 *
+*  +------------------------------- NOTE ---------------------------------+
+*  | If you do a search and replace of tabs for spaces, make sure that the|
+*  | two tabs in the regular expressions are NOT replaced!                |
+*  +----------------------------------------------------------------------+
+*
 * Mime Decoding class
 *
 * This class will parse a raw mime email and return
@@ -44,12 +49,9 @@
 * print_r($structure);
 *
 * TODO:
-*  - Implement full usage of pear error handling
-*  - Implement further content types, eg. message/rfc822
-*  - Implement decoding of bodies
-*  - Implement decoding of headers
-*  - Improve robustness
-*  - Fix the inevitable bugs :)
+*  - Implement further content types, eg. multipart/parallel,
+*    perhaps even message/partial.
+*  - Implement decoding of bodies (Just need the _decodeBodies method writing)
 *
 * @author  Richard Heyes <richard.heyes@heyes-computing.net>
 * @version $Revision$
@@ -83,10 +85,29 @@ class Mail_mimeDecode extends PEAR{
     var $_error;
 
     /**
+     * Flag to determine whether to include bodies in the
+     * returned object.
+     * @var    boolean
+     */
+    var $_include_bodies;
+
+    /**
      * Flag to determine whether to decode bodies
      * @var    boolean
      */
     var $_decode_bodies;
+
+    /**
+     * Flag to determine whether to decode headers
+     * @var    boolean
+     */
+    var $_decode_headers;
+
+    /**
+     * Variable to hold the line end type.
+     * @var    string
+     */
+    var $_crlf;
 
     /**
      * Constructor.
@@ -101,15 +122,14 @@ class Mail_mimeDecode extends PEAR{
     function Mail_mimeDecode($input, $crlf = "\r\n")
     {
 
-        if (!defined('MAIL_MIMEDECODE_CRLF'))
-            define('MAIL_MIMEDECODE_CRLF', $crlf, TRUE);
-
+        $this->_crlf = $crlf;
         list($header, $body) = $this->_splitBodyHeader($input);
 
-        $this->_input         = $input;
-        $this->_header        = $header;
-        $this->_body          = $body;
-        $this->_decode_bodies = FALSE;
+        $this->_input          = $input;
+        $this->_header         = $header;
+        $this->_body           = $body;
+        $this->_decode_bodies  = false;
+        $this->_include_bodies = true;
     }
 
     /**
@@ -119,15 +139,19 @@ class Mail_mimeDecode extends PEAR{
      * 
      * @param array An array of various parameters that determine
      *              various things:
-     *              decode_bodies - Whether to decode the bodies
-     *                              of the parts. (Transfer encoding)
-     *
-     *              input - If called statically, this will be treated
-     *                      as the input
+     *              include_bodies - Whether to include the body in the returned
+     *                               object.
+     *              decode_bodies  - Whether to decode the bodies
+     *                               of the parts. (Transfer encoding)
+     *              decode_headers - Whether to decode headers
+     *              input          - If called statically, this will be treated
+     *                               as the input
+     *              crlf           - If called statically, this will be used as
+     *                               the crlf value.
      * @return object Decoded results
      * @access public
      */
-    function decode($params = NULL)
+    function decode($params = null)
     {
 
         // Have we been called statically? If so, create an object and pass details to that.
@@ -141,12 +165,17 @@ class Mail_mimeDecode extends PEAR{
 
         // Called statically but no input
         } elseif (!isset($this)) {
-            return new PEAR_Error('Called statically and no input given');
+            return $this->raiseError('Called statically and no input given');
 
         // Called via an object
         } else {
-            $this->_decode_bodies = isset($params['decode_bodies']) ? $params['decode_bodies'] : FALSE;
+            $this->_include_bodies = isset($params['include_bodies'])  ? $params['include_bodies']  : false;
+            $this->_decode_bodies  = isset($params['decode_bodies'])   ? $params['decode_bodies']   : false;
+            $this->_decode_headers = isset($params['decode_headers'])  ? $params['decode_headers']  : false;
+            
             $structure = $this->_decode($this->_header, $this->_body);
+            if($structure === false)
+                $structure = $this->raiseError($this->_error);
         }
 
         return $structure;
@@ -162,45 +191,50 @@ class Mail_mimeDecode extends PEAR{
      * @return object Results of decoding process
      * @access private
      */
-    function _decode($headers, $body)
+    function _decode($headers, $body, $default_ctype = 'text/plain')
     {
-
-
         $return = new stdClass;
         $headers = $this->_parseHeaders($headers);
 
-        foreach ($headers as $value)
-            $return->headers[strtolower($value['name'])] = $value['value'];
+        foreach ($headers as $value) {
+            if (isset($return->headers[strtolower($value['name'])]) AND !is_array($return->headers[strtolower($value['name'])])) {
+                $return->headers[strtolower($value['name'])]   = array($return->headers[strtolower($value['name'])]);
+                $return->headers[strtolower($value['name'])][] = $value['value'];
+
+            } elseif (isset($return->headers[strtolower($value['name'])])) {
+                $return->headers[strtolower($value['name'])][] = $value['value'];
+
+            } else {
+                $return->headers[strtolower($value['name'])] = $value['value'];
+            }
+        }
 
         reset($headers);
         while (list($key, $value) = each($headers)) {
             $headers[$key]['name'] = strtolower($headers[$key]['name']);
             switch ($headers[$key]['name']) {
+
                 case 'content-type':
                     $content_type = $this->_parseHeaderValue($headers[$key]['value']);
     
-                    if (preg_match('/[0-9a-z+.-]\/[0-9a-z+.-]/i', $content_type['value'])) {
-                        $return->ifsubtype = TRUE;
-                        list($return->type, $return->subtype) = explode('/', $content_type['value']);
+                    if (preg_match('/([0-9a-z+.-]+)\/([0-9a-z+.-]+)/i', $content_type['value'], $regs)) {
+                        $return->ctype_primary   = $regs[1];
+                        $return->ctype_secondary = $regs[2];
                     }
     
                     if (isset($content_type['other'])) {
-                        $return->ifparameters = TRUE;
                         while (list($p_name, $p_value) = each($content_type['other'])) {
-                            $return->parameters[$p_name] = $p_value;
+                            $return->ctype_parameters[$p_name] = $p_value;
                         }
                     }
-                    //print_r($content_type);exit;
                     break;
 
                 case 'content-disposition';
                     $content_disposition = $this->_parseHeaderValue($headers[$key]['value']);
-                    $return->ifdisposition = TRUE;
                     $return->disposition   = $content_disposition['value'];
                     if (isset($content_disposition['other'])) {
-                        $return->ifdparameters = TRUE;
                         while (list($p_name, $p_value) = each($content_disposition['other'])) {
-                            $return->dparameters[$p_name] = $p_value;
+                            $return->d_parameters[$p_name] = $p_value;
                         }
                     }
                     break;
@@ -213,34 +247,52 @@ class Mail_mimeDecode extends PEAR{
 
         if (isset($content_type)) {
 
-            switch ($content_type['value']) {
+            switch (strtolower($content_type['value'])) {
                 case 'text/plain':
-                    $return->body = $body;
+                    $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body) : $body) : null;
                     break;
     
                 case 'text/html':
-                    $return->body = $body;
+                    $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body) : $body) : null;
                     break;
-    
+
+                case 'multipart/digest':
                 case 'multipart/alternative':
                 case 'multipart/related':
                 case 'multipart/mixed':
                     if(!isset($content_type['other']['boundary'])){
-                        $this->_error = 'No boundary found for multipart/* part';
-                        return FALSE;
+                        $this->_error = 'No boundary found for ' . $content_type['value'] . ' part';
+                        return false;
                     }
-    
+
+                    $default_ctype = (strtolower($content_type['value']) === 'multipart/digest') ? 'message/rfc822' : 'text/plain';
+
                     $parts = $this->_boundarySplit($body, $content_type['other']['boundary']);
                     for($i=0; $i<count($parts); $i++){
-                        list($part_body, $part_header) = $this->_splitBodyHeader($parts[$i]);
-                        $return->parts[] = $this->_decode($part_body, $part_header);
+                        list($part_header, $part_body) = $this->_splitBodyHeader($parts[$i]);
+                        $part = $this->_decode($part_header, $part_body, $default_ctype);
+                        if($part === false)
+                            $part = $this->raiseError($this->_error);
+                        $return->parts[] = $part;
                     }
                     break;
-    
+
+                case 'message/rfc822':
+                    $obj = new Mail_mimeDecode($body, $this->_crlf);
+                    $return->parts[] = $obj->decode(array('include_bodies' => $this->_include_bodies));
+                    unset($obj);
+                    break;
+
                 default:
-                    $return->body = $body;
+                    $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body) : $body) : null;
                     break;
             }
+
+        } else {
+            $ctype = explode('/', $default_ctype);
+            $return->ctype_primary   = $ctype[0];
+            $return->ctype_secondary = $ctype[1];
+            $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body) : $body) : null;
         }
         
         return $return;
@@ -258,14 +310,14 @@ class Mail_mimeDecode extends PEAR{
     function _splitBodyHeader($input)
     {
 
-        $pos    = strpos($input, MAIL_MIMEDECODE_CRLF.MAIL_MIMEDECODE_CRLF);
-        if ($pos === FALSE) {
+        $pos = strpos($input, $this->_crlf . $this->_crlf);
+        if ($pos === false) {
             $this->_error = 'Could not split header and body';
-            return FALSE;
+            return false;
         }
 
-        $header = substr($input, 0, $pos+strlen(MAIL_MIMEDECODE_CRLF));
-        $body   = substr($input, $pos+(2*strlen(MAIL_MIMEDECODE_CRLF)));
+        $header = substr($input, 0, $pos);
+        $body   = substr($input, $pos+(2*strlen($this->_crlf)));
 
         return array($header, $body);
     }
@@ -281,14 +333,21 @@ class Mail_mimeDecode extends PEAR{
     function _parseHeaders($input)
     {
 
-        // Unfold the input
-        $input   = preg_replace('/'.MAIL_MIMEDECODE_CRLF.'(	| )/', ' ', $input); // Not two spaces in regex, but a tab and a space
-        $headers = explode(MAIL_MIMEDECODE_CRLF, trim($input));
+        if ($input !== '') {
+            // Unfold the input
+            $input   = preg_replace('/' . $this->_crlf . '(	| )/', ' ', $input); // Not two spaces in regex, but a tab and a space
+            $headers = explode($this->_crlf, trim($input));
     
-        foreach ($headers as $value) {
-
-            list($hdr_name, $hdr_value) = explode(': ', $value);
-            $return[] = array('name' => $hdr_name, 'value' => $hdr_value);
+            foreach ($headers as $value) {
+                $hdr_name = substr($value, 0, $pos = strpos($value, ':'));
+                $hdr_value = substr($value, $pos+1);
+                $return[] = array(
+                                  'name'  => $hdr_name,
+                                  'value' => $this->_decode_headers ? $this->_decodeHeader($hdr_value) : $hdr_value
+                                 );
+            }
+        } else {
+            $return = array();
         }
 
         return $return;
@@ -308,7 +367,7 @@ class Mail_mimeDecode extends PEAR{
     function _parseHeaderValue($input)
     {
 
-        if (($pos = strpos($input, ';')) !== FALSE) {
+        if (($pos = strpos($input, ';')) !== false) {
 
             $return['value'] = trim(substr($input, 0, $pos));
             $input = trim(substr($input, $pos+1));
@@ -317,7 +376,7 @@ class Mail_mimeDecode extends PEAR{
                 preg_match_all('/(([[:alnum:]]+)="?([^"]*)"?\s?;?)+/i', $input, $matches);
 
                 for($i=0; $i<count($matches[2]); $i++){
-                    $return['other'][$matches[2][$i]] = $matches[3][$i];
+                    $return['other'][strtolower($matches[2][$i])] = $matches[3][$i];
                 }
             }
         } else
@@ -342,6 +401,48 @@ class Mail_mimeDecode extends PEAR{
             $parts[] = $tmp[$i];
 
         return $parts;
+    }
+
+    /**
+     * Given a header, this function will decode it
+     * according to RFC2047. Probably not *exactly*
+     * conformant, but it does pass all the given
+     * examples (in RFC2047).
+     *
+     * @param string Input header value to decode
+     * @return string Decoded header value
+     * @access private
+     */
+    function _decodeHeader($input)
+    {
+        // Remove white space between encoded-words
+        $input = preg_replace('/(=\?[^?]+\?(Q|B)\?[^?]*\?=)( |	|' . $this->_crlf . ')+=\?/', '\1=?', $input);
+
+        // For each encoded-word...
+        while(preg_match('/(=\?([^?]+)\?(Q|B)\?([^?]*)\?=)/', $input, $matches)){
+
+            $encoded  = $matches[1];
+            $charset  = $matches[2];
+            $encoding = $matches[3];
+            $text     = $matches[4];
+
+            switch($encoding){
+                case 'B':
+                    $text = base64_decode($text);
+                    break;
+
+                case 'Q':
+                    $text = str_replace('_', ' ', $text);
+                    preg_match_all('/=([A-F0-9]{2})/', $text, $matches);
+                    foreach($matches[1] as $value)
+                        $text = str_replace('='.$value, chr(hexdec($value)), $text);
+                    break;
+            }
+
+            $input = str_replace($encoded, $text, $input);
+        }
+        
+        return $input;
     }
 
 } // End of class
