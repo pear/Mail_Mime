@@ -11,7 +11,7 @@ $mm->setTxtBody('Blah blah');
 if (version_compare(phpversion(), "5.0.0", '<')) {
     $mmCopy = $mm;
 } else {
-    $mmCopy = clone $mm;
+    $mmCopy = clone($mm);
 }
 
 $mm->get();
