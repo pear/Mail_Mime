@@ -188,9 +188,9 @@ class Mail_mimePart extends PEAR{
      * Encodes and returns the email. Also stores
      * it in the encoded member variable
      *
-	 * @return An associative array containing two elements,
-	 *         body and headers. The headers element is itself
-	 *         an indexed array.
+     * @return An associative array containing two elements,
+     *         body and headers. The headers element is itself
+     *         an indexed array.
      * @access public
      */
     function encode()
@@ -204,11 +204,11 @@ class Mail_mimePart extends PEAR{
 
             // Add body parts to $subparts
             for ($i = 0; $i < count($this->_subparts); $i++) {
-				$headers = array();
+                $headers = array();
                 $tmp = $this->_subparts[$i]->encode();
-				foreach ($tmp['headers'] as $key => $value) {
-					$headers[] = $key . ': ' . $value;
-				}
+                foreach ($tmp['headers'] as $key => $value) {
+                    $headers[] = $key . ': ' . $value;
+                }
                 $subparts[] = implode(MAIL_MIMEPART_CRLF, $headers) . MAIL_MIMEPART_CRLF . MAIL_MIMEPART_CRLF . $tmp['body'];
             }
 
@@ -221,7 +221,7 @@ class Mail_mimePart extends PEAR{
         }
 
         // Add headers to $encoded
-		$encoded['headers'] =& $this->_headers;
+        $encoded['headers'] =& $this->_headers;
 
         return $encoded;
     }
@@ -235,10 +235,10 @@ class Mail_mimePart extends PEAR{
      * @param $body   The body of the subpart, if any.
      * @param $params The parameters for the subpart, same
      *                as the $params argument for constructor.
-	 * @return A reference to the part you just added. It is
-	 *         crucial if using multipart/* in your subparts that
-	 *         you use =& in your script when calling this function,
-	 *         otherwise you will not be able to add further subparts.
+     * @return A reference to the part you just added. It is
+     *         crucial if using multipart/* in your subparts that
+     *         you use =& in your script when calling this function,
+     *         otherwise you will not be able to add further subparts.
      * @access public
      */
     function &addSubPart($body, $params)
