@@ -46,7 +46,6 @@
 * TODO:
 *  - Implement further content types, eg. multipart/parallel,
 *    perhaps even message/partial.
-*  - Implement decoding of bodies (Just need the _decodeBodies method writing)
 *
 * @author  Richard Heyes <richard.heyes@heyes-computing.net>
 * @version $Revision$
