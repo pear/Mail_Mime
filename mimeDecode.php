@@ -99,12 +99,6 @@ class Mail_mimeDecode extends PEAR
     var $_decode_headers;
 
     /**
-     * Variable to hold the line end type.
-     * @var    string
-     */
-    var $_crlf;
-    
-    /**
     * If invoked from a class, $this will be set. This has problematic
     * connotations for calling decode() statically. Hence this variable
     * is used to determine if we are indeed being called statically or
@@ -119,13 +113,10 @@ class Mail_mimeDecode extends PEAR
      * stores the header and body of the input.
      *
      * @param string The input to decode
-     * @param string CRLF type to use (CRLF/LF/CR)
      * @access public
      */
-    function Mail_mimeDecode($input, $crlf = "\r\n")
+    function Mail_mimeDecode($input)
     {
-
-        $this->_crlf = $crlf;
         list($header, $body)   = $this->_splitBodyHeader($input);
 
         $this->_input          = $input;
@@ -134,7 +125,7 @@ class Mail_mimeDecode extends PEAR
         $this->_decode_bodies  = false;
         $this->_include_bodies = true;
         
-        $this->mailmimeDecode  = true;
+        $this->mailMimeDecode  = true;
     }
 
     /**
@@ -151,8 +142,6 @@ class Mail_mimeDecode extends PEAR
      *              decode_headers - Whether to decode headers
      *              input          - If called statically, this will be treated
      *                               as the input
-     *              crlf           - If called statically, this will be used as
-     *                               the crlf value.
      * @return object Decoded results
      * @access public
      */
@@ -162,11 +151,7 @@ class Mail_mimeDecode extends PEAR
         // Have we been called statically? If so, create an object and pass details to that.
         if (!isset($this->mailMimeDecode) AND isset($params['input'])) {
 
-            if (isset($params['crlf'])) {
-                $obj = new Mail_mimeDecode($params['input'], $params['crlf']);
-            } else {
-                $obj = new Mail_mimeDecode($params['input']);
-            }
+            $obj = new Mail_mimeDecode($params['input']);
             $structure = $obj->decode($params);
 
         // Called statically but no input
@@ -289,7 +274,7 @@ class Mail_mimeDecode extends PEAR
                     break;
 
                 case 'message/rfc822':
-                    $obj = &new Mail_mimeDecode($body, $this->_crlf);
+                    $obj = &new Mail_mimeDecode($body);
                     $return->parts[] = $obj->decode(array('include_bodies' => $this->_include_bodies));
                     unset($obj);
                     break;
@@ -364,17 +349,11 @@ class Mail_mimeDecode extends PEAR
      */
     function _splitBodyHeader($input)
     {
-
-        $pos = strpos($input, $this->_crlf . $this->_crlf);
-        if ($pos === false) {
-            $this->_error = 'Could not split header and body';
-            return false;
+        if (preg_match("/^(.*?)\r?\n\r?\n(.*)/s", $input, $match)) {
+            return array($match[1], $match[2]);
         }
-
-        $header = substr($input, 0, $pos);
-        $body   = substr($input, $pos+(2*strlen($this->_crlf)));
-
-        return array($header, $body);
+        $this->_error = 'Could not split header and body';
+        return false;
     }
 
     /**
@@ -390,8 +369,9 @@ class Mail_mimeDecode extends PEAR
 
         if ($input !== '') {
             // Unfold the input
-            $input   = preg_replace('/' . $this->_crlf . "(\t| )/", ' ', $input);
-            $headers = explode($this->_crlf, trim($input));
+            $input   = preg_replace("/\r\n/", "\n", $input);
+            $input   = preg_replace("/\n(\t| )/", ' ', $input);
+            $headers = explode("\n", trim($input));
 
             foreach ($headers as $value) {
                 $hdr_name = substr($value, 0, $pos = strpos($value, ':'));
@@ -486,7 +466,7 @@ class Mail_mimeDecode extends PEAR
     function _decodeHeader($input)
     {
         // Remove white space between encoded-words
-        $input = preg_replace('/(=\?[^?]+\?(Q|B)\?[^?]*\?=)( |' . "\t|" . $this->_crlf . ')+=\?/', '\1=?', $input);
+        $input = preg_replace('/(=\?[^?]+\?(Q|B)\?[^?]*\?=)( |' . "\t|\r?\n" . ')+=\?/', '\1=?', $input);
 
         // For each encoded-word...
         while (preg_match('/(=\?([^?]+)\?(Q|B)\?([^?]*)\?=)/', $input, $matches)) {
