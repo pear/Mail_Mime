@@ -156,7 +156,7 @@ class Mail_mimeDecode extends PEAR
 
         // Called statically but no input
         } elseif (!isset($this->mailMimeDecode)) {
-            return $this->raiseError('Called statically and no input given');
+            return PEAR::raiseError('Called statically and no input given');
 
         // Called via an object
         } else {
