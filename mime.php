@@ -441,7 +441,7 @@ class Mail_mime extends Mail
     * @return string The mime content
     * @access public
     */
-    function & get($build_params = NULL)
+    function & get($build_params = null)
     {
         if (isset($build_params)) {
             while (list($key, $value) = each($build_params)) {
@@ -498,7 +498,7 @@ class Mail_mime extends Mail
     * @return array Assoc array with the standard mime headers
     * @access public
     */
-    function & headers($xtra_headers = NULL)
+    function & headers($xtra_headers = null)
     {
         $do_text  = isset($this->_txtbody)   ? true : false;
         $do_html  = isset($this->_htmlbody)  ? true : false;
