@@ -30,7 +30,7 @@ require_once 'Mail/mimePart.php';
 * http://vulcanonet.com/soft/mime/
 *
 * @notes This class is based on HTML Mime Mail class from
-*   Richard Heyes <richard.heyes@heyes-computing.net> which was based also
+*   Richard Heyes <richard@phpguru.org> which was based also
 *   in the mime_mail.class by Tobias Ratschiller <tobias@dnet.it> and
 *   Sascha Schumann <sascha@schumann.cx>.
 *
@@ -39,7 +39,7 @@ require_once 'Mail/mimePart.php';
 * @package Mail
 * @access public
 */
-class Mail_mime extends Mail
+class Mail_mime
 {
     /**
     * Contains the plain text part of the email
