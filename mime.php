@@ -109,8 +109,6 @@ class Mail_mime
             define('MAIL_MIME_CRLF', $crlf, true);
         }
 
-        $this->_boundary = '=_' . md5(uniqid(time()));
-
         $this->_build_params = array(
                                      'text_encoding' => '7bit',
                                      'html_encoding' => 'quoted-printable',
