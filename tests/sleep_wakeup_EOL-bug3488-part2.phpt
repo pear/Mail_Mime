@@ -20,7 +20,8 @@ $x = $mmData['mm']->headers();
 list($h1) = explode("\n", $mmData['header']);
 list($h2) = explode("\n", $x['Content-Type']);
 
-echo ($h1 == $h2) ? "Match\n" : "No Match\n";
+echo ($h1 == $h2) ? "Match" : "No Match";
 
 ?>
 --EXPECT--
+Match
