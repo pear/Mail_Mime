@@ -193,7 +193,7 @@ class Mail_mime
             $this->_htmlbody = $cont;
         }
 
-        return false;
+        return true;
     }
 
     /**
