@@ -97,6 +97,11 @@ class Mail_mime
      * @var array
      */
     var $_headers = array();
+    /**
+     * End Of Line sequence (for serialize)
+     * @var string
+     */
+    var $_eol;
 
 
     /**
@@ -106,10 +111,7 @@ class Mail_mime
      */
     function Mail_mime($crlf = "\r\n")
     {
-        if (!defined('MAIL_MIME_CRLF')) {
-            define('MAIL_MIME_CRLF', $crlf, true);
-        }
-
+        $this->_setEOL($crlf);
         $this->_build_params = array(
                                      'text_encoding' => '7bit',
                                      'html_encoding' => 'quoted-printable',
@@ -118,6 +120,16 @@ class Mail_mime
                                      'text_charset'  => 'ISO-8859-1',
                                      'head_charset'  => 'ISO-8859-1'
                                     );
+    }
+
+    /**
+     * Wakeup (unserialize) - re-sets EOL constant
+     *
+     * @access private
+     */
+    function __wakeup()
+    {
+        $this->_setEOL($this->_eol);
     }
 
     /**
@@ -674,6 +686,22 @@ class Mail_mime
 
         return $input;
     }
+
+    /**
+     * Set the object's end-of-line and define the constant if applicable
+     *
+     * @param string $eol End Of Line sequence
+     * @access private
+     */
+    function _setEOL($eol)
+    {
+        $this->_eol = $eol;
+        if (!defined('MAIL_MIME_CRLF')) {
+            define('MAIL_MIME_CRLF', $this->_eol, true);
+        }
+    }
+
+    
 
 } // End of class
 ?>
