@@ -16,9 +16,15 @@
 // | Authors: Richard Heyes <richard.heyes@heyes-computing.net>           |
 // +----------------------------------------------------------------------+
 
-	require_once('PEAR.php');
+    require_once('PEAR.php');
 
 /**
+*  +----------------------------- IMPORTANT ------------------------------+
+*  | Usage of this class compared to native php extensions such as        |
+*  | mailparse or imap, is slow and may be feature deficient. If available|
+*  | you are STRONGLY recommended to use the php extensions.              |
+*  +----------------------------------------------------------------------+
+*
 * Mime Decoding class
 *
 * This class will parse a raw mime email and return
@@ -54,33 +60,33 @@ class Mail_mimeDecode extends PEAR{
 
     /**
      * The raw email to decode
-     * @var	string
+     * @var    string
      */
-	var $_input;
+    var $_input;
 
     /**
      * The header part of the input
-     * @var	string
+     * @var    string
      */
-	var $_header;
+    var $_header;
 
     /**
      * The body part of the input
-     * @var	string
+     * @var    string
      */
-	var $_body;
+    var $_body;
 
     /**
      * If an error occurs, this is used to store the message
-     * @var	string
+     * @var    string
      */
-	var $_error;
+    var $_error;
 
     /**
      * Flag to determine whether to decode bodies
-     * @var	boolean
+     * @var    boolean
      */
-	var $_decode_bodies;
+    var $_decode_bodies;
 
     /**
      * Constructor.
@@ -92,231 +98,251 @@ class Mail_mimeDecode extends PEAR{
      * @param string CRLF type to use (CRLF/LF/CR)
      * @access public
      */
-	function Mail_mimeDecode($input, $crlf = "\r\n")
-	{
+    function Mail_mimeDecode($input, $crlf = "\r\n")
+    {
 
-		if (!defined('MAIL_MIMEDECODE_CRLF'))
-			define('MAIL_MIMEDECODE_CRLF', $crlf, TRUE);
+        if (!defined('MAIL_MIMEDECODE_CRLF'))
+            define('MAIL_MIMEDECODE_CRLF', $crlf, TRUE);
 
-		list($header, $body) = $this->splitBodyHeader($input);
+        list($header, $body) = $this->_splitBodyHeader($input);
 
-		$this->_input         = $input;
-		$this->_header        = $header;
-		$this->_body          = $body;
-		$this->_decode_bodies = FALSE;
-	}
+        $this->_input         = $input;
+        $this->_header        = $header;
+        $this->_body          = $body;
+        $this->_decode_bodies = FALSE;
+    }
 
     /**
      * Begins the decoding process. If called statically
-	 * it will create an object and call the decode() method
-	 * of it.
+     * it will create an object and call the decode() method
+     * of it.
      * 
      * @param array An array of various parameters that determine
-	 *              various things:
-	 *              decode_bodies - Whether to decode the bodies
-	 *                              of the parts. (Transfer encoding)
+     *              various things:
+     *              decode_bodies - Whether to decode the bodies
+     *                              of the parts. (Transfer encoding)
      *
-	 *              input - If called statically, this will be treated
-	 *                      as the input
+     *              input - If called statically, this will be treated
+     *                      as the input
      * @return object Decoded results
      * @access public
      */
-	function decode($params = NULL)
-	{
+    function decode($params = NULL)
+    {
 
-		// Have we been called statically? If so, create an object and pass details to that.
-		if (!isset($this) AND isset($params['input'])) {
+        // Have we been called statically? If so, create an object and pass details to that.
+        if (!isset($this) AND isset($params['input'])) {
 
-			if (isset($params['crlf']))
-				$obj = new Mail_mimeDecode($params['input'], $params['crlf']);
-			else
-				$obj = new Mail_mimeDecode($params['input']);
-			$structure = $obj->decode($params);
+            if (isset($params['crlf']))
+                $obj = new Mail_mimeDecode($params['input'], $params['crlf']);
+            else
+                $obj = new Mail_mimeDecode($params['input']);
+            $structure = $obj->decode($params);
 
-		// Called statically but no input
-		} elseif (!isset($this)) {
-			return new PEAR_Error('Called statically and no input given');
+        // Called statically but no input
+        } elseif (!isset($this)) {
+            return new PEAR_Error('Called statically and no input given');
 
-		// Called via an object
-		} else {
-			$this->_decode_bodies = isset($params['decode_bodies']) ? $params['decode_bodies'] : FALSE;
-			$structure = $this->_decode($this->_header, $this->_body);
-		}
+        // Called via an object
+        } else {
+            $this->_decode_bodies = isset($params['decode_bodies']) ? $params['decode_bodies'] : FALSE;
+            $structure = $this->_decode($this->_header, $this->_body);
+        }
 
-		return $structure;
-	}
+        return $structure;
+    }
 
     /**
      * Performs the decoding. Decodes the body string passed to it
-	 * If it finds certain content-types it will call itself in a
-	 * recursive fashion
+     * If it finds certain content-types it will call itself in a
+     * recursive fashion
      * 
      * @param string Header section
-	 * @param string Body section
-	 * @return object Results of decoding process
+     * @param string Body section
+     * @return object Results of decoding process
      * @access private
      */
-	function _decode($headers, $body)
-	{
+    function _decode($headers, $body)
+    {
 
-		$return = new stdClass;
 
-		$headers = $this->parseHeaders($headers);
+        $return = new stdClass;
+        $headers = $this->_parseHeaders($headers);
 
-		foreach ($headers as $value)
-			$return->headers[] = $value['name'].': '.$value['value'];
+        foreach ($headers as $value)
+            $return->headers[strtolower($value['name'])] = $value['value'];
 
-		reset($headers);
-		while (list($key, $value) = each($headers)) {
-			$headers[$key]['name'] = strtolower($headers[$key]['name']);
-			switch ($headers[$key]['name']) {
-			case 'content-type':
-				$content_type = $this->parseHeaderValue($headers[$key]['value']);
-				break;
+        reset($headers);
+        while (list($key, $value) = each($headers)) {
+            $headers[$key]['name'] = strtolower($headers[$key]['name']);
+            switch ($headers[$key]['name']) {
+                case 'content-type':
+                    $content_type = $this->_parseHeaderValue($headers[$key]['value']);
+    
+                    if (preg_match('/[0-9a-z+.-]\/[0-9a-z+.-]/i', $content_type['value'])) {
+                        $return->ifsubtype = TRUE;
+                        list($return->type, $return->subtype) = explode('/', $content_type['value']);
+                    }
+    
+                    if (isset($content_type['other'])) {
+                        $return->ifparameters = TRUE;
+                        while (list($p_name, $p_value) = each($content_type['other'])) {
+                            $return->parameters[$p_name] = $p_value;
+                        }
+                    }
+                    //print_r($content_type);exit;
+                    break;
 
-			case 'content-disposition';
-				$content_disposition = $this->parseHeaderValue($headers[$key]['value']);
-				break;
+                case 'content-disposition';
+                    $content_disposition = $this->_parseHeaderValue($headers[$key]['value']);
+                    $return->ifdisposition = TRUE;
+                    $return->disposition   = $content_disposition['value'];
+                    if (isset($content_disposition['other'])) {
+                        $return->ifdparameters = TRUE;
+                        while (list($p_name, $p_value) = each($content_disposition['other'])) {
+                            $return->dparameters[$p_name] = $p_value;
+                        }
+                    }
+                    break;
 
-			case 'content-transfer-encoding':
-				$content_transfer_encoding = $this->parseHeaderValue($headers[$key]['value']);
-				break;
-			}
-		}
+                case 'content-transfer-encoding':
+                    $content_transfer_encoding = $this->_parseHeaderValue($headers[$key]['value']);
+                    break;
+            }
+        }
 
-		if (isset($content_type)) {
+        if (isset($content_type)) {
 
-			switch ($content_type['value']) {
-			case 'text/plain':
-				$return->body = $body;
-				break;
-
-			case 'text/html':
-				$return->body = $body;
-				break;
-
-			case 'multipart/alternative':
-			case 'multipart/related':
-			case 'multipart/mixed':
-				if(!isset($content_type['other']['boundary'])){
-					$this->_error = 'No boundary found for multipart/* part';
-					return FALSE;
-				}
-
-				$parts = $this->boundarySplit($body, $content_type['other']['boundary']);
-				for($i=0; $i<count($parts); $i++){
-					list($part_body, $part_header) = $this->splitBodyHeader($parts[$i]);
-					$return->parts[] = $this->_decode($part_body, $part_header);
-				}
-				break;
-
-			default:
-				$return->body = $body;
-				break;
-			}
-		}
-		
-		return $return;
-	}
+            switch ($content_type['value']) {
+                case 'text/plain':
+                    $return->body = $body;
+                    break;
+    
+                case 'text/html':
+                    $return->body = $body;
+                    break;
+    
+                case 'multipart/alternative':
+                case 'multipart/related':
+                case 'multipart/mixed':
+                    if(!isset($content_type['other']['boundary'])){
+                        $this->_error = 'No boundary found for multipart/* part';
+                        return FALSE;
+                    }
+    
+                    $parts = $this->_boundarySplit($body, $content_type['other']['boundary']);
+                    for($i=0; $i<count($parts); $i++){
+                        list($part_body, $part_header) = $this->_splitBodyHeader($parts[$i]);
+                        $return->parts[] = $this->_decode($part_body, $part_header);
+                    }
+                    break;
+    
+                default:
+                    $return->body = $body;
+                    break;
+            }
+        }
+        
+        return $return;
+    }
 
     /**
      * Given a string containing a header and body
-	 * section, this function will split them (at the first
-	 * blank line) and return them.
+     * section, this function will split them (at the first
+     * blank line) and return them.
      * 
-	 * @param string Input to split apart
-	 * @return array Contains header and body section
+     * @param string Input to split apart
+     * @return array Contains header and body section
      * @access private
      */
-	function splitBodyHeader($input)
-	{
+    function _splitBodyHeader($input)
+    {
 
-		$pos	= strpos($input, MAIL_MIMEDECODE_CRLF.MAIL_MIMEDECODE_CRLF);
-		if ($pos === FALSE) {
-			$this->_error = 'Could not split header and body';
-			return FALSE;
-		}
+        $pos    = strpos($input, MAIL_MIMEDECODE_CRLF.MAIL_MIMEDECODE_CRLF);
+        if ($pos === FALSE) {
+            $this->_error = 'Could not split header and body';
+            return FALSE;
+        }
 
-		$header	= substr($input, 0, $pos+strlen(MAIL_MIMEDECODE_CRLF));
-		$body	= substr($input, $pos+(2*strlen(MAIL_MIMEDECODE_CRLF)));
+        $header = substr($input, 0, $pos+strlen(MAIL_MIMEDECODE_CRLF));
+        $body   = substr($input, $pos+(2*strlen(MAIL_MIMEDECODE_CRLF)));
 
-		return array($header, $body);
-	}
+        return array($header, $body);
+    }
 
     /**
      * Parse headers given in $input and return
-	 * as assoc array.
+     * as assoc array.
      * 
-	 * @param string Headers to parse
-	 * @return array Contains parsed headers
+     * @param string Headers to parse
+     * @return array Contains parsed headers
      * @access private
      */
-	function parseHeaders($input)
-	{
+    function _parseHeaders($input)
+    {
 
-		// Unfold the input
-		$input		= preg_replace('/'.MAIL_MIMEDECODE_CRLF.'(	| )/', ' ', $input);
-		$headers	= explode(MAIL_MIMEDECODE_CRLF, trim($input));
-	
-		foreach ($headers as $value) {
+        // Unfold the input
+        $input   = preg_replace('/'.MAIL_MIMEDECODE_CRLF.'(	| )/', ' ', $input); // Not two spaces in regex, but a tab and a space
+        $headers = explode(MAIL_MIMEDECODE_CRLF, trim($input));
+    
+        foreach ($headers as $value) {
 
-			list($hdr_name, $hdr_value) = explode(': ', $value);
-			$return[] = array('name' => $hdr_name, 'value' => $hdr_value);
-		}
+            list($hdr_name, $hdr_value) = explode(': ', $value);
+            $return[] = array('name' => $hdr_name, 'value' => $hdr_value);
+        }
 
-		return $return;
-	}
+        return $return;
+    }
 
     /**
      * Function to parse a header value,
-	 * extract first part, and any secondary
-	 * parts (after ;) This function is not as
-	 * robust as it could be. Eg. header comments
-	 * in the wrong place will probably break it.
+     * extract first part, and any secondary
+     * parts (after ;) This function is not as
+     * robust as it could be. Eg. header comments
+     * in the wrong place will probably break it.
      * 
-	 * @param string Header value to parse
-	 * @return array Contains parsed result
+     * @param string Header value to parse
+     * @return array Contains parsed result
      * @access private
      */
-	function parseHeaderValue($input)
-	{
+    function _parseHeaderValue($input)
+    {
 
-		if (($pos = strpos($input, ';')) !== FALSE) {
+        if (($pos = strpos($input, ';')) !== FALSE) {
 
-			$return['value'] = trim(substr($input, 0, $pos));
-			$input = trim(substr($input, $pos+1));
+            $return['value'] = trim(substr($input, 0, $pos));
+            $input = trim(substr($input, $pos+1));
 
-			if (strlen($input) > 0) {
-				preg_match_all('/(([[:alnum:]]+)="?([^"]*)"?\s?;?)+/i', $input, $matches);
+            if (strlen($input) > 0) {
+                preg_match_all('/(([[:alnum:]]+)="?([^"]*)"?\s?;?)+/i', $input, $matches);
 
-				for($i=0; $i<count($matches[2]); $i++){
-					$return['other'][$matches[2][$i]] = $matches[3][$i];
-				}
-			}
-		} else
-			$return['value'] = trim($input);
-		
-		return $return;
-	}
+                for($i=0; $i<count($matches[2]); $i++){
+                    $return['other'][$matches[2][$i]] = $matches[3][$i];
+                }
+            }
+        } else
+            $return['value'] = trim($input);
+        
+        return $return;
+    }
 
     /**
      * This function splits the input based
-	 * on the given boundary
+     * on the given boundary
      * 
-	 * @param string Input to parse
-	 * @return array Contains array of resulting mime parts
+     * @param string Input to parse
+     * @return array Contains array of resulting mime parts
      * @access private
      */
-	function boundarySplit($input, $boundary)
-	{
+    function _boundarySplit($input, $boundary)
+    {
+        $tmp = explode('--'.$boundary, $input);
 
-		$tmp = explode('--'.$boundary, $input);
+        for ($i=1; $i<count($tmp)-1; $i++)
+            $parts[] = $tmp[$i];
 
-		for ($i=1; $i<count($tmp)-1; $i++)
-			$parts[] = $tmp[$i];
-
-		return $parts;
-	}
+        return $parts;
+    }
 
 } // End of class
 ?>
