@@ -252,7 +252,7 @@ class Mail_mimeDecode extends PEAR{
                     $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body, $encoding) : $body) : null;
                     break;
 
-				case 'multipart/signed': // PGP
+                case 'multipart/signed': // PGP
                 case 'multipart/digest':
                 case 'multipart/alternative':
                 case 'multipart/related':
@@ -281,8 +281,8 @@ class Mail_mimeDecode extends PEAR{
                     break;
 
                 default:
-					if(!isset($content_transfer_encoding['value']))
-						$content_transfer_encoding['value'] = '7bit';
+                    if(!isset($content_transfer_encoding['value']))
+                        $content_transfer_encoding['value'] = '7bit';
                     $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body, $content_transfer_encoding['value']) : $body) : null;
                     break;
             }
