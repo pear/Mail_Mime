@@ -500,5 +500,68 @@ class Mail_mimeDecode extends PEAR{
         return $input;
     }
 
+    /**
+     * Checks the input for uuencoded files and returns
+	 * an array of them. Can be called statically
+     *
+     * @param  string Input body to look for attahcments in
+     * @return array  Decoded bodies
+     * @access public
+	 * @author Unknown
+     */
+	function &uudecode($input)
+	{
+		// Find all uuencoded sections
+		preg_match_all("/begin [0-7]{3} .+\r?\n(([\r\n]|.)+)\r?\nend/U", $input, $matches);
+
+		foreach ($matches[1] as $str) {
+		    $file = '';
+		    $str = preg_split("/\r?\n/", trim($str));
+		    $strlen = count($str);
+	
+		    for ($i = 0; $i < $strlen; $i++) {
+		        $pos = 1;
+		        $d = 0;
+		        $len=(int)(((ord(substr($str[$i],0,1)) -32) - ' ') & 077);
+	
+		        while (($d + 3 <= $len) AND ($pos + 4 <= strlen($str[$i]))) {
+		            $c0 = (ord(substr($str[$i],$pos,1)) ^ 0x20);
+		            $c1 = (ord(substr($str[$i],$pos+1,1)) ^ 0x20);
+		            $c2 = (ord(substr($str[$i],$pos+2,1)) ^ 0x20);
+		            $c3 = (ord(substr($str[$i],$pos+3,1)) ^ 0x20);
+		            $file .= chr(((($c0 - ' ') & 077) << 2) | ((($c1 - ' ') & 077) >> 4));
+		
+		            $file .= chr(((($c1 - ' ') & 077) << 4) | ((($c2 - ' ') & 077) >> 2));
+		
+		            $file .= chr(((($c2 - ' ') & 077) << 6) |  (($c3 - ' ') & 077));
+		
+		            $pos += 4;
+		            $d += 3;
+		        }
+		
+		        if (($d + 2 <= $len) && ($pos + 3 <= strlen($str[$i]))) {
+		            $c0 = (ord(substr($str[$i],$pos,1)) ^ 0x20);
+		            $c1 = (ord(substr($str[$i],$pos+1,1)) ^ 0x20);
+		            $c2 = (ord(substr($str[$i],$pos+2,1)) ^ 0x20);
+		            $file .= chr(((($c0 - ' ') & 077) << 2) | ((($c1 - ' ') & 077) >> 4));
+		
+		            $file .= chr(((($c1 - ' ') & 077) << 4) | ((($c2 - ' ') & 077) >> 2));
+		
+		            $pos += 3;
+		            $d += 2;
+		        }
+		
+		        if (($d + 1 <= $len) && ($pos + 2 <= strlen($str[$i]))) {
+		            $c0 = (ord(substr($str[$i],$pos,1)) ^ 0x20);
+		            $c1 = (ord(substr($str[$i],$pos+1,1)) ^ 0x20);
+		            $file .= chr(((($c0 - ' ') & 077) << 2) | ((($c1 - ' ') & 077) >> 4));
+		
+		        }
+		    }
+		    $files[] = $file;
+		}
+
+		return $files;
+	}
 } // End of class
 ?>
