@@ -328,6 +328,8 @@ class Mail_mimePart {
                 if (($dec == 32) AND ($i == ($linlen - 1))){    // convert space at eol only
                     $char = '=20';
 
+                } elseif(($dec == 9) AND ($i == ($linlen - 1))) {  // convert tab at eol only
+                    $char = '=09';
                 } elseif($dec == 9) {
                     ; // Do nothing if a tab.
                 } elseif(($dec == 61) OR ($dec < 32 ) OR ($dec > 126)) {
