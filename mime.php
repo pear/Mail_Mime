@@ -383,7 +383,7 @@ class Mail_mime
     * @return string The mime content
     * @access public
     */
-    function &get($params = null)
+    function &get($build_params = null)
     {
         if (isset($build_params)) {
             while (list($key, $value) = each($build_params)) {

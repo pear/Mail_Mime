@@ -173,8 +173,8 @@ class Mail_mimePart extends PEAR{
         }
 
         // Default content-type
-        if (!isset($_headers['Content-Type'])) {
-            $_headers['Content-Type'] = 'text/plain';
+        if (!isset($headers['Content-Type'])) {
+            $headers['Content-Type'] = 'text/plain';
         }
 
         //Default encoding
@@ -184,7 +184,7 @@ class Mail_mimePart extends PEAR{
 
         // Assign stuff to member variables
         $this->_encoded  = array();
-        $this->_headers  = $_headers;
+        $this->_headers  = $headers;
         $this->_body     = $body;
     }
 
