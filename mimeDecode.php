@@ -136,14 +136,6 @@ class Mail_mimeDecode extends PEAR
     var $_decode_headers;
 
     /**
-    * If invoked from a class, $this will be set. This has problematic
-    * connotations for calling decode() statically. Hence this variable
-    * is used to determine if we are indeed being called statically or
-    * via an object.
-    */
-    var $mailMimeDecode;
-
-    /**
      * Constructor.
      *
      * Sets up the object, initialise the variables, and splits and
@@ -161,8 +153,6 @@ class Mail_mimeDecode extends PEAR
         $this->_body           = $body;
         $this->_decode_bodies  = false;
         $this->_include_bodies = true;
-        
-        $this->mailMimeDecode  = true;
     }
 
     /**
@@ -184,15 +174,17 @@ class Mail_mimeDecode extends PEAR
      */
     function decode($params = null)
     {
+        // determine if this method has been called statically
+        $isStatic = !(isset($this) && get_class($this) == __CLASS__);
 
         // Have we been called statically? If so, create an object and pass details to that.
-        if (!isset($this) AND isset($params['input'])) {
+        if ($isStatic AND isset($params['input'])) {
 
             $obj = new Mail_mimeDecode($params['input']);
             $structure = $obj->decode($params);
 
         // Called statically but no input
-        } elseif (!isset($this)) {
+        } elseif ($isStatic) {
             return PEAR::raiseError('Called statically and no input given');
 
         // Called via an object
