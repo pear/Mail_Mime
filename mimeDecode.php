@@ -244,11 +244,11 @@ class Mail_mimeDecode extends PEAR{
 
             switch (strtolower($content_type['value'])) {
                 case 'text/plain':
-                    $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body) : $body) : null;
+                    $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body, $content_transfer_encoding['value']) : $body) : null;
                     break;
     
                 case 'text/html':
-                    $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body) : $body) : null;
+                    $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body, $content_transfer_encoding['value']) : $body) : null;
                     break;
 
                 case 'multipart/digest':
@@ -263,7 +263,7 @@ class Mail_mimeDecode extends PEAR{
                     $default_ctype = (strtolower($content_type['value']) === 'multipart/digest') ? 'message/rfc822' : 'text/plain';
 
                     $parts = $this->_boundarySplit($body, $content_type['other']['boundary']);
-                    for($i=0; $i<count($parts); $i++){
+                    for ($i = 0; $i < count($parts); $i++) {
                         list($part_header, $part_body) = $this->_splitBodyHeader($parts[$i]);
                         $part = $this->_decode($part_header, $part_body, $default_ctype);
                         if($part === false)
@@ -279,7 +279,7 @@ class Mail_mimeDecode extends PEAR{
                     break;
 
                 default:
-                    $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body) : $body) : null;
+                    $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body, $content_transfer_encoding['value']) : $body) : null;
                     break;
             }
 
@@ -370,12 +370,13 @@ class Mail_mimeDecode extends PEAR{
             if (strlen($input) > 0) {
                 preg_match_all('/(([[:alnum:]]+)="?([^"]*)"?\s?;?)+/i', $input, $matches);
 
-                for($i=0; $i<count($matches[2]); $i++){
+                for ($i = 0; $i < count($matches[2]); $i++) {
                     $return['other'][strtolower($matches[2][$i])] = $matches[3][$i];
                 }
             }
-        } else
+        } else {
             $return['value'] = trim($input);
+        }
         
         return $return;
     }
@@ -392,8 +393,9 @@ class Mail_mimeDecode extends PEAR{
     {
         $tmp = explode('--'.$boundary, $input);
 
-        for ($i=1; $i<count($tmp)-1; $i++)
+        for ($i=1; $i<count($tmp)-1; $i++) {
             $parts[] = $tmp[$i];
+        }
 
         return $parts;
     }
@@ -414,14 +416,14 @@ class Mail_mimeDecode extends PEAR{
         $input = preg_replace('/(=\?[^?]+\?(Q|B)\?[^?]*\?=)( |' . "\t|" . $this->_crlf . ')+=\?/', '\1=?', $input);
 
         // For each encoded-word...
-        while(preg_match('/(=\?([^?]+)\?(Q|B)\?([^?]*)\?=)/', $input, $matches)){
+        while (preg_match('/(=\?([^?]+)\?(Q|B)\?([^?]*)\?=)/', $input, $matches)) {
 
             $encoded  = $matches[1];
             $charset  = $matches[2];
             $encoding = $matches[3];
             $text     = $matches[4];
 
-            switch($encoding){
+            switch ($encoding) {
                 case 'B':
                     $text = base64_decode($text);
                     break;
@@ -437,6 +439,59 @@ class Mail_mimeDecode extends PEAR{
             $input = str_replace($encoded, $text, $input);
         }
         
+        return $input;
+    }
+
+    /**
+     * Given a body string and an encoding type, 
+     * this function will decode and return it.
+     *
+     * @param  string Input body to decode
+     * @param  string Encoding type to use.
+     * @return string Decoded body
+     * @access private
+     */
+    function _decodeBody($input, $encoding = '7bit')
+    {
+        switch ($encoding) {
+            case '7bit':
+                return $input;
+                break;
+
+            case 'quoted-printable':
+                return $this->_quotedPrintableDecode($input);
+                break;
+
+            case 'base64':
+                return base64_decode($input);
+                break;
+
+            default:
+                return $input;
+        }
+    }
+
+    /**
+     * Given a quoted-printable string, this
+     * function will decode and return it.
+     *
+     * @param  string Input body to decode
+     * @return string Decoded body
+     * @access private
+     */
+    function _quotedPrintableDecode($input)
+    {
+        // Remove soft line breaks
+        $input = preg_replace("/=\r?\n/", '', $input);
+
+        // Replace encoded characters
+        if (preg_match_all('/=[A-Z0-9]{2}/', $input, $matches)) {
+            $matches = array_unique($matches[0]);
+            foreach ($matches as $value) {
+                $input = str_replace($value, chr(hexdec(substr($value,1))), $input);
+            }
+        }
+
         return $input;
     }
 
