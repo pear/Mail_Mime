@@ -377,6 +377,9 @@ class Mail_mimeDecode extends PEAR{
 
             if (strlen($input) > 0) {
 
+                // This splits on a semi-colon, if there's no preceeding backslash
+                // Can't handle if it's in double quotes however. (Of course anyone
+                // sending that needs a good slap).
                 $parameters = preg_split('/\s*(?<!\\\\);\s*/i', $input);
 
                 for ($i = 0; $i < count($parameters); $i++) {
@@ -386,6 +389,7 @@ class Mail_mimeDecode extends PEAR{
                         $param_value = substr($param_value, 1, -1);
                     }
                     $return['other'][$param_name] = $param_value;
+                    $return['other'][strtolower($param_name)] = $param_value;
                 }
             }
         } else {
@@ -444,7 +448,7 @@ class Mail_mimeDecode extends PEAR{
 
                 case 'Q':
                     $text = str_replace('_', ' ', $text);
-                    preg_match_all('/=([A-F0-9]{2})/', $text, $matches);
+                    preg_match_all('/=([a-f0-9]{2})/i', $text, $matches);
                     foreach($matches[1] as $value)
                         $text = str_replace('='.$value, chr(hexdec($value)), $text);
                     break;
@@ -499,7 +503,7 @@ class Mail_mimeDecode extends PEAR{
         $input = preg_replace("/=\r?\n/", '', $input);
 
         // Replace encoded characters
-        if (preg_match_all('/=[A-Z0-9]{2}/', $input, $matches)) {
+        if (preg_match_all('/=[a-f0-9]{2}/i', $input, $matches)) {
             $matches = array_unique($matches[0]);
             foreach ($matches as $value) {
                 $input = str_replace($value, chr(hexdec(substr($value,1))), $input);
