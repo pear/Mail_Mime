@@ -13,8 +13,8 @@
 // | obtain it through the world-wide-web, please send a note to          |
 // | license@php.net so we can mail you a copy immediately.               |
 // +----------------------------------------------------------------------+
-// | Authors: Tomas V.V.Cox <cox@idecnet.com>                             |
-// |          Richard Heyes <richard@phpguru.org>                         |
+// | Authors: Richard Heyes <richard@phpguru.org>                         |
+// |          Tomas V.V.Cox <cox@idecnet.com> (port to PEAR)              |
 // |                                                                      |
 // +----------------------------------------------------------------------+
 //
@@ -34,8 +34,8 @@ require_once 'Mail/mimePart.php';
 *   in the mime_mail.class by Tobias Ratschiller <tobias@dnet.it> and
 *   Sascha Schumann <sascha@schumann.cx>.
 *
-* @author Tomas V.V.Cox <cox@idecnet.com>
 * @author Richard Heyes <richard.heyes@heyes-computing.net>
+* @author Tomas V.V.Cox <cox@idecnet.com>
 * @package Mail
 * @access public
 */
@@ -230,7 +230,7 @@ class Mail_mime extends Mail
     }
 
     /*
-    * Adds a text subpart to the mimePart object and 
+    * Adds a text subpart to the mimePart object and
     * returns it during the build process.
     *
     * @param mixed    The object to add the part to, or
@@ -430,7 +430,7 @@ class Mail_mime extends Mail
                     $message =& $this->_addAlternativePart($null);
    	                $this->_addTextPart($message, $this->_txtbody);
 					$this->_addHtmlPart($message);
-                    
+
                 } else {
                     $message =& $this->_addHtmlPart($null);
                 }
@@ -508,7 +508,7 @@ class Mail_mime extends Mail
     */
     function & headers($xtra_headers = null)
     {
-        // Content-Type header should already be present, 
+        // Content-Type header should already be present,
         // So just add mime version header
         $headers['MIME-Version'] = '1.0';
         if (isset($xtra_headers)) {
