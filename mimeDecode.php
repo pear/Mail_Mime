@@ -1,6 +1,8 @@
-<?Php
+<?php
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 // +-----------------------------------------------------------------------+
 // | Copyright (c) 2002-2003  Richard Heyes                                |
+// | Copyright (c) 2003-2005  The PHP Group                                |
 // | All rights reserved.                                                  |
 // |                                                                       |
 // | Redistribution and use in source and binary forms, with or without    |
@@ -88,10 +90,8 @@ require_once 'PEAR.php';
 * @version $Revision$
 * @package Mail
 */
-
 class Mail_mimeDecode extends PEAR
 {
-
     /**
      * The raw email to decode
      * @var    string
@@ -177,7 +177,8 @@ class Mail_mimeDecode extends PEAR
         // determine if this method has been called statically
         $isStatic = !(isset($this) && get_class($this) == __CLASS__);
 
-        // Have we been called statically? If so, create an object and pass details to that.
+        // Have we been called statically?
+	// If so, create an object and pass details to that.
         if ($isStatic AND isset($params['input'])) {
 
             $obj = new Mail_mimeDecode($params['input']);
@@ -189,9 +190,12 @@ class Mail_mimeDecode extends PEAR
 
         // Called via an object
         } else {
-            $this->_include_bodies = isset($params['include_bodies'])  ? $params['include_bodies']  : false;
-            $this->_decode_bodies  = isset($params['decode_bodies'])   ? $params['decode_bodies']   : false;
-            $this->_decode_headers = isset($params['decode_headers'])  ? $params['decode_headers']  : false;
+            $this->_include_bodies = isset($params['include_bodies']) ?
+	                             $params['include_bodies'] : false;
+            $this->_decode_bodies  = isset($params['decode_bodies']) ?
+	                             $params['decode_bodies']  : false;
+            $this->_decode_headers = isset($params['decode_headers']) ?
+	                             $params['decode_headers'] : false;
 
             $structure = $this->_decode($this->_header, $this->_body);
             if ($structure === false) {
