@@ -405,7 +405,7 @@ class Mail_mime extends Mail
 
         switch (TRUE) {
             case $text AND !$attachments:
-                $message =& $this->_addTextPart($null, $this->text);
+                $message =& $this->_addTextPart($null, $this->_txtbody);
                 break;
 
             case !$text AND !$html AND $attachments:
