@@ -21,7 +21,7 @@
 // $Id$
 
 require_once 'PEAR.php';
-require_once 'Mail/mimePart.php';
+require_once 'Mail_Mime/mimePart.php';
 
 /*
 * Mime mail composer class. Can handle: text and html bodies, embedded html
