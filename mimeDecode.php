@@ -643,7 +643,7 @@ class Mail_mimeDecode extends PEAR{
                            Mail_mimeDecode::_getXML($input->parts[$i], $indent+1) .
                            str_repeat($htab, $indent) . '</mimepart>' . $crlf;
             }
-        } else {
+        } elseif (isset($input->body)) {
             $output .= $crlf . str_repeat($htab, $indent) . '<body><![CDATA[' .
                        $input->body . ']]></body>' . $crlf;
         }
