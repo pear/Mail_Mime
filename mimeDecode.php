@@ -644,6 +644,8 @@ class Mail_mimeDecode extends PEAR
      */
     function getSendArray()
     {
+        // prevent warning if this is not set
+        $this->_decode_headers = FALSE;
         $headerlist =$this->_parseHeaders($this->_header);
         $to = "";
         if (!$headerlist) {
