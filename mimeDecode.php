@@ -16,7 +16,7 @@
 // | Authors: Richard Heyes <richard@phpguru.org>                         |
 // +----------------------------------------------------------------------+
 
-    require_once($CONFIG['includes'].'PEAR.php');
+    require_once('PEAR.php');
 
 /**
 *  +----------------------------- IMPORTANT ------------------------------+
