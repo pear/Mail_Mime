@@ -16,7 +16,7 @@
 // | Authors: Richard Heyes <richard@phpguru.org>                         |
 // +----------------------------------------------------------------------+
 
-    require_once('PEAR.php');
+require_once 'PEAR.php';
 
 /**
 *  +----------------------------- IMPORTANT ------------------------------+
@@ -28,7 +28,7 @@
 * Mime Decoding class
 *
 * This class will parse a raw mime email and return
-* the structure. Returned structure is similar to 
+* the structure. Returned structure is similar to
 * that returned by imap_fetchstructure().
 *
 * USAGE: (assume $input is your raw email)
@@ -52,7 +52,8 @@
 * @package Mail
 */
 
-class Mail_mimeDecode extends PEAR{
+class Mail_mimeDecode extends PEAR
+{
 
     /**
      * The raw email to decode
@@ -105,7 +106,7 @@ class Mail_mimeDecode extends PEAR{
 
     /**
      * Constructor.
-     * 
+     *
      * Sets up the object, initialise the variables, and splits and
      * stores the header and body of the input.
      *
@@ -130,7 +131,7 @@ class Mail_mimeDecode extends PEAR{
      * Begins the decoding process. If called statically
      * it will create an object and call the decode() method
      * of it.
-     * 
+     *
      * @param array An array of various parameters that determine
      *              various things:
      *              include_bodies - Whether to include the body in the returned
@@ -166,7 +167,7 @@ class Mail_mimeDecode extends PEAR{
             $this->_include_bodies = isset($params['include_bodies'])  ? $params['include_bodies']  : false;
             $this->_decode_bodies  = isset($params['decode_bodies'])   ? $params['decode_bodies']   : false;
             $this->_decode_headers = isset($params['decode_headers'])  ? $params['decode_headers']  : false;
-            
+
             $structure = $this->_decode($this->_header, $this->_body);
             if($structure === false)
                 $structure = $this->raiseError($this->_error);
@@ -179,7 +180,7 @@ class Mail_mimeDecode extends PEAR{
      * Performs the decoding. Decodes the body string passed to it
      * If it finds certain content-types it will call itself in a
      * recursive fashion
-     * 
+     *
      * @param string Header section
      * @param string Body section
      * @return object Results of decoding process
@@ -215,7 +216,7 @@ class Mail_mimeDecode extends PEAR{
                         $return->ctype_primary   = $regs[1];
                         $return->ctype_secondary = $regs[2];
                     }
-    
+
                     if (isset($content_type['other'])) {
                         while (list($p_name, $p_value) = each($content_type['other'])) {
                             $return->ctype_parameters[$p_name] = $p_value;
@@ -246,7 +247,7 @@ class Mail_mimeDecode extends PEAR{
                     $encoding = isset($content_transfer_encoding) ? $content_transfer_encoding['value'] : '7bit';
                     $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body, $encoding) : $body) : null;
                     break;
-    
+
                 case 'text/html':
                     $encoding = isset($content_transfer_encoding) ? $content_transfer_encoding['value'] : '7bit';
                     $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body, $encoding) : $body) : null;
@@ -294,7 +295,7 @@ class Mail_mimeDecode extends PEAR{
             $return->ctype_secondary = $ctype[1];
             $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body) : $body) : null;
         }
-        
+
         return $return;
     }
 
@@ -302,7 +303,7 @@ class Mail_mimeDecode extends PEAR{
      * Given a string containing a header and body
      * section, this function will split them (at the first
      * blank line) and return them.
-     * 
+     *
      * @param string Input to split apart
      * @return array Contains header and body section
      * @access private
@@ -325,7 +326,7 @@ class Mail_mimeDecode extends PEAR{
     /**
      * Parse headers given in $input and return
      * as assoc array.
-     * 
+     *
      * @param string Headers to parse
      * @return array Contains parsed headers
      * @access private
@@ -337,7 +338,7 @@ class Mail_mimeDecode extends PEAR{
             // Unfold the input
             $input   = preg_replace('/' . $this->_crlf . "(\t| )/", ' ', $input);
             $headers = explode($this->_crlf, trim($input));
-    
+
             foreach ($headers as $value) {
                 $hdr_name = substr($value, 0, $pos = strpos($value, ':'));
                 $hdr_value = substr($value, $pos+1);
@@ -362,7 +363,7 @@ class Mail_mimeDecode extends PEAR{
      * parts (after ;) This function is not as
      * robust as it could be. Eg. header comments
      * in the wrong place will probably break it.
-     * 
+     *
      * @param string Header value to parse
      * @return array Contains parsed result
      * @access private
@@ -395,14 +396,14 @@ class Mail_mimeDecode extends PEAR{
         } else {
             $return['value'] = trim($input);
         }
-        
+
         return $return;
     }
 
     /**
      * This function splits the input based
      * on the given boundary
-     * 
+     *
      * @param string Input to parse
      * @return array Contains array of resulting mime parts
      * @access private
@@ -456,12 +457,12 @@ class Mail_mimeDecode extends PEAR{
 
             $input = str_replace($encoded, $text, $input);
         }
-        
+
         return $input;
     }
 
     /**
-     * Given a body string and an encoding type, 
+     * Given a body string and an encoding type,
      * this function will decode and return it.
      *
      * @param  string Input body to decode
@@ -542,44 +543,44 @@ class Mail_mimeDecode extends PEAR{
             $file = '';
             $str = preg_split("/\r?\n/", trim($str));
             $strlen = count($str);
-    
+
             for ($i = 0; $i < $strlen; $i++) {
                 $pos = 1;
                 $d = 0;
                 $len=(int)(((ord(substr($str[$i],0,1)) -32) - ' ') & 077);
-    
+
                 while (($d + 3 <= $len) AND ($pos + 4 <= strlen($str[$i]))) {
                     $c0 = (ord(substr($str[$i],$pos,1)) ^ 0x20);
                     $c1 = (ord(substr($str[$i],$pos+1,1)) ^ 0x20);
                     $c2 = (ord(substr($str[$i],$pos+2,1)) ^ 0x20);
                     $c3 = (ord(substr($str[$i],$pos+3,1)) ^ 0x20);
                     $file .= chr(((($c0 - ' ') & 077) << 2) | ((($c1 - ' ') & 077) >> 4));
-        
+
                     $file .= chr(((($c1 - ' ') & 077) << 4) | ((($c2 - ' ') & 077) >> 2));
-        
+
                     $file .= chr(((($c2 - ' ') & 077) << 6) |  (($c3 - ' ') & 077));
-        
+
                     $pos += 4;
                     $d += 3;
                 }
-        
+
                 if (($d + 2 <= $len) && ($pos + 3 <= strlen($str[$i]))) {
                     $c0 = (ord(substr($str[$i],$pos,1)) ^ 0x20);
                     $c1 = (ord(substr($str[$i],$pos+1,1)) ^ 0x20);
                     $c2 = (ord(substr($str[$i],$pos+2,1)) ^ 0x20);
                     $file .= chr(((($c0 - ' ') & 077) << 2) | ((($c1 - ' ') & 077) >> 4));
-        
+
                     $file .= chr(((($c1 - ' ') & 077) << 4) | ((($c2 - ' ') & 077) >> 2));
-        
+
                     $pos += 3;
                     $d += 2;
                 }
-        
+
                 if (($d + 1 <= $len) && ($pos + 2 <= strlen($str[$i]))) {
                     $c0 = (ord(substr($str[$i],$pos,1)) ^ 0x20);
                     $c1 = (ord(substr($str[$i],$pos+1,1)) ^ 0x20);
                     $file .= chr(((($c0 - ' ') & 077) << 2) | ((($c1 - ' ') & 077) >> 4));
-        
+
                 }
             }
             $files[] = array('filename' => $filename, 'fileperm' => $fileperm, 'filedata' => $file);
@@ -688,7 +689,7 @@ class Mail_mimeDecode extends PEAR{
                             str_repeat($htab, $indent) . $htab . $htab . '<paramvalue>' . htmlspecialchars($paramvalue) . '</paramvalue>' . $crlf .
                             str_repeat($htab, $indent) . $htab . '</parameter>' . $crlf;
             }
-            
+
             $params = implode('', $params);
         } else {
             $params = '';
@@ -701,7 +702,7 @@ class Mail_mimeDecode extends PEAR{
                   str_repeat($htab, $indent) . '</header>' . $crlf;
 
         return $return;
-    }    
+    }
 
 } // End of class
 ?>

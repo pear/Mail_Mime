@@ -21,7 +21,7 @@
 // $Id$
 
 require_once 'PEAR.php';
-require_once 'Mail_Mime/mimePart.php';
+require_once 'Mail/mimePart.php';
 
 /*
 * Mime mail composer class. Can handle: text and html bodies, embedded html
@@ -505,7 +505,7 @@ class Mail_mime
     * @return array Assoc array with the mime headers
     * @access public
     */
-    function & headers($xtra_headers = null)
+    function &headers($xtra_headers = null)
     {
         // Content-Type header should already be present,
         // So just add mime version header
@@ -526,7 +526,7 @@ class Mail_mime
     * @return string Plain text headers
     * @access public
     */
-    function &txtHeaders($xtra_headers = null)
+    function txtHeaders($xtra_headers = null)
     {
         $headers = $this->headers($xtra_headers);
         $ret = '';

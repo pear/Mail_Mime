@@ -16,8 +16,6 @@
 // | Authors: Richard Heyes <richard@phpguru.org>                         |
 // +----------------------------------------------------------------------+
 
-    require_once('PEAR.php');
-
 /**
 *
 *  Raw mime encoding class
@@ -64,7 +62,7 @@
 * $email = $message->encode();
 * $email['headers'][] = 'Mime-Version: 1.0';
 *
-* 
+*
 * Further examples are available at http://www.phpguru.org
 *
 * TODO:
@@ -77,7 +75,7 @@
 * @package Mail
 */
 
-class Mail_mimePart extends PEAR{
+class Mail_mimePart {
 
    /**
     * The encoding type of this part
@@ -111,7 +109,7 @@ class Mail_mimePart extends PEAR{
 
     /**
      * Constructor.
-     * 
+     *
      * Sets up the object.
      *
      * @param $body   - The body of the mime part if any.
@@ -190,7 +188,7 @@ class Mail_mimePart extends PEAR{
 
     /**
      * encode()
-     * 
+     *
      * Encodes and returns the email. Also stores
      * it in the encoded member variable
      *
@@ -234,7 +232,7 @@ class Mail_mimePart extends PEAR{
 
     /**
      * &addSubPart()
-     * 
+     *
      * Adds a subpart to current mime part and returns
      * a reference to it
      *
@@ -255,7 +253,7 @@ class Mail_mimePart extends PEAR{
 
     /**
      * _getEncodedData()
-     * 
+     *
      * Returns encoded data based upon encoding passed to it
      *
      * @param $data     The data to encode.
@@ -286,11 +284,11 @@ class Mail_mimePart extends PEAR{
 
     /**
      * quoteadPrintableEncode()
-     * 
+     *
      * Encodes data to quoted-printable standard.
      *
      * @param $input    The data to encode
-     * @param $line_max Optional max line length. Should 
+     * @param $line_max Optional max line length. Should
      *                  not be more than 76 chars
      *
      * @access private
@@ -301,7 +299,7 @@ class Mail_mimePart extends PEAR{
         $eol    = MAIL_MIMEPART_CRLF;
         $escape    = '=';
         $output    = '';
-        
+
         while(list(, $line) = each($lines)){
 
             $linlen     = strlen($line);
@@ -319,7 +317,7 @@ class Mail_mimePart extends PEAR{
                 } elseif(($dec == 61) OR ($dec < 32 ) OR ($dec > 126)) {
                     $char = $escape . strtoupper(sprintf('%02s', dechex($dec)));
                 }
-    
+
                 if ((strlen($newline) + strlen($char)) >= $line_max) {        // MAIL_MIMEPART_CRLF is not counted
                     $output  .= $newline . $escape . $eol;                    // soft line break; " =\r\n" is okay
                     $newline  = '';
