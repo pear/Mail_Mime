@@ -1,4 +1,4 @@
-<?php
+<?Php
 //
 // +----------------------------------------------------------------------+
 // | PHP Version 4                                                        |
@@ -370,7 +370,7 @@ class Mail_mimeDecode extends PEAR
         if ($input !== '') {
             // Unfold the input
             $input   = preg_replace("/\r\n/", "\n", $input);
-            $input   = preg_replace("/\n(\t| )/", ' ', $input);
+            $input   = preg_replace("/\n(\t| )+/", ' ', $input);
             $headers = explode("\n", trim($input));
 
             foreach ($headers as $value) {
