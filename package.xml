@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<package>
+  <name>Mail_Mime</name>
+  <summary>Provides classes to create and decode mime messages.</summary>
+  <maintainer>
+    <user>heyesr</user>
+    <name>Richard Heyes</name>
+    <email>heyesr@php.net</email>
+  </maintainer>
+  <release>
+    <version>1.0</version>
+    <date>2001-12-28</date>
+    <notes>
+      This is the initial independent release of the Mime_Mail package.
+    </notes>
+  </release>
+
+  <filelist>
+    <dir name="/" baseinstalldir="Mail_Mime">
+        <file role="php">mime.php</file>
+        <file role="php">mimeDecode.php</file>
+        <file role="php">mimePart.php</file>
+        <file role="data">xmail.dtd</file>
+        <file role="data">xmail.xsl</file>
+    </dir>
+  </filelist>
+</package>
