@@ -34,6 +34,7 @@ o xmail.xsl: An XSLT stylesheet to transform the output of the getXML() method b
     <version>1.1</version>
     <date>2002-04-03</date>
     <state>stable</state>
+    <license>PHP 2.02</license>
     <notes>
       This is a maintenance release with various bugfixes and minor enhancements.
     </notes>
