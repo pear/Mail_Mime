@@ -115,19 +115,29 @@ class Mail_mime
     *        contents
     * @param bool $isfile If true the first param should be trated
     *        as a file name, else as a string (default)
+    * @param bool If true the text or file is appended to the
+    *        existing body, else the old body is overwritten
     * @return mixed true on success or PEAR_Error object
     * @access public
     */
-    function setTXTBody($data, $isfile = false)
+    function setTXTBody($data, $isfile = false, $append = false)
     {
         if (!$isfile) {
-            $this->_txtbody = $data;
+            if (!$append) {
+                $this->_txtbody = $data;
+            } else {
+                $this->_txtbody .= $data;
+            }
         } else {
             $cont = $this->_file2str($data);
             if (PEAR::isError($cont)) {
                 return $cont;
             }
-            $this->_txtbody = $cont;
+            if (!$append) {
+                 $this->_txtbody = $cont;
+             } else {
+                 $this->_txtbody .= $cont;
+             }
         }
         return true;
     }
