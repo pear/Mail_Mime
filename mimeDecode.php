@@ -1,6 +1,6 @@
 <?Php
 // +-----------------------------------------------------------------------+
-// | Copyright (c) 2002-2003  Richard Heyes                                     |
+// | Copyright (c) 2002-2003  Richard Heyes                                |
 // | All rights reserved.                                                  |
 // |                                                                       |
 // | Redistribution and use in source and binary forms, with or without    |
@@ -223,6 +223,7 @@ class Mail_mimeDecode extends PEAR
     function _decode($headers, $body, $default_ctype = 'text/plain')
     {
         $return = new stdClass;
+        $return->headers = array();
         $headers = $this->_parseHeaders($headers);
 
         foreach ($headers as $value) {
@@ -543,7 +544,7 @@ class Mail_mimeDecode extends PEAR
      */
     function _decodeBody($input, $encoding = '7bit')
     {
-        switch ($encoding) {
+        switch (strtolower($encoding)) {
             case '7bit':
                 return $input;
                 break;
@@ -700,14 +701,6 @@ class Mail_mimeDecode extends PEAR
         $to = substr($to,1);
         return array($to,$header,$this->_body);
     } 
-
-
-
-
-
-
-
-
 
     /**
      * Returns a xml copy of the output of
