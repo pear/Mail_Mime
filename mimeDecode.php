@@ -502,7 +502,13 @@ class Mail_mimeDecode extends PEAR{
 
     /**
      * Checks the input for uuencoded files and returns
-	 * an array of them. Can be called statically
+	 * an array of them. Can be called statically, eg:
+	 *
+	 * $files =& Mail_mimeDecode::uudecode($some_text);
+	 *
+	 * It will check for the begin 666 ... end syntax
+	 * however and won't just blindly decode whatever you
+	 * pass it.
      *
      * @param  string Input body to look for attahcments in
      * @return array  Decoded bodies
