@@ -30,6 +30,13 @@ o xmail.xsl: An XSLT stylesheet to transform the output of the getXML() method b
       </maintainer>
 
       <maintainer>
+         <user>sean</user>
+         <name>Sean Coates</name>
+         <email>sean@php.net</email>
+         <role>developer</role>
+      </maintainer>
+
+      <maintainer>
          <user>cox</user>
          <name>Tomas V.V.Cox</name>
          <email>cox@idecnet.com</email>
