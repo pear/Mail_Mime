@@ -117,14 +117,15 @@ class Mail_mimePart extends PEAR{
      * @param $body   - The body of the mime part if any.
      * @param $params - An associative array of parameters:
      *                  content_type - The content type for this part eg multipart/mixed
-     *                  encoding     - The encoding to use, 7bit, base64, or quoted-printable
+     *                  encoding     - The encoding to use, 7bit, 8bit, base64, or quoted-printable
      *                  cid          - Content ID to apply
      *                  disposition  - Content disposition, inline or attachment
      *                  dfilename    - Optional filename parameter for content disposition
      *                  description  - Content description
+     *                  charset      - Character set to use
      * @access public
      */
-    function Mail_mimePart($body, $params = array())
+    function Mail_mimePart($body = '', $params = array())
     {
         if (!defined('MAIL_MIMEPART_CRLF')) {
             define('MAIL_MIMEPART_CRLF', "\r\n", TRUE);
@@ -176,10 +177,15 @@ class Mail_mimePart extends PEAR{
             $_headers['Content-Type'] = 'text/plain';
         }
 
+        //Default encoding
+        if (!isset($this->_encoding)) {
+            $this->_encoding = '7bit';
+        }
+
         // Assign stuff to member variables
-        $this->_encoded  =  array();
-        $this->_headers  =& $headers;
-        $this->_body     =  $body;
+        $this->_encoded  = array();
+        $this->_headers  = $_headers;
+        $this->_body     = $body;
     }
 
     /**
@@ -260,6 +266,7 @@ class Mail_mimePart extends PEAR{
     function _getEncodedData($data, $encoding)
     {
         switch ($encoding) {
+            case '8bit':
             case '7bit':
                 return $data;
                 break;
@@ -271,6 +278,9 @@ class Mail_mimePart extends PEAR{
             case 'base64':
                 return rtrim(chunk_split(base64_encode($data), 76, MAIL_MIMEPART_CRLF));
                 break;
+
+            default:
+                return $data;
         }
     }
 
