@@ -518,7 +518,7 @@ class Mail_mimeDecode extends PEAR{
 	function &uudecode($input)
 	{
 		// Find all uuencoded sections
-		preg_match_all("/begin ([0-7]{3}) (.+)\r?\n((?:[\r\n]|.)+)\r?\nend/U", $input, $matches);
+		preg_match_all("/begin ([0-7]{3}) (.+)\r?\n(.+)\r?\nend/Us", $input, $matches);
 
 		for ($j = 0; $j < count($matches[3]); $j++) {
 
@@ -574,5 +574,121 @@ class Mail_mimeDecode extends PEAR{
 
 		return $files;
 	}
+
+    /**
+     * Returns a xml copy of the output of
+     * Mail_mimeDecode::decode. Pass the output in as the
+	 * argument. This function can be called statically. Eg:
+	 *
+	 * $output = $obj->decode();
+	 * $xml    = Mail_mimeDecode::getXML($output);
+	 *
+	 * The DTD used for this should have been in the package. Or
+	 * alternatively you can get it from cvs, or here:
+	 * http://www.phpguru.org/xmail/xmail.dtd.
+	 *
+     * @param  object Input to convert to xml. This should be the
+	 *                output of the Mail_mimeDecode::decode function
+     * @return string XML version of input
+     * @access public
+     */
+	function getXML($input)
+	{
+		$crlf    =  "\r\n";
+		$output  = '<?xml version=\'1.0\'?>' . $crlf .
+		           '<!DOCTYPE email SYSTEM "http://www.phpguru.org/xmail/xmail.dtd">' . $crlf .
+				   '<email>' . $crlf .
+				   Mail_mimeDecode::_getXML($input) .
+				   '</email>';
+
+		return $output;
+	}
+
+    /**
+     * Function that does the actual conversion to xml. Does a single
+	 * mimepart at a time.
+	 *
+     * @param  object  Input to convert to xml. This is a mimepart object.
+	 *                 It may or may not contain subparts.
+	 * @param  integer Number of tabs to indent
+     * @return string  XML version of input
+     * @access private
+     */
+	function _getXML($input, $indent = 1)
+	{
+		$htab    =  "\t";
+		$crlf    =  "\r\n";
+		$output  =  '';
+		$headers =& $input->headers;
+
+		foreach ($headers as $hdr_name => $hdr_value) {
+
+			// Multiple headers with this name
+			if (is_array($headers[$hdr_name])) {
+				for ($i = 0; $i < count($hdr_value); $i++) {
+					$output .= Mail_mimeDecode::_getXML_helper($hdr_name, $hdr_value[$i], $indent);
+				}
+
+			// Only one header of this sort
+			} else {
+				$output .= Mail_mimeDecode::_getXML_helper($hdr_name, $hdr_value, $indent);
+			}
+		}
+
+		if (!empty($input->parts)) {
+			for ($i = 0; $i < count($input->parts); $i++) {
+				$output .= $crlf . str_repeat($htab, $indent) . '<mimepart>' . $crlf .
+						   Mail_mimeDecode::_getXML($input->parts[$i], $indent+1) .
+						   str_repeat($htab, $indent) . '</mimepart>' . $crlf;
+			}
+		} else {
+			$output .= $crlf . str_repeat($htab, $indent) . '<body><![CDATA[' .
+					   $input->body . ']]></body>' . $crlf;
+		}
+
+		return $output;
+	}
+
+    /**
+     * Helper function to _getXML(). Returns xml of a header.
+	 *
+     * @param  string  Name of header
+	 * @param  string  Value of header
+	 * @param  integer Number of tabs to indent
+     * @return string  XML version of input
+     * @access private
+     */
+	function _getXML_helper($hdr_name, $hdr_value, $indent)
+	{
+		$htab   = "\t";
+		$crlf   = "\r\n";
+		$return = '';
+
+		$new_hdr_value = ($hdr_name != 'received') ? Mail_mimeDecode::_parseHeaderValue($hdr_value) : array('value' => $hdr_value);
+		$new_hdr_name  = str_replace(' ', '-', ucwords(str_replace('-', ' ', $hdr_name)));
+
+		// Sort out any parameters
+		if (!empty($new_hdr_value['other'])) {
+			foreach ($new_hdr_value['other'] as $paramname => $paramvalue) {
+				$params[] = str_repeat($htab, $indent) . $htab . '<parameter>' . $crlf .
+							str_repeat($htab, $indent) . $htab . $htab . '<paramname>' . htmlspecialchars($paramname) . '</paramname>' . $crlf .
+							str_repeat($htab, $indent) . $htab . $htab . '<paramvalue>' . htmlspecialchars($paramvalue) . '</paramvalue>' . $crlf .
+							str_repeat($htab, $indent) . $htab . '</parameter>' . $crlf;
+			}
+			
+			$params = implode('', $params);
+		} else {
+			$params = '';
+		}
+
+		$return = str_repeat($htab, $indent) . '<header>' . $crlf .
+				  str_repeat($htab, $indent) . $htab . '<headername>' . htmlspecialchars($new_hdr_name) . '</headername>' . $crlf .
+				  str_repeat($htab, $indent) . $htab . '<headervalue>' . htmlspecialchars($new_hdr_value['value']) . '</headervalue>' . $crlf .
+				  $params .
+				  str_repeat($htab, $indent) . '</header>' . $crlf;
+
+		return $return;
+	}	
+
 } // End of class
 ?>
