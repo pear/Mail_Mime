@@ -219,10 +219,10 @@ class Mail_mime
     function & _file2str($file_name)
     {
         if (!is_readable($file_name)) {
-            return $this->raiseError('File is not readable ' . $file_name);
+            return PEAR::raiseError('File is not readable ' . $file_name);
         }
         if (!$fd = fopen($file_name, 'rb')) {
-            return $this->raiseError('Could not open ' . $file_name);
+            return PEAR::raiseError('Could not open ' . $file_name);
         }
         $cont = fread($fd, filesize($file_name));
         fclose($fd);
@@ -496,13 +496,12 @@ class Mail_mime
         }
     }
 
-
     /*
     * Returns an array with the headers needed to prepend to the email
     * (MIME-Version and Content-Type). Format of argument is:
     * $array['header-name'] = 'header-value';
     *
-    * @param  array Assoc array with any extra headers. Optional.
+    * @param  array $xtra_headers Assoc array with any extra headers. Optional.
     * @return array Assoc array with the mime headers
     * @access public
     */
@@ -518,5 +517,67 @@ class Mail_mime
 
         return $this->_headers;
     }
+
+    /**
+    * Get the text version of the headers
+    * (usefull if you want to use the PHP mail() function)
+    *
+    * @param  array $xtra_headers Assoc array with any extra headers. Optional.
+    * @return string Plain text headers
+    * @access public
+    */
+    function &txtHeaders($xtra_headers = null)
+    {
+        $headers = $this->headers($xtra_headers);
+        $ret = '';
+        foreach ($headers as $key => $val) {
+            $ret .= "$key: $val" . MAIL_MIME_CRLF;
+        }
+        return $ret;
+    }
+
+    /**
+    * Set an email to the From (the sender) header
+    *
+    * @param string $email The email direction to add
+    * @access public
+    */
+    function addFrom($email)
+    {
+        $this->_headers['From'] = $email;
+    }
+
+    /**
+    * Add an email to the Cc (carbon copy) header
+    * (multiple calls to this method is allowed)
+    *
+    * @param string $email The email direction to add
+    * @access public
+    */
+    function addCc($email)
+    {
+        if (isset($this->_headers['Cc'])) {
+            $this->_headers['Cc'] .= ", $email";
+        } else {
+            $this->_headers['Cc'] = $email;
+        }
+    }
+
+    /**
+    * Add an email to the Bcc (blank carbon copy) header
+    * (multiple calls to this method is allowed)
+    *
+    * @param string $email The email direction to add
+    * @access public
+    */
+    function addBcc($email)
+    {
+        if (isset($this->_headers['Bcc'])) {
+            $this->_headers['Bcc'] .= ", $email";
+        } else {
+            $this->_headers['Bcc'] = $email;
+        }
+    }
+
 }
 ?>
