@@ -13,7 +13,7 @@
 // | obtain it through the world-wide-web, please send a note to          |
 // | license@php.net so we can mail you a copy immediately.               |
 // +----------------------------------------------------------------------+
-// | Authors: Richard Heyes <richard.heyes@heyes-computing.net>           |
+// | Authors: Richard Heyes <richard@phpguru.org>                         |
 // +----------------------------------------------------------------------+
 
     require_once('PEAR.php');
@@ -47,7 +47,7 @@
 *  - Implement further content types, eg. multipart/parallel,
 *    perhaps even message/partial.
 *
-* @author  Richard Heyes <richard.heyes@heyes-computing.net>
+* @author  Richard Heyes <richard@phpguru.org>
 * @version $Revision$
 * @package Mail
 */
