@@ -126,7 +126,7 @@ class Mail_mimePart {
     function Mail_mimePart($body = '', $params = array())
     {
         if (!defined('MAIL_MIMEPART_CRLF')) {
-            define('MAIL_MIMEPART_CRLF', "\r\n", TRUE);
+            define('MAIL_MIMEPART_CRLF', defined('MAIL_MIME_CRLF') ? MAIL_MIME_CRLF : "\r\n", TRUE);
         }
 
         foreach ($params as $key => $value) {
@@ -204,7 +204,7 @@ class Mail_mimePart {
         if (!empty($this->_subparts)) {
             srand((double)microtime()*1000000);
             $boundary = '=_' . md5(uniqid(rand()) . microtime());
-            $this->_headers['Content-Type'] .= '; ' . 'boundary="' . $boundary . '"';
+            $this->_headers['Content-Type'] .= ';' . MAIL_MIMEPART_CRLF . "\t" . 'boundary="' . $boundary . '"';
 
             // Add body parts to $subparts
             for ($i = 0; $i < count($this->_subparts); $i++) {
@@ -295,10 +295,10 @@ class Mail_mimePart {
      */
     function _quotedPrintableEncode($input , $line_max = 76)
     {
-        $lines    = preg_split("/\r\n|\r|\n/", $input);
+        $lines  = preg_split("/\r?\n/", $input);
         $eol    = MAIL_MIMEPART_CRLF;
-        $escape    = '=';
-        $output    = '';
+        $escape = '=';
+        $output = '';
 
         while(list(, $line) = each($lines)){
 

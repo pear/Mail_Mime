@@ -100,8 +100,9 @@ class Mail_mime
                                      'text_encoding' => '7bit',
                                      'html_encoding' => 'quoted-printable',
                                      '7bit_wrap'     => 998,
-                                     'html_charset'  => 'iso-8859-1',
-                                     'text_charset'  => 'iso-8859-1'
+                                     'html_charset'  => 'ISO-8859-1',
+                                     'text_charset'  => 'ISO-8859-1',
+                                     'head_charset'  => 'ISO-8859-1'
                                     );
     }
 
@@ -399,6 +400,8 @@ class Mail_mime
     *                                  Default is iso-8859-1
     *                text_charset   -  The character set to use for text.
     *                                  Default is iso-8859-1
+    *                head_charset   -  The character set to use for headers.
+    *                                  Default is iso-8859-1
     * @return string The mime content
     * @access public
     */
@@ -447,8 +450,8 @@ class Mail_mime
             case $html AND !$attachments AND !$html_images:
                 if (isset($this->_txtbody)) {
                     $message =& $this->_addAlternativePart($null);
-   	                $this->_addTextPart($message, $this->_txtbody);
-					$this->_addHtmlPart($message);
+                       $this->_addTextPart($message, $this->_txtbody);
+                    $this->_addHtmlPart($message);
 
                 } else {
                     $message =& $this->_addHtmlPart($null);
@@ -462,7 +465,7 @@ class Mail_mime
                     $related =& $this->_addRelatedPart($message);
                 } else {
                     $message =& $this->_addRelatedPart($null);
-					$related =& $message;
+                    $related =& $message;
                 }
                 $this->_addHtmlPart($related);
                 for ($i = 0; $i < count($this->_html_images); $i++) {
@@ -506,7 +509,7 @@ class Mail_mime
 
         if (isset($message)) {
             $output = $message->encode();
-            $this->_headers = $output['headers'];
+            $this->_headers = array_merge($this->_headers, $output['headers']);
 
             return $output['body'];
 
@@ -534,7 +537,7 @@ class Mail_mime
         }
         $this->_headers = array_merge($headers, $this->_headers);
 
-        return $this->_headers;
+        return $this->_encodeHeaders($this->_headers);
     }
 
     /**
@@ -556,12 +559,23 @@ class Mail_mime
     }
 
     /**
+    * Sets the Subject header
+    * 
+    * @param  string $subject String to set the subject to
+    * access  public
+    */
+    function setSubject($subject)
+    {
+        $this->_headers['Subject'] = $subject;
+    }
+
+    /**
     * Set an email to the From (the sender) header
     *
     * @param string $email The email direction to add
     * @access public
     */
-    function addFrom($email)
+    function setFrom($email)
     {
         $this->_headers['From'] = $email;
     }
@@ -597,6 +611,27 @@ class Mail_mime
             $this->_headers['Bcc'] = $email;
         }
     }
+    
+    /**
+    * Encodes a header as per RFC2047
+    *
+    * @param  string  $input The header data to encode
+    * @return string         Encoded data
+    * @access private
+    */
+    function _encodeHeaders($input)
+    {
+        foreach ($input as $hdr_name => $hdr_value) {
+            preg_match_all('/(\w*[\x80-\xFF]+\w*)/', $hdr_value, $matches);
+            foreach ($matches[1] as $value) {
+                $replacement = preg_replace('/([\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
+                $hdr_value = str_replace($value, '=?' . $this->_build_params['head_charset'] . '?Q?' . $replacement . '?=', $hdr_value);
+            }
+            $input[$hdr_name] = $hdr_value;
+        }
+        
+        return $input;
+    }
 
-}
+} // End of class
 ?>

@@ -4,6 +4,7 @@
 <package version="1.0">
 
   <name>Mail_Mime</name>
+  <license>PHP</license>
   <summary>Provides classes to create and decode mime messages.</summary>
   <description>
   Provides classes to deal with creation and manipulation of mime messages:
@@ -31,12 +32,15 @@ o xmail.xsl: An XSLT stylesheet to transform the output of the getXML() method b
   </maintainers>
 
   <release>
-    <version>1.1</version>
-    <date>2002-04-03</date>
+    <version>1.2</version>
+    <date>2002-07-14</date>
     <state>stable</state>
-    <license>PHP 2.02</license>
     <notes>
-      This is a maintenance release with various bugfixes and minor enhancements.
+      - Added header encoding
+	  - Altered mimePart to put boundary parameter on newline
+	  - Changed addFrom() to setFrom()
+	  - Added setSubject()
+	  - Made mimePart inherit crlf setting from mime
     </notes>
     <filelist>
     <dir name="/" baseinstalldir="Mail">
@@ -51,21 +55,22 @@ o xmail.xsl: An XSLT stylesheet to transform the output of the getXML() method b
 
   <changelog>
 	  <release>
+	    <version>1.1</version>
+	    <date>2002-04-03</date>
+	    <state>stable</state>
+	    <license>PHP 2.02</license>
+	    <notes>
+	      This is a maintenance release with various bugfixes and minor enhancements.
+	    </notes>
+	  </release>
+
+	  <release>
 	    <version>1.0</version>
 	    <date>2001-12-28</date>
 	    <state>stable</state>
 	    <notes>
 	      This is the initial release of the Mime_Mail package.
 	    </notes>
-	    <filelist>
-	    <dir name="/" baseinstalldir="Mail">
-	        <file role="php">mime.php</file>
-	        <file role="php">mimeDecode.php</file>
-	        <file role="php">mimePart.php</file>
-	        <file role="data">xmail.dtd</file>
-	        <file role="data">xmail.xsl</file>
-	    </dir>
-	  </filelist>
 	  </release>
   </changelog>
 
