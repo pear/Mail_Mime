@@ -107,7 +107,7 @@ class Mail_mime
     function Mail_mime($crlf = "\r\n")
     {
         if (!defined('MAIL_MIME_CRLF')) {
-            define('MAIL_MIME_CRLF', $crlf, TRUE);
+            define('MAIL_MIME_CRLF', $crlf, true);
         }
 
         $this->_build_params = array(
@@ -130,13 +130,13 @@ class Mail_mime
     *                         the file name with the contents
     * @param  bool    $isfile If true the first param should be treated
     *                         as a file name, else as a string (default)
-    * @param  bool    $append If TRUE the text or file is appended to
+    * @param  bool    $append If true the text or file is appended to
     *                         the existing body, else the old body is
     *                         overwritten
-    * @return mixed   TRUE on success or PEAR_Error object
+    * @return mixed   true on success or PEAR_Error object
     * @access public
     */
-    function setTXTBody($data, $isfile = FALSE, $append = FALSE)
+    function setTXTBody($data, $isfile = false, $append = false)
     {
         if (!$isfile) {
             if (!$append) {
@@ -155,7 +155,7 @@ class Mail_mime
                 $this->_txtbody .= $cont;
             }
         }
-        return TRUE;
+        return true;
     }
 
     /**
@@ -163,12 +163,12 @@ class Mail_mime
     *
     * @param  string  $data   Either a string or the file name with the
     *                         contents
-    * @param  bool    $isfile If TRUE the first param should be treated
+    * @param  bool    $isfile If true the first param should be treated
     *                         as a file name, else as a string (default)
-    * @return mixed   TRUE on success or PEAR_Error object
+    * @return mixed   true on success or PEAR_Error object
     * @access public
     */
-    function setHTMLBody($data, $isfile = FALSE)
+    function setHTMLBody($data, $isfile = false)
     {
         if (!$isfile) {
             $this->_htmlbody = $data;
@@ -180,7 +180,7 @@ class Mail_mime
             $this->_htmlbody = $cont;
         }
 
-        return FALSE;
+        return false;
     }
 
     /**
@@ -191,18 +191,18 @@ class Mail_mime
     * @param  string  $name       The filename of the image.
     *                             Only use if $file is the image data
     * @param  bool    $isfilename Whether $file is a filename or not
-    *                             Defaults to TRUE
-    * @return mixed   TRUE on success or PEAR_Error object
+    *                             Defaults to true
+    * @return mixed   true on success or PEAR_Error object
     * @access public
     */
     function addHTMLImage(
         $file, $c_type='application/octet-stream', $name = '',
-        $isfilename = TRUE
+        $isfilename = true
     )
     {
-        $filedata = ($isfilename === TRUE) ? $this->_file2str($file)
+        $filedata = ($isfilename === true) ? $this->_file2str($file)
                                            : $file;
-        $filename = ($isfilename === TRUE) ? basename($file)
+        $filename = ($isfilename === true) ? basename($file)
                                            : basename($name);
         if (PEAR::isError($filedata)) {
             return $filedata;
@@ -213,7 +213,7 @@ class Mail_mime
                                       'c_type' => $c_type,
                                       'cid'    => md5(uniqid(time()))
                                      );
-        return TRUE;
+        return true;
     }
 
     /**
@@ -225,18 +225,18 @@ class Mail_mime
     * @param  string  $name       The filename of the attachment
     *                             Only use if $file is the file data
     * @param  bool    $isFilename Whether $file is a filename or not
-    *                             Defaults to TRUE
-    * @return mixed TRUE on success or PEAR_Error object
+    *                             Defaults to true
+    * @return mixed true on success or PEAR_Error object
     * @access public
     */
     function addAttachment(
         $file, $c_type = 'application/octet-stream', $name = '',
-        $isfilename = TRUE, $encoding = 'base64'
+        $isfilename = true, $encoding = 'base64'
     )
     {
-        $filedata = ($isfilename === TRUE) ? $this->_file2str($file)
+        $filedata = ($isfilename === true) ? $this->_file2str($file)
                                            : $file;
-        if ($isfilename === TRUE) {
+        if ($isfilename === true) {
             // Force the name the user supplied, otherwise use $file
             $filename = (!empty($name)) ? $name : $file;
         } else {
@@ -258,7 +258,7 @@ class Mail_mime
                                 'c_type'   => $c_type,
                                 'encoding' => $encoding
                                );
-        return TRUE;
+        return true;
     }
 
     /**
@@ -286,7 +286,7 @@ class Mail_mime
     * returns it during the build process.
     *
     * @param mixed    The object to add the part to, or
-    *                 NULL if a new object is to be created.
+    *                 null if a new object is to be created.
     * @param string   The text to add.
     * @return object  The text mimePart object
     * @access private
@@ -308,7 +308,7 @@ class Mail_mime
     * returns it during the build process.
     *
     * @param  mixed   The object to add the part to, or
-    *                 NULL if a new object is to be created.
+    *                 null if a new object is to be created.
     * @return object  The html mimePart object
     * @access private
     */
@@ -344,7 +344,7 @@ class Mail_mime
     * the build process.
     *
     * @param  mixed   The object to add the part to, or
-    *                 NULL if a new object is to be created.
+    *                 null if a new object is to be created.
     * @return object  The multipart/mixed mimePart object
     * @access private
     */
@@ -364,7 +364,7 @@ class Mail_mime
     * the build process.
     *
     * @param mixed    The object to add the part to, or
-    *                 NULL if a new object is to be created
+    *                 null if a new object is to be created
     * @return object  The multipart/mixed mimePart object
     * @access private
     */
@@ -437,7 +437,7 @@ class Mail_mime
     * @return string The mime content
     * @access public
     */
-    function &get($build_params = NULL)
+    function &get($build_params = null)
     {
         if (isset($build_params)) {
             while (list($key, $value) = each($build_params)) {
@@ -455,12 +455,12 @@ class Mail_mime
         }
 
         $null        = null;
-        $attachments = !empty($this->_parts)                ? TRUE : FALSE;
-        $html_images = !empty($this->_html_images)          ? TRUE : FALSE;
-        $html        = !empty($this->_htmlbody)             ? TRUE : FALSE;
-        $text        = (!$html AND !empty($this->_txtbody)) ? TRUE : FALSE;
+        $attachments = !empty($this->_parts)                ? true : false;
+        $html_images = !empty($this->_html_images)          ? true : false;
+        $html        = !empty($this->_htmlbody)             ? true : false;
+        $text        = (!$html AND !empty($this->_txtbody)) ? true : false;
 
-        switch (TRUE) {
+        switch (true) {
         case $text AND !$attachments:
             $message =& $this->_addTextPart($null, $this->_txtbody);
             break;
@@ -546,7 +546,7 @@ class Mail_mime
             return $output['body'];
 
         } else {
-            return FALSE;
+            return false;
         }
     }
 
@@ -560,7 +560,7 @@ class Mail_mime
     * @return array Assoc array with the mime headers
     * @access public
     */
-    function &headers($xtra_headers = NULL)
+    function &headers($xtra_headers = null)
     {
         // Content-Type header should already be present,
         // So just add mime version header
@@ -582,7 +582,7 @@ class Mail_mime
     * @return string  Plain text headers
     * @access public
     */
-    function txtHeaders($xtra_headers = NULL)
+    function txtHeaders($xtra_headers = null)
     {
         $headers = $this->headers($xtra_headers);
         $ret = '';
