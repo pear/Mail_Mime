@@ -16,7 +16,7 @@
 // | Authors: Richard Heyes <richard@phpguru.org>                         |
 // +----------------------------------------------------------------------+
 
-    require_once('PEAR.php');
+    require_once($CONFIG['includes'].'PEAR.php');
 
 /**
 *  +----------------------------- IMPORTANT ------------------------------+
@@ -210,7 +210,7 @@ class Mail_mimeDecode extends PEAR{
 
                 case 'content-type':
                     $content_type = $this->_parseHeaderValue($headers[$key]['value']);
-    
+
                     if (preg_match('/([0-9a-z+.-]+)\/([0-9a-z+.-]+)/i', $content_type['value'], $regs)) {
                         $return->ctype_primary   = $regs[1];
                         $return->ctype_secondary = $regs[2];
@@ -252,6 +252,7 @@ class Mail_mimeDecode extends PEAR{
                     $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body, $encoding) : $body) : null;
                     break;
 
+                case 'multipart/report': // RFC1892
                 case 'multipart/signed': // PGP
                 case 'multipart/digest':
                 case 'multipart/alternative':
@@ -375,10 +376,16 @@ class Mail_mimeDecode extends PEAR{
             $input = trim(substr($input, $pos+1));
 
             if (strlen($input) > 0) {
-                preg_match_all('/(([[:alnum:]]+)="?([^"]*)"?\s?;?)+/i', $input, $matches);
 
-                for ($i = 0; $i < count($matches[2]); $i++) {
-                    $return['other'][strtolower($matches[2][$i])] = $matches[3][$i];
+                $parameters = preg_split('/\s*(?<!\\\\);\s*/i', $input);
+
+                for ($i = 0; $i < count($parameters); $i++) {
+                    $param_name  = substr($parameters[$i], 0, $pos = strpos($parameters[$i], '='));
+                    $param_value = substr($parameters[$i], $pos + 1);
+                    if ($param_value[0] == '"') {
+                        $param_value = substr($param_value, 1, -1);
+                    }
+                    $return['other'][$param_name] = $param_value;
                 }
             }
         } else {
