@@ -511,16 +511,21 @@ class Mail_mimeDecode extends PEAR{
 	 * pass it.
      *
      * @param  string Input body to look for attahcments in
-     * @return array  Decoded bodies
+     * @return array  Decoded bodies, filenames and permissions
      * @access public
 	 * @author Unknown
      */
 	function &uudecode($input)
 	{
 		// Find all uuencoded sections
-		preg_match_all("/begin [0-7]{3} .+\r?\n(([\r\n]|.)+)\r?\nend/U", $input, $matches);
+		preg_match_all("/begin ([0-7]{3}) (.+)\r?\n((?:[\r\n]|.)+)\r?\nend/U", $input, $matches);
 
-		foreach ($matches[1] as $str) {
+		for ($j = 0; $j < count($matches[3]); $j++) {
+
+			$str      = $matches[3][$j];
+			$filename = $matches[2][$j];
+			$fileperm = $matches[1][$j];
+
 		    $file = '';
 		    $str = preg_split("/\r?\n/", trim($str));
 		    $strlen = count($str);
@@ -564,7 +569,7 @@ class Mail_mimeDecode extends PEAR{
 		
 		        }
 		    }
-		    $files[] = $file;
+		    $files[] = array('filename' => $filename, 'fileperm' => $fileperm, 'filedata' => $file);
 		}
 
 		return $files;
