@@ -200,7 +200,7 @@ class Mail_mimePart extends PEAR{
         if (!empty($this->_subparts)) {
             srand((double)microtime()*1000000);
             $boundary = '=_' . md5(uniqid(rand()) . microtime());
-            $this->_headers['Content-Type'] .= ';' . MAIL_MIMEPART_CRLF . chr(9) . 'boundary="' . $boundary . '"';
+            $this->_headers['Content-Type'] .= '; ' . 'boundary="' . $boundary . '"';
 
             // Add body parts to $subparts
             for ($i = 0; $i < count($this->_subparts); $i++) {
