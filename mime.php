@@ -73,13 +73,18 @@ class Mail_mime extends Mail
     */        
     var $_headers = array();
 
+    
     /*
     * Constructor function
     *
     * @access public
     */
-    function Mail_mime()
+    function Mail_mime($crlf = "\r\n")
     {
+        if (!defined('MAIL_MIME_CRLF')) {
+            define('MAIL_MIME_CRLF', $crlf, true);
+        }
+
         $this->_boundary = '=_' . md5(uniqid(time()));
     }
 
@@ -148,53 +153,53 @@ class Mail_mime extends Mail
 
         if (count($this->_html_images) == 0) {
             $this->_multipart .=
-                '--'.$orig_boundary."\r\n".
-                'Content-Type: multipart/alternative;'.chr(13).chr(10).chr(9).
-                'boundary="'.$sec_boundary."\"\r\n\r\n\r\n".
+                '--' . $orig_boundary . MAIL_MIME_CRLF .
+                'Content-Type: multipart/alternative;' . MAIL_MIME_CRLF . chr(9) .
+                'boundary="' . $sec_boundary.'"' . MAIL_MIME_CRLF . MAIL_MIME_CRLF . MAIL_MIME_CRLF .
 
-                '--'.$sec_boundary."\r\n".
-                'Content-Type: text/plain'."\r\n".
-                'Content-Transfer-Encoding: base64'."\r\n\r\n".
-                chunk_split(base64_encode($this->_txtbody))."\r\n\r\n".
+                '--' . $sec_boundary . MAIL_MIME_CRLF .
+                'Content-Type: text/plain' . MAIL_MIME_CRLF .
+                'Content-Transfer-Encoding: base64' . MAIL_MIME_CRLF . MAIL_MIME_CRLF .
+                chunk_split(base64_encode($this->_txtbody)) . MAIL_MIME_CRLF . MAIL_MIME_CRLF .
 
-                '--'.$sec_boundary."\r\n".
-                'Content-Type: text/html'."\r\n".
-                'Content-Transfer-Encoding: base64'."\r\n\r\n".
-                chunk_split(base64_encode($this->_htmlbody))."\r\n\r\n".
-                '--'.$sec_boundary."--\r\n\r\n";
+                '--' . $sec_boundary . MAIL_MIME_CRLF .
+                'Content-Type: text/html' . MAIL_MIME_CRLF .
+                'Content-Transfer-Encoding: base64' . MAIL_MIME_CRLF . MAIL_MIME_CRLF .
+                chunk_split(base64_encode($this->_htmlbody)) . MAIL_MIME_CRLF . MAIL_MIME_CRLF .
+                '--' . $sec_boundary . '--' . MAIL_MIME_CRLF . MAIL_MIME_CRLF;
         } else {
             //replaces image names with content-id's.
             for ($i=0; $i<count($this->_html_images); $i++) {
                 $this->_htmlbody = ereg_replace($this->_html_images[$i]['name'],
-                                   'cid:'.$this->_html_images[$i]['cid'],
+                                   'cid:' . $this->_html_images[$i]['cid'],
                                    $this->_htmlbody);
             }
             $this->_multipart .=
-                '--'.$orig_boundary."\r\n".
-                'Content-Type: multipart/related;'.chr(13).chr(10).chr(9).
-                'boundary="'.$sec_boundary."\"\r\n\r\n\r\n".
+                '--' . $orig_boundary . MAIL_MIME_CRLF .
+                'Content-Type: multipart/related;' . MAIL_MIME_CRLF . chr(9) .
+                'boundary="' . $sec_boundary.'"' . MAIL_MIME_CRLF . MAIL_MIME_CRLF . MAIL_MIME_CRLF .
 
-                '--'.$sec_boundary."\r\n".
-                'Content-Type: multipart/alternative;'.chr(13).chr(10).chr(9).
-                'boundary="'.$thr_boundary."\"\r\n\r\n\r\n".
+                '--' . $sec_boundary . MAIL_MIME_CRLF .
+                'Content-Type: multipart/alternative;' . MAIL_MIME_CRLF . chr(9) .
+                'boundary="' . $thr_boundary . '"' . MAIL_MIME_CRLF . MAIL_MIME_CRLF . MAIL_MIME_CRLF .
 
-                '--'.$thr_boundary."\r\n".
-                'Content-Type: text/plain'."\r\n".
-                'Content-Transfer-Encoding: base64'."\r\n\r\n".
-                chunk_split(base64_encode($this->_txtbody))."\r\n\r\n".
+                '--' . $thr_boundary . MAIL_MIME_CRLF .
+                'Content-Type: text/plain' . MAIL_MIME_CRLF .
+                'Content-Transfer-Encoding: base64' . MAIL_MIME_CRLF . MAIL_MIME_CRLF .
+                chunk_split(base64_encode($this->_txtbody)) . MAIL_MIME_CRLF . MAIL_MIME_CRLF .
 
-                '--'.$thr_boundary."\r\n".
-                'Content-Type: text/html'."\r\n".
-                'Content-Transfer-Encoding: base64'."\r\n\r\n".
-                chunk_split(base64_encode($this->_htmlbody))."\r\n\r\n".
-                '--'.$thr_boundary."--\r\n\r\n";
+                '--' . $thr_boundary . MAIL_MIME_CRLF .
+                'Content-Type: text/html' . MAIL_MIME_CRLF .
+                'Content-Transfer-Encoding: base64' . MAIL_MIME_CRLF . MAIL_MIME_CRLF .
+                chunk_split(base64_encode($this->_htmlbody)) . MAIL_MIME_CRLF . MAIL_MIME_CRLF .
+                '--' . $thr_boundary . '--' . MAIL_MIME_CRLF . MAIL_MIME_CRLF;
 
             for ($i=0; $i<count($this->_html_images); $i++) {
-                $this->_multipart .= '--'.$sec_boundary."\r\n";
+                $this->_multipart .= '--' . $sec_boundary . MAIL_MIME_CRLF;
                 $this->_buildHtml_image($i);
             }
 
-            $this->_multipart .= "--".$sec_boundary."--\r\n\r\n";
+            $this->_multipart .= "--" . $sec_boundary . '--' . MAIL_MIME_CRLF . MAIL_MIME_CRLF;
         }
     }
 
@@ -212,7 +217,8 @@ class Mail_mime extends Mail
         if (PEAR::isError($file)) {
             return $file;
         }
-        $this->_html_images[] = array( 'body'   => $file,
+        $this->_html_images[] = array(
+                                      'body'   => $file,
                                       'name'   => basename($file_name),
                                       'c_type' => $c_type,
                                       'cid'    => md5(uniqid(time()))
@@ -234,9 +240,11 @@ class Mail_mime extends Mail
         if (PEAR::isError($file)) {
             return $file;
         }
-        $this->_parts[] = array( 'body'   => $file,
+        $this->_parts[] = array(
+                                'body'   => $file,
                                 'name'   => basename($file_name),
-                                'c_type' => $c_type );
+                                'c_type' => $c_type
+                               );
         return TRUE;
     }
 
@@ -270,11 +278,11 @@ class Mail_mime extends Mail
         $this->_multipart .= 'Content-Type: '.$this->_html_images[$i]['c_type'];
 
         $fname = basename($this->_html_images[$i]['name']);
-        $this->_multipart .= '; name="' . $fname . "\"\r\n";
+        $this->_multipart .= '; name="' . $fname . '"' . MAIL_MIME_CRLF;
 
-        $this->_multipart .= 'Content-Transfer-Encoding: base64'."\r\n";
-        $this->_multipart .= 'Content-ID: <' . $this->_html_images[$i]['cid'] . ">\r\n\r\n";
-        $this->_multipart .= chunk_split(base64_encode($this->_html_images[$i]['body'])) . "\r\n";
+        $this->_multipart .= 'Content-Transfer-Encoding: base64' . MAIL_MIME_CRLF;
+        $this->_multipart .= 'Content-ID: <' . $this->_html_images[$i]['cid'] . '>' . MAIL_MIME_CRLF . MAIL_MIME_CRLF;
+        $this->_multipart .= chunk_split(base64_encode($this->_html_images[$i]['body'])) . MAIL_MIME_CRLF;
     }
 
     /*
@@ -287,24 +295,24 @@ class Mail_mime extends Mail
     function & _buildPart(&$part)
     {
         $message_part = '';
-        $message_part.= 'Content-Type: '.$part['c_type'];
+        $message_part.= 'Content-Type: ' . $part['c_type'];
         if ($part['name'] != '') {
-            $message_part .= '; name="'.$part['name']."\"\r\n";
+            $message_part .= '; name="' . $part['name'].'"' . MAIL_MIME_CRLF;
         } else {
-            $message_part .= "\r\n";
+            $message_part .= MAIL_MIME_CRLF;
         }
 
         // Determine content encoding.
         if ($part['c_type'] == 'text/plain') {
-            $message_part .= 'Content-Transfer-Encoding: base64'."\r\n\r\n";
-            $message_part .= chunk_split(base64_encode($part['body']))."\r\n";
+            $message_part .= 'Content-Transfer-Encoding: base64' . MAIL_MIME_CRLF . MAIL_MIME_CRLF;
+            $message_part .= chunk_split(base64_encode($part['body'])) . MAIL_MIME_CRLF;
         } elseif ($part['c_type'] == 'message/rfc822') {
-            $message_part .= 'Content-Transfer-Encoding: 7bit'."\r\n\r\n";
-            $message_part .= $part['body']."\r\n";
+            $message_part .= 'Content-Transfer-Encoding: 7bit' . MAIL_MIME_CRLF . MAIL_MIME_CRLF;
+            $message_part .= $part['body'] . MAIL_MIME_CRLF;
         } else {
-            $message_part .= 'Content-Transfer-Encoding: base64'."\r\n";
-            $message_part .= 'Content-Disposition: attachment; filename="'.$part['name']."\"\r\n\r\n";
-            $message_part .= chunk_split(base64_encode($part['body']))."\r\n";
+            $message_part .= 'Content-Transfer-Encoding: base64' . MAIL_MIME_CRLF;
+            $message_part .= 'Content-Disposition: attachment; filename="' . $part['name'] . '"' . MAIL_MIME_CRLF . MAIL_MIME_CRLF;
+            $message_part .= chunk_split(base64_encode($part['body'])) . MAIL_MIME_CRLF;
         }
 
         return $message_part;
@@ -320,7 +328,7 @@ class Mail_mime extends Mail
     function & get()
     {
         $boundary = $this->_boundary;
-        $this->_multipart = "This is a MIME encoded message.\r\n\r\n";
+        $this->_multipart = 'This is a MIME encoded message.' . MAIL_MIME_CRLF . MAIL_MIME_CRLF;
         // For HTML bodies and HTML Images
         if (isset($this->_htmlbody)) {
             $this->_buildHtml($boundary);
@@ -329,15 +337,15 @@ class Mail_mime extends Mail
             $part = array('body' => $this->_txtbody,
                           'name' => '',
                           'c_type' => 'text/plain');
-            $this->_multipart .= '--'.$boundary."\r\n".$this->_buildPart($part);
+            $this->_multipart .= '--' . $boundary . MAIL_MIME_CRLF . $this->_buildPart($part);
         }
         // For attachments
         for ($i=(count($this->_parts)-1); $i>=0; $i--) {
-            $this->_multipart .= '--'.$boundary."\r\n".
+            $this->_multipart .= '--'.$boundary . MAIL_MIME_CRLF.
                                 $this->_buildPart($this->_parts[$i]);
         }
 
-        $this->_mime = $this->_multipart."--".$boundary."--\r\n";
+        $this->_mime = $this->_multipart . '--' . $boundary . '--' . MAIL_MIME_CRLF;
         return $this->_mime;
     }
 
@@ -352,7 +360,7 @@ class Mail_mime extends Mail
     {
         $headers = array();
         $headers['MIME-Version'] = '1.0';
-        $headers['Content-Type'] = 'multipart/mixed;'.chr(13).chr(10).chr(9).
+        $headers['Content-Type'] = 'multipart/mixed;' . MAIL_MIME_CRLF . chr(9) .
                                     'boundary="'.$this->_boundary.'"';
         return $headers;
     }
