@@ -244,11 +244,13 @@ class Mail_mimeDecode extends PEAR{
 
             switch (strtolower($content_type['value'])) {
                 case 'text/plain':
-                    $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body, $content_transfer_encoding['value']) : $body) : null;
+                    $encoding = isset($content_transfer_encoding) ? $content_transfer_encoding['value'] : '7bit';
+                    $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body, $encoding) : $body) : null;
                     break;
     
                 case 'text/html':
-                    $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body, $content_transfer_encoding['value']) : $body) : null;
+                    $encoding = isset($content_transfer_encoding) ? $content_transfer_encoding['value'] : '7bit';
+                    $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body, $encoding) : $body) : null;
                     break;
 
                 case 'multipart/digest':
