@@ -195,10 +195,8 @@ class Mail_mime
      * @return mixed   true on success or PEAR_Error object
      * @access public
      */
-    function addHTMLImage(
-        $file, $c_type='application/octet-stream', $name = '',
-        $isfilename = true
-    )
+    function addHTMLImage($file, $c_type='application/octet-stream',
+                          $name = '', $isfilename = true)
     {
         $filedata = ($isfilename === true) ? $this->_file2str($file)
                                            : $file;
@@ -229,10 +227,9 @@ class Mail_mime
      * @return mixed true on success or PEAR_Error object
      * @access public
      */
-    function addAttachment(
-        $file, $c_type = 'application/octet-stream', $name = '',
-        $isfilename = true, $encoding = 'base64'
-    )
+    function addAttachment($file, $c_type = 'application/octet-stream',
+                           $name = '', $isfilename = true,
+                           $encoding = 'base64')
     {
         $filedata = ($isfilename === true) ? $this->_file2str($file)
                                            : $file;
