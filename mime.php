@@ -63,12 +63,12 @@ class Mail_mime extends Mail
     * list of the attached images
     * @var array
     */    
-    var $_html_images  = array();
+    var $_html_images = array();
     /**
     * list of the attachements
     * @var array
     */        
-    var $_parts       = array();
+    var $_parts = array();
     /**
     * Build parameters
     * @var array
