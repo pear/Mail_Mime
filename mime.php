@@ -50,12 +50,12 @@ class Mail_mime extends Mail
     /**
     * list of the attached images
     * @var array
-    */    
+    */
     var $html_images = array();
     /**
     * list of the attachements
     * @var array
-    */        
+    */
     var $parts       = array();
 
     /*
@@ -198,7 +198,7 @@ class Mail_mime extends Mail
             return $file;
         }
         $this->html_images[] = array( 'body'   => $file,
-                                      'name'   => $file_name,
+                                      'name'   => basename($file_name),
                                       'c_type' => $c_type,
                                       'cid'    => md5(uniqid(time()))
                                     );
