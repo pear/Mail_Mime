@@ -260,44 +260,4 @@ class Mail_MimePart
 		return str_replace('=0D=0A', "\r\n", $output);
 	}
 } // End of Mail_MimePart
-
-if (basename($_SERVER['PHP_SELF']) == 'Mail_MimePart.php') {
-	// Example code
-	$text = new Mail_MimePart();
-	$text->addHeader('Content-Type', 'text/plain');
-	$text->setBody('This is some text');
-	
-	$html = new Mail_MimePart();
-	$html->addHeader('Content-Type', 'text/html');
-	$html->addHeader('Content-Transfer-Encoding', MAIL_MIMEPART_QPRINT);
-	$html->setBody('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-	<HTML><HEAD>
-	<META http-equiv=Content-Type content="text/html; charset=windows-1252">
-	<META content="MSHTML 6.00.2600.0" name=GENERATOR>
-	<STYLE></STYLE>
-	</HEAD>
-	<BODY bgColor=#ffffff>
-	<DIV><FONT face=Arial size=2>Hi</FONT></DIV>
-	<DIV><FONT face=Arial size=2></FONT>&nbsp;</DIV>
-	<DIV><FONT face=Arial size=2>Accomadation is booked.... Transfer 70 squids into 
-	same account as before.&nbsp; Flight money&nbsp; - give us at end of feb as 
-	agreed.. All thats left is boarding lessons Do you want to do private betweeen 
-	the two of us or a group course - prob cheeper. I will look into prices oh and 
-	insurance.</FONT></DIV>
-	<DIV><FONT face=Arial size=2></FONT>&nbsp;</DIV>
-	<DIV><FONT face=Arial size=2>Janine x</FONT></DIV></BODY></HTML>');
-	
-	$mixed = new Mail_MimePart();
-	$mixed->addHeader('From', 'richard@phpguru.org');
-	$mixed->addHeader('Content-Type', 'multipart/alternative');
-	
-	$mixed->addSubPart($text);
-	$mixed->addSubPart($html);
-	
-	$result = $mixed->encode();
-	
-	
-	//mail('richard@phpguru.org', 'test', $result['body'], implode("\n", $result['headers_i']));
-	pd(implode(MAIL_MIMEPART_CRLF, $result['headers_idx']) . MAIL_MIMEPART_CRLF . MAIL_MIMEPART_CRLF . $result['body']);
-}
 ?>
