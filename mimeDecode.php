@@ -160,16 +160,17 @@ class Mail_mimeDecode extends PEAR
     {
 
         // Have we been called statically? If so, create an object and pass details to that.
-        if (!isset($this) AND isset($params['input'])) {
+        if (!isset($this->mailMimeDecode) AND isset($params['input'])) {
 
-            if (isset($params['crlf']))
+            if (isset($params['crlf'])) {
                 $obj = new Mail_mimeDecode($params['input'], $params['crlf']);
-            else
+            } else {
                 $obj = new Mail_mimeDecode($params['input']);
+            }
             $structure = $obj->decode($params);
 
         // Called statically but no input
-        } elseif (!isset($this)) {
+        } elseif (!isset($this->mailMimeDecode)) {
             return $this->raiseError('Called statically and no input given');
 
         // Called via an object
