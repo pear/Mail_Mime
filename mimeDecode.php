@@ -253,7 +253,7 @@ class Mail_mimeDecode extends PEAR
                     $this->_include_bodies ? $return->body = ($this->_decode_bodies ? $this->_decodeBody($body, $encoding) : $body) : null;
                     break;
 
-				case 'multipart/parallel':
+                case 'multipart/parallel':
                 case 'multipart/report': // RFC1892
                 case 'multipart/signed': // PGP
                 case 'multipart/digest':
@@ -313,18 +313,18 @@ class Mail_mimeDecode extends PEAR
         $return = array();
         if (!empty($structure->parts)) {
             if ($mime_number != '') {
-				$structure->mime_id = $prepend . $mime_number;
+                $structure->mime_id = $prepend . $mime_number;
                 $return[$prepend . $mime_number] = &$structure;
             }
             for ($i = 0; $i < count($structure->parts); $i++) {
 
-			
-				if (!empty($structure->headers['content-type']) AND substr(strtolower($structure->headers['content-type']), 0, 8) == 'message/') {
-					$prepend      = $prepend . $mime_number . '.';
-					$_mime_number = '';
-				} else {
-	                $_mime_number = ($mime_number == '' ? $i + 1 : sprintf('%s.%s', $mime_number, $i + 1));
-				}
+            
+                if (!empty($structure->headers['content-type']) AND substr(strtolower($structure->headers['content-type']), 0, 8) == 'message/') {
+                    $prepend      = $prepend . $mime_number . '.';
+                    $_mime_number = '';
+                } else {
+                    $_mime_number = ($mime_number == '' ? $i + 1 : sprintf('%s.%s', $mime_number, $i + 1));
+                }
 
                 $arr = &Mail_mimeDecode::getMimeNumbers($structure->parts[$i], $no_refs, $_mime_number, $prepend);
                 foreach ($arr as $key => $val) {
@@ -335,7 +335,7 @@ class Mail_mimeDecode extends PEAR
             if ($mime_number == '') {
                 $mime_number = '1';
             }
-			$structure->mime_id = $prepend . $mime_number;
+            $structure->mime_id = $prepend . $mime_number;
             $no_refs ? $return[$prepend . $mime_number] = '' : $return[$prepend . $mime_number] = &$structure;
         }
         
@@ -676,7 +676,7 @@ class Mail_mimeDecode extends PEAR
         $htab    =  "\t";
         $crlf    =  "\r\n";
         $output  =  '';
-		$headers = @(array)$input->headers;
+        $headers = @(array)$input->headers;
 
         foreach ($headers as $hdr_name => $hdr_value) {
 
