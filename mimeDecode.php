@@ -60,8 +60,29 @@ require_once 'PEAR.php';
 * print_r($structure);
 *
 * TODO:
-*  - Implement further content types, eg. multipart/parallel,
-*    perhaps even message/partial.
+*  o Implement multipart/appledouble
+*  o UTF8: ???
+
+		> 4. We have also found a solution for decoding the UTF-8 
+		> headers. Therefore I made the following function:
+		> 
+		> function decode_utf8($txt) {
+		> $trans=array("Å&#8216;"=>"Ãµ","Å±"=>"Ã»","Å"=>"Ã&#8226;","Å°"
+		=>"Ã&#8250;");
+		> $txt=strtr($txt,$trans);
+		> return(utf8_decode($txt));
+		> }
+		> 
+		> And I have inserted the following line to the class:
+		> 
+		> if (strtolower($charset)=="utf-8") $text=decode_utf8($text);
+		> 
+		> ... before the following one in the "_decodeHeader" function:
+		> 
+		> $input = str_replace($encoded, $text, $input);
+		> 
+		> This way from now on it can easily decode the UTF-8 headers too.
+
 *
 * @author  Richard Heyes <richard@phpguru.org>
 * @version $Revision$
