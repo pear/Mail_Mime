@@ -200,8 +200,11 @@ class Mail_mime
     {
         $filedata = ($isfilename === true) ? $this->_file2str($file)
                                            : $file;
-        $filename = ($isfilename === true) ? basename($file)
-                                           : basename($name);
+        if ($isfilename === true) {
+            $filename = ($name == '' ? basename($file) : basename($name));
+        } else {
+            $filename = basename($name);
+        }
         if (PEAR::isError($filedata)) {
             return $filedata;
         }
