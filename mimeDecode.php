@@ -25,11 +25,6 @@
 *  | you are STRONGLY recommended to use the php extensions.              |
 *  +----------------------------------------------------------------------+
 *
-*  +------------------------------- NOTE ---------------------------------+
-*  | If you do a search and replace of tabs for spaces, make sure that the|
-*  | two tabs in the regular expressions are NOT replaced!                |
-*  +----------------------------------------------------------------------+
-*
 * Mime Decoding class
 *
 * This class will parse a raw mime email and return
@@ -335,7 +330,7 @@ class Mail_mimeDecode extends PEAR{
 
         if ($input !== '') {
             // Unfold the input
-            $input   = preg_replace('/' . $this->_crlf . '(	| )/', ' ', $input); // Not two spaces in regex, but a tab and a space
+            $input   = preg_replace('/' . $this->_crlf . "(\t| )/", ' ', $input);
             $headers = explode($this->_crlf, trim($input));
     
             foreach ($headers as $value) {
@@ -416,7 +411,7 @@ class Mail_mimeDecode extends PEAR{
     function _decodeHeader($input)
     {
         // Remove white space between encoded-words
-        $input = preg_replace('/(=\?[^?]+\?(Q|B)\?[^?]*\?=)( |	|' . $this->_crlf . ')+=\?/', '\1=?', $input);
+        $input = preg_replace('/(=\?[^?]+\?(Q|B)\?[^?]*\?=)( |' . "\t|" . $this->_crlf . ')+=\?/', '\1=?', $input);
 
         // For each encoded-word...
         while(preg_match('/(=\?([^?]+)\?(Q|B)\?([^?]*)\?=)/', $input, $matches)){
