@@ -103,6 +103,14 @@ class Mail_mimeDecode extends PEAR
      * @var    string
      */
     var $_crlf;
+    
+    /**
+    * If invoked from a class, $this will be set. This has problematic
+    * connotations for calling decode() statically. Hence this variable
+    * is used to determine if we are indeed being called statically or
+    * via an object.
+    */
+    var $mailMimeDecode;
 
     /**
      * Constructor.
@@ -118,13 +126,15 @@ class Mail_mimeDecode extends PEAR
     {
 
         $this->_crlf = $crlf;
-        list($header, $body) = $this->_splitBodyHeader($input);
+        list($header, $body)   = $this->_splitBodyHeader($input);
 
         $this->_input          = $input;
         $this->_header         = $header;
         $this->_body           = $body;
         $this->_decode_bodies  = false;
         $this->_include_bodies = true;
+        
+        $this->mailmimeDecode  = true;
     }
 
     /**
