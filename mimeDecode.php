@@ -240,8 +240,6 @@ class Mail_mimeDecode extends PEAR
         }
 
         reset($headers);
-print "DEBUG\n";
-print_r($headers);
         while (list($key, $value) = each($headers)) {
             $headers[$key]['name'] = strtolower($headers[$key]['name']);
             switch ($headers[$key]['name']) {
@@ -486,7 +484,7 @@ print_r($headers);
      */
     function _boundarySplit($input, $boundary)
     {
-       $parts = array();
+        $parts = array();
 
         $bs_possible = substr($boundary, 2, -2);
         $bs_check = '\"' . $bs_possible . '\"';
@@ -501,7 +499,7 @@ print_r($headers);
             $parts[] = $tmp[$i];
         }
 
-        return $parts
+        return $parts;
     }
 
     /**
