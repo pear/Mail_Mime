@@ -1,20 +1,36 @@
 <?Php
-//
-// +----------------------------------------------------------------------+
-// | PHP Version 4                                                        |
-// +----------------------------------------------------------------------+
-// | Copyright (c) 1997-2002 The PHP Group                                |
-// +----------------------------------------------------------------------+
-// | This source file is subject to version 2.02 of the PHP license,      |
-// | that is bundled with this package in the file LICENSE, and is        |
-// | available at through the world-wide-web at                           |
-// | http://www.php.net/license/2_02.txt.                                 |
-// | If you did not receive a copy of the PHP license and are unable to   |
-// | obtain it through the world-wide-web, please send a note to          |
-// | license@php.net so we can mail you a copy immediately.               |
-// +----------------------------------------------------------------------+
-// | Authors: Richard Heyes <richard@phpguru.org>                         |
-// +----------------------------------------------------------------------+
+// +-----------------------------------------------------------------------+
+// | Copyright (c) 2002  Richard Heyes                                     |
+// | All rights reserved.                                                  |
+// |                                                                       |
+// | Redistribution and use in source and binary forms, with or without    |
+// | modification, are permitted provided that the following conditions    |
+// | are met:                                                              |
+// |                                                                       |
+// | o Redistributions of source code must retain the above copyright      |
+// |   notice, this list of conditions and the following disclaimer.       |
+// | o Redistributions in binary form must reproduce the above copyright   |
+// |   notice, this list of conditions and the following disclaimer in the |
+// |   documentation and/or other materials provided with the distribution.|
+// | o The names of the authors may not be used to endorse or promote      |
+// |   products derived from this software without specific prior written  |
+// |   permission.                                                         |
+// |                                                                       |
+// | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS   |
+// | "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT     |
+// | LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR |
+// | A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT  |
+// | OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, |
+// | SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT      |
+// | LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, |
+// | DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY |
+// | THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT   |
+// | (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE |
+// | OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  |
+// |                                                                       |
+// +-----------------------------------------------------------------------+
+// | Author: Richard Heyes <richard@phpguru.org>                           |
+// +-----------------------------------------------------------------------+
 
 require_once 'PEAR.php';
 
@@ -369,9 +385,9 @@ class Mail_mimeDecode extends PEAR
 
         if ($input !== '') {
             // Unfold the input
-            $input   = preg_replace("/\r\n/", "\n", $input);
-            $input   = preg_replace("/\n(\t| )+/", ' ', $input);
-            $headers = explode("\n", trim($input));
+            $input   = preg_replace("/\r?\n/", "\r\n", $input);
+            $input   = preg_replace("/\r\n(\t| )+/", ' ', $input);
+            $headers = explode("\r\n", trim($input));
 
             foreach ($headers as $value) {
                 $hdr_name = substr($value, 0, $pos = strpos($value, ':'));
@@ -466,22 +482,22 @@ class Mail_mimeDecode extends PEAR
     function _decodeHeader($input)
     {
         // Remove white space between encoded-words
-        $input = preg_replace('/(=\?[^?]+\?(Q|B)\?[^?]*\?=)( |' . "\t|\r?\n" . ')+=\?/', '\1=?', $input);
+        $input = preg_replace('/(=\?[^?]+\?(q|b)\?[^?]*\?=)(\s)+=\?/i', '\1=?', $input);
 
         // For each encoded-word...
-        while (preg_match('/(=\?([^?]+)\?(Q|B)\?([^?]*)\?=)/', $input, $matches)) {
+        while (preg_match('/(=\?([^?]+)\?(q|b)\?([^?]*)\?=)/i', $input, $matches)) {
 
             $encoded  = $matches[1];
             $charset  = $matches[2];
             $encoding = $matches[3];
             $text     = $matches[4];
 
-            switch ($encoding) {
-                case 'B':
+            switch (strtolower($encoding)) {
+                case 'b':
                     $text = base64_decode($text);
                     break;
 
-                case 'Q':
+                case 'q':
                     $text = str_replace('_', ' ', $text);
                     preg_match_all('/=([a-f0-9]{2})/i', $text, $matches);
                     foreach($matches[1] as $value)
@@ -538,12 +554,7 @@ class Mail_mimeDecode extends PEAR
         $input = preg_replace("/=\r?\n/", '', $input);
 
         // Replace encoded characters
-        if (preg_match_all('/=[a-f0-9]{2}/i', $input, $matches)) {
-            $matches = array_unique($matches[0]);
-            foreach ($matches as $value) {
-                $input = str_replace($value, chr(hexdec(substr($value,1))), $input);
-            }
-        }
+		$input = preg_replace('/=([a-f0-9]{2})/ie', "chr(hexdec('\\1'))", $input);
 
         return $input;
     }

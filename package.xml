@@ -4,7 +4,6 @@
 <package version="1.0">
 
   <name>Mail_Mime</name>
-  <license>PHP</license>
   <summary>Provides classes to create and decode mime messages.</summary>
   <description>
   Provides classes to deal with creation and manipulation of mime messages:
@@ -32,15 +31,13 @@ o xmail.xsl: An XSLT stylesheet to transform the output of the getXML() method b
   </maintainers>
 
   <release>
-    <version>1.2</version>
-    <date>2002-07-14</date>
+    <version>1.2.1</version>
+    <date>2002-07-27</date>
     <state>stable</state>
+    <license>PHP</license>
     <notes>
-      - Added header encoding
-	  - Altered mimePart to put boundary parameter on newline
-	  - Changed addFrom() to setFrom()
-	  - Added setSubject()
-	  - Made mimePart inherit crlf setting from mime
+o License change
+o Applied a few changes From Ilia Alshanetsky
     </notes>
     <filelist>
     <dir name="/" baseinstalldir="Mail">
@@ -54,11 +51,23 @@ o xmail.xsl: An XSLT stylesheet to transform the output of the getXML() method b
   </release>
 
   <changelog>
+    <release>
+      <version>1.2</version>
+      <date>2002-07-14</date>
+      <state>stable</state>
+      <notes>
+o Added header encoding
+o Altered mimePart to put boundary parameter on newline
+o Changed addFrom() to setFrom()
+o Added setSubject()
+o Made mimePart inherit crlf setting from mime
+      </notes>
+    </release>
+
 	  <release>
 	    <version>1.1</version>
 	    <date>2002-04-03</date>
 	    <state>stable</state>
-	    <license>PHP 2.02</license>
 	    <notes>
 	      This is a maintenance release with various bugfixes and minor enhancements.
 	    </notes>
