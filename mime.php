@@ -14,13 +14,14 @@
 // | license@php.net so we can mail you a copy immediately.               |
 // +----------------------------------------------------------------------+
 // | Authors: Tomas V.V.Cox <cox@idecnet.com>                             |
-// |          Richard Heyes <richard.heyes@heyes-computing.net            |
+// |          Richard Heyes <richard@phpguru.org>                         |
 // |                                                                      |
 // +----------------------------------------------------------------------+
 //
 // $Id$
 
 require_once 'PEAR.php';
+require_once 'Mail/mimePart.php';
 
 /*
 * Mime mail composer class. Can handle: text and html bodies, embedded html
@@ -99,7 +100,8 @@ class Mail_mime extends Mail
                                      'text_encoding' => '7bit',
                                      'html_encoding' => 'quoted-printable',
                                      '7bit_wrap'     => 998,
-                                     'charset'       => 'iso-8859-1'
+                                     'html_charset'  => 'iso-8859-1',
+                                     'text_charset'  => 'iso-8859-1'
                                     );
     }
 
@@ -156,73 +158,6 @@ class Mail_mime extends Mail
     }
 
     /*
-    * Builds html part of email.
-    *
-    * @param string $orig_boundary boundary of the beginning content
-    *                               type header
-    * @access private
-    */
-    function _buildHtml($orig_boundary)
-    {
-        if (!isset($this->_txtbody)) {
-            $this->_txtbody = '';
-        }
-
-        $sec_boundary = '=_' . md5(uniqid(time()));
-        $thr_boundary = '=_' . md5(uniqid(time()));
-
-        if (count($this->_html_images) == 0) {
-            $this->_multipart .=
-                '--' . $orig_boundary . MAIL_MIME_CRLF .
-                'Content-Type: multipart/alternative;' . MAIL_MIME_CRLF . chr(9) .
-                'boundary="' . $sec_boundary.'"' . MAIL_MIME_CRLF . MAIL_MIME_CRLF .
-
-                '--' . $sec_boundary . MAIL_MIME_CRLF .
-                'Content-Type: text/plain; charset="' . $this->_build_params['charset'] . '"' . MAIL_MIME_CRLF .
-                $this->_getEncodedData($this->_txtbody, $this->_build_params['text_encoding']) . MAIL_MIME_CRLF .
-
-                '--'.$sec_boundary . MAIL_MIME_CRLF .
-                'Content-Type: text/html; charset="' . $this->_build_params['charset'] . '"' . MAIL_MIME_CRLF .
-                $this->_getEncodedData($this->_htmlbody, $this->_build_params['html_encoding']) . MAIL_MIME_CRLF .
-                '--' . $sec_boundary . '--' . MAIL_MIME_CRLF . MAIL_MIME_CRLF;
-
-        } else {
-
-            // Replaces image names with content-id's.
-            for ($i = 0; $i < count($this->_html_images); $i++) {
-                $this->_htmlbody = str_replace($this->_html_images[$i]['name'],
-                                              'cid:' . $this->_html_images[$i]['cid'],
-                                              $this->_htmlbody);
-            }
-            $this->_multipart .=
-                '--'.$orig_boundary . MAIL_MIME_CRLF .
-                'Content-Type: multipart/related;' . MAIL_MIME_CRLF . chr(9) .
-                'boundary="' . $sec_boundary . '"' . MAIL_MIME_CRLF . MAIL_MIME_CRLF .
-
-                '--'.$sec_boundary . MAIL_MIME_CRLF .
-                'Content-Type: multipart/alternative;' . MAIL_MIME_CRLF . chr(9) .
-                'boundary="' . $thr_boundary . '"' . MAIL_MIME_CRLF . MAIL_MIME_CRLF .
-
-                '--' . $thr_boundary . MAIL_MIME_CRLF .
-                'Content-Type: text/plain; charset="' . $this->_build_params['charset'] . '"' . MAIL_MIME_CRLF .
-                $this->_getEncodedData($this->_txtbody, $this->_build_params['text_encoding']) . MAIL_MIME_CRLF .
-
-                '--'.$thr_boundary . MAIL_MIME_CRLF .
-                'Content-Type: text/html; charset="' . $this->_build_params['charset'] . '"' . MAIL_MIME_CRLF .
-                $this->_getEncodedData($this->_htmlbody, $this->_build_params['html_encoding']) . MAIL_MIME_CRLF .
-                '--' . $thr_boundary . '--' . MAIL_MIME_CRLF;
-
-            // Add the embedded images
-            for ($i = 0; $i < count($this->_html_images); $i++) {
-                $this->_multipart .= '--' . $sec_boundary . MAIL_MIME_CRLF;
-                $this->_buildHtmlImage($this->_html_images[$i]);
-            }
-
-            $this->_multipart .= '--' . $sec_boundary . '--' . MAIL_MIME_CRLF;
-        }
-    }
-
-    /*
     * Adds an image to the list of embedded images.
     *
     * @param string $file The image file name OR image data itself
@@ -258,7 +193,7 @@ class Mail_mime extends Mail
     * @return mixed true on success or PEAR_Error object
     * @access public
     */
-    function addAttachment($file, $c_type='application/octet-stream', $name = '', $isfilename = true)
+    function addAttachment($file, $c_type='application/octet-stream', $name = '', $isfilename = true, $encoding = 'base64')
     {
         $filedata = ($isfilename === true) ? $this->_file2str($file) : $file;
         $filename = ($isfilename === true) ? basename($file) : basename($name);
@@ -267,9 +202,10 @@ class Mail_mime extends Mail
         }
 
         $this->_parts[] = array(
-                                'body'   => $filedata,
-                                'name'   => $filename,
-                                'c_type' => $c_type
+                                'body'     => $filedata,
+                                'name'     => $filename,
+                                'c_type'   => $c_type,
+                                'encoding' => $encoding
                                );
         return true;
     }
@@ -294,134 +230,137 @@ class Mail_mime extends Mail
     }
 
     /*
-    * Builds an embedded image part of an html mail.
+    * Adds a text subpart to the mimePart object and 
+    * returns it during the build process.
     *
-    * @param integer $i number of the image to build
+    * @param mixed    The object to add the part to, or
+    *                 null if a new object is to be created.
+    * @param string   The text to add.
+    * @return object  The text mimePart object
     * @access private
     */
-    function _buildHtmlImage($image)
-    {
-        $this->_multipart .= 'Content-Type: ' . $image['c_type'];
+    function &_addTextPart(&$obj, $text){
 
-        $fname = basename($image['name']);
-        $this->_multipart .= '; name="' . $fname . '"' . MAIL_MIME_CRLF;
-
-        $this->_multipart .= 'Content-ID: <' . $image['cid'] . '>' . MAIL_MIME_CRLF;
-        $this->_multipart .= $this->_getEncodedData($image['body'], 'base64') . MAIL_MIME_CRLF;
-    }
-
-    /*
-    * Builds a single part of a multipart message.
-    *
-    * @param array &$part Array containing the part data
-    * @return string containing the whole part
-    * @access private
-    */
-    function & _buildPart(&$part)
-    {
-        $message_part = '';
-        $message_part.= 'Content-Type: ' . $part['c_type'];
-        if ($part['name'] != '') {
-            $message_part .= '; name="' . $part['name'] . '"' . MAIL_MIME_CRLF;
+        $params['content_type'] = 'text/plain';
+        $params['encoding']     = $this->_build_params['text_encoding'];
+        $params['charset']      = $this->_build_params['text_charset'];
+        if (is_object($obj)) {
+            return $obj->addSubpart($text, $params);
         } else {
-            $message_part .= MAIL_MIME_CRLF;
+            return new Mail_mimePart($text, $params);
         }
+    }
 
-        // Determine content encoding.
-        if ($part['c_type'] == 'text/plain') {
-            $message_part .= 'Content-Disposition: attachment; filename="' . $part['name'] . '"' . MAIL_MIME_CRLF;
-            $message_part .= $this->_getEncodedData($part['body'], $this->_build_params['text_encoding']) . MAIL_MIME_CRLF;
+    /*
+    * Adds a html subpart to the mimePart object and
+    * returns it during the build process.
+    *
+    * @param mixed    The object to add the part to, or
+    *                 null if a new object is to be created.
+    * @return object  The html mimePart object
+    * @access private
+    */
+    function &_addHtmlPart(&$obj){
 
-        } elseif ($part['c_type'] == 'message/rfc822') {
-            $message_part .= $this->_getEncodedData($part['body'], '7bit') . MAIL_MIME_CRLF;
-
+        $params['content_type'] = 'text/html';
+        $params['encoding']     = $this->_build_params['html_encoding'];
+        $params['charset']      = $this->_build_params['html_charset'];
+        if (is_object($obj)) {
+            return $obj->addSubpart($this->_htmlbody, $params);
         } else {
-            $message_part .= 'Content-Disposition: attachment; filename="' . $part['name'] . '"' . MAIL_MIME_CRLF;
-            $message_part .= $this->_getEncodedData($part['body'], 'base64') . MAIL_MIME_CRLF;
+            return new Mail_mimePart($this->_htmlbody, $params);
         }
-
-        return $message_part;
     }
 
     /*
-    * Encodes data quoted-printable style
+    * Creates a new mimePart object, using multipart/mixed as
+    * the initial content-type and returns it during the
+    * build process.
     *
-    * @param string Data to encode
-    * @return string Encoded data
+    * @return object  The multipart/mixed mimePart object
     * @access private
     */
-    function _quotedPrintableEncode($input , $line_max = 76)
-    {
-        $lines  = preg_split("/(\r\n|\r|\n)/", $input);
-        $eol    = MAIL_MIME_CRLF;
-        $escape = '=';
-        $output = '';
+    function &_addMixedPart(){
 
-        while (list(, $line) = each($lines)) {
-
-            $linlen  = strlen($line);
-            $newline = '';
-
-            for ($i = 0; $i < $linlen; $i++) {
-                $char = substr($line, $i, 1);
-                $dec  = ord($char);
-
-                if (($dec == 32) AND ($i == ($linlen - 1))) {
-                    $char = '=20';
-
-                } elseif($dec == 9) {
-                    // Do nothing if a tab.
-
-                } elseif(($dec == 61) OR ($dec < 32 ) OR ($dec > 126)) {
-                    $char = $escape . strtoupper(sprintf('%02s', dechex($dec)));
-                }
-
-                if ((strlen($newline) + strlen($char)) >= $line_max) {
-                    $output  .= $newline . $escape . $eol;
-                    $newline  = '';
-                }
-                $newline .= $char;
-            }
-
-            $output .= $newline . $eol;
-        }
-
-        return substr($output, 0, -1*strlen($eol)); // Don't want the final CRLF
+        $params['content_type'] = 'multipart/mixed';
+        return new Mail_mimePart('', $params);
     }
 
     /*
-    * Returns data passed to it based on the given encoding type.
+    * Adds a multipart/alternative part to a mimePart
+    * object, (or creates one), and returns it  during
+    * the build process.
     *
-    * @param string Data to be encoded
-    * @param string Encoding type use, currently one of
-    *               7bit, quoted-printable, base64
-    * @return string Encoded data
+    * @param mixed    The object to add the part to, or
+    *                 null if a new object is to be created.
+    * @return object  The multipart/mixed mimePart object
     * @access private
     */
-    function _getEncodedData($data, $encoding)
-    {
-        $return = '';
+    function &_addAlternativePart(&$obj){
 
-        switch($encoding){
-
-            case '7bit':
-                $return .= 'Content-Transfer-Encoding: 7bit' . MAIL_MIME_CRLF . MAIL_MIME_CRLF .
-                           substr(chunk_split($data, $this->_build_params['7bit_wrap'], MAIL_MIME_CRLF), 0, -1 * strlen(MAIL_MIME_CRLF));
-                break;
-
-            case 'quoted-printable':
-                $return .= 'Content-Transfer-Encoding: quoted-printable' . MAIL_MIME_CRLF . MAIL_MIME_CRLF .
-                           $this->_quotedPrintableEncode($data);
-                break;
-
-            case 'base64':
-                $return .= 'Content-Transfer-Encoding: base64' . MAIL_MIME_CRLF . MAIL_MIME_CRLF .
-                           substr(chunk_split(base64_encode($data), 76, MAIL_MIME_CRLF), 0, -1 * strlen(MAIL_MIME_CRLF));
-                           // The substr removes the last CRLF that chunk_split adds
-                break;
+        $params['content_type'] = 'multipart/alternative';
+        if (is_object($obj)) {
+            return $obj->addSubpart('', $params);
+        } else {
+            return new Mail_mimePart('', $params);
         }
+    }
 
-        return $return;
+    /*
+    * Adds a multipart/related part to a mimePart
+    * object, (or creates one), and returns it  during
+    * the build process.
+    *
+    * @param mixed    The object to add the part to, or
+    *                 null if a new object is to be created.
+    * @return object  The multipart/mixed mimePart object
+    * @access private
+    */
+    function &_addRelatedPart(&$obj){
+
+        $params['content_type'] = 'multipart/related';
+        if (is_object($obj)) {
+            return $obj->addSubpart('', $params);
+        } else {
+            return new Mail_mimePart('', $params);
+        }
+    }
+
+    /*
+    * Adds an html image subpart to a mimePart object
+    * and returns it during the build process.
+    *
+    * @param  object  The mimePart to add the image to
+    * @param  array   The image information
+    * @return object  The image mimePart object
+    * @access private
+    */
+    function &_addHtmlImagePart(&$obj, $value){
+
+        $params['content_type'] = $value['c_type'];
+        $params['encoding']     = 'base64';
+        $params['disposition']  = 'inline';
+        $params['dfilename']    = $value['name'];
+        $params['cid']          = $value['cid'];
+        $obj->addSubpart($value['body'], $params);
+    }
+
+    /*
+    * Adds an attachment subpart to a mimePart object
+    * and returns it during the build process.
+    *
+    * @param  object  The mimePart to add the image to
+    * @param  array   The attachment information
+    * @return object  The image mimePart object
+    * @access private
+    */
+    function &_addAttachmentPart(&$obj, $value){
+
+        $params['content_type'] = $value['c_type'];
+        $params['encoding']     = $value['encoding'];
+        $params['disposition']  = 'attachment';
+        $params['dfilename']    = $value['name'];
+        $obj->addSubpart($value['body'], $params);
     }
 
     /*
@@ -437,12 +376,14 @@ class Mail_mime extends Mail
     *                7bit_wrap      -  Number of characters before text is
     *                                  wrapped in 7bit encoding
     *                                  Default is 998
-    *                charset        -  The character set to use.
+    *                html_charset   -  The character set to use for html.
+    *                                  Default is iso-8859-1
+    *                text_charset   -  The character set to use for text.
     *                                  Default is iso-8859-1
     * @return string The mime content
     * @access public
     */
-    function & get($build_params = null)
+    function &get($params = null)
     {
         if (isset($build_params)) {
             while (list($key, $value) = each($build_params)) {
@@ -450,75 +391,130 @@ class Mail_mime extends Mail
             }
         }
 
-        $do_text  = isset($this->_txtbody)   ? true : false;
-        $do_html  = isset($this->_htmlbody)  ? true : false;
-        $do_parts = count($this->_parts) > 0 ? true : false;
-
-        $boundary = $this->_boundary;
-
-        // Need to make a multipart email?
-        if ($do_html OR $do_parts) {
-            $this->_multipart = 'This is a MIME encoded message.' . MAIL_MIME_CRLF . MAIL_MIME_CRLF;
-
-            // For HTML bodies and HTML Images
-            if ($do_html) {
-                $this->_buildHtml($boundary);
-
-            // For TXT bodies
-            } elseif ($do_text) {
-                $part = array(
-                              'body'   => $this->_txtbody,
-                              'name'   => '',
-                              'c_type' => 'text/plain'
-                             );
-
-                $this->_multipart .= '--' . $boundary . MAIL_MIME_CRLF . $this->_buildPart($part);
-            }
-
-        // Plain text email
-        } elseif ($do_text) {
-            $this->_multipart = $this->_txtbody;
-        }
-
-        // Build any attachments
-        if ($do_parts) {
-            for ($i = 0; $i < count($this->_parts); $i++) {
-                $this->_multipart .= '--' . $boundary . MAIL_MIME_CRLF . $this->_buildPart($this->_parts[$i]);
+        if (!empty($this->_html_images) AND isset($this->_htmlbody)) {
+            foreach ($this->_html_images as $value) {
+                $this->_htmlbody = str_replace($value['name'], 'cid:'.$value['cid'], $this->_htmlbody);
             }
         }
 
-        $this->_mime = ($do_html OR $do_parts) ? $this->_multipart . '--' . $boundary . '--' . MAIL_MIME_CRLF : $this->_multipart;
-        return $this->_mime;
+        $null        = null;
+        $attachments = !empty($this->_parts)                ? TRUE : FALSE;
+        $html_images = !empty($this->_html_images)          ? TRUE : FALSE;
+        $html        = !empty($this->_htmlbody)             ? TRUE : FALSE;
+        $text        = (!$html AND !empty($this->_txtbody)) ? TRUE : FALSE;
+
+        switch (TRUE) {
+            case $text AND !$attachments:
+                $message =& $this->_addTextPart($null, $this->text);
+                break;
+
+            case !$text AND !$html AND $attachments:
+                $message =& $this->_addMixedPart();
+
+                for ($i = 0; $i < count($this->_parts); $i++) {
+                    $this->_addAttachmentPart($message, $this->_parts[$i]);
+                }
+                break;
+
+            case $text AND $attachments:
+                $message =& $this->_addMixedPart();
+                $this->_addTextPart($message, $this->_txtbody);
+
+                for ($i = 0; $i < count($this->_parts); $i++) {
+                    $this->_addAttachmentPart($message, $this->_parts[$i]);
+                }
+                break;
+
+            case $html AND !$attachments AND !$html_images:
+                if (isset($this->_txtbody)) {
+                    $message =& $this->_addAlternativePart($null);
+   	                $this->_addTextPart($message, $this->_txtbody);
+					$this->_addHtmlPart($message);
+                    
+                } else {
+                    $message =& $this->_addHtmlPart($null);
+                }
+                break;
+
+            case $html AND !$attachments AND $html_images:
+                if (isset($this->_txtbody)) {
+                    $message =& $this->_addAlternativePart($null);
+                    $this->_addTextPart($message, $this->_txtbody);
+                    $related =& $this->_addRelatedPart($message);
+                } else {
+                    $message =& $this->_addRelatedPart($null);
+					$related =& $message;
+                }
+                $this->_addHtmlPart($related);
+                for ($i = 0; $i < count($this->_html_images); $i++) {
+                    $this->_addHtmlImagePart($related, $this->_html_images[$i]);
+                }
+                break;
+
+            case $html AND $attachments AND !$html_images:
+                $message =& $this->_addMixedPart();
+                if (isset($this->_txtbody)) {
+                    $alt =& $this->_addAlternativePart($message);
+                    $this->_addTextPart($alt, $this->_txtbody);
+                    $this->_addHtmlPart($alt);
+                } else {
+                    $this->_addHtmlPart($message);
+                }
+                for ($i = 0; $i < count($this->_parts); $i++) {
+                    $this->_addAttachmentPart($message, $this->_parts[$i]);
+                }
+                break;
+
+            case $html AND $attachments AND $html_images:
+                $message =& $this->_addMixedPart();
+                if (isset($this->_txtbody)) {
+                    $alt =& $this->_addAlternativePart($message);
+                    $this->_addTextPart($alt, $this->_txtbody);
+                    $rel =& $this->_addRelatedPart($alt);
+                } else {
+                    $rel =& $this->_addRelatedPart($message);
+                }
+                $this->_addHtmlPart($rel);
+                for ($i = 0; $i < count($this->_html_images); $i++) {
+                    $this->_addHtmlImagePart($rel, $this->_html_images[$i]);
+                }
+                for ($i = 0; $i < count($this->_parts); $i++) {
+                    $this->_addAttachmentPart($message, $this->_parts[$i]);
+                }
+                break;
+
+        }
+
+        if (isset($message)) {
+            $output = $message->encode();
+            $this->_headers = $output['headers'];
+
+            return $output['body'];
+
+        } else {
+            return FALSE;
+        }
     }
 
+
     /*
-    * Returns an array with the headers needed to append to the email
-    * (MIME-Version and Content-Type)
+    * Returns an array with the headers needed to prepend to the email
+    * (MIME-Version and Content-Type). Format of argument is:
+    * $array['header-name'] = 'header-value';
     *
     * @param  array Assoc array with any extra headers. Optional.
-    * @return array Assoc array with the standard mime headers
+    * @return array Assoc array with the mime headers
     * @access public
     */
     function & headers($xtra_headers = null)
     {
-        $do_text  = isset($this->_txtbody)   ? true : false;
-        $do_html  = isset($this->_htmlbody)  ? true : false;
-        $do_parts = count($this->_parts) > 0 ? true : false;
-
-        // Add the mime headers
-        if ($do_html OR $do_parts) {
-            $this->_headers['MIME-Version'] = '1.0';
-            $this->_headers['Content-Type'] = 'multipart/mixed;' . MAIL_MIME_CRLF . chr(9) .
-                                                'boundary="' . $this->_boundary . '"';
-
-        // Just set the content-type to text/plain
-        } elseif ($do_text) {
-            $this->_headers['Content-Type'] = 'text/plain';
-        }
-
+        // Content-Type header should already be present, 
+        // So just add mime version header
+        $headers['MIME-Version'] = '1.0';
         if (isset($xtra_headers)) {
-            $this->_headers = array_merge($this->_headers, $xtra_headers);
+            $headers = array_merge($headers, $xtra_headers);
         }
+        $this->_headers = array_merge($headers, $this->_headers);
 
         return $this->_headers;
     }
