@@ -196,7 +196,16 @@ class Mail_mime
     function addAttachment($file, $c_type='application/octet-stream', $name = '', $isfilename = true, $encoding = 'base64')
     {
         $filedata = ($isfilename === true) ? $this->_file2str($file) : $file;
-        $filename = ($isfilename === true) ? basename($file) : basename($name);
+        if ($isfilename === true) {
+            // Force the name the user supplied, otherwise use $file
+            $filename = (!empty($name)) ? $name : $file;
+        } else {
+            $filename = $name;
+        }
+        if (empty($filename)) {
+            return PEAR::raiseError('The supplied filename for the attachment can\'t be empty');
+        }
+        $filename = basename($filename);
         if (PEAR::isError($filedata)) {
             return $filedata;
         }
