@@ -2,21 +2,37 @@
 <package>
   <name>Mail_Mime</name>
   <summary>Provides classes to create and decode mime messages.</summary>
-  <maintainer>
-    <user>heyesr</user>
-    <name>Richard Heyes</name>
-    <email>heyesr@php.net</email>
-  </maintainer>
+  <description>
+  Provides classes to deal with creation and manipulation of mime messages:
+- mime.php: Create mime email, with html, attachments, embedded images etc.
+- mimePart.php: Advanced method of creating mime messages.
+- mimeDecode.php - Decodes mime messages to a usable structure.
+- xmail.dtd: An XML DTD to acompany the getXML() method of the decoding class.
+- xmail.xsl: An XSLT stylesheet to transform the output of the getXML() method
+  </description>
+  <maintainers>
+      <maintainer>
+        <user>heyesr</user>
+        <name>Richard Heyes</name>
+        <email>heyesr@php.net</email>
+        <role>lead</role>
+      </maintainer>
+      <maintainer>
+         <user>cox</user>
+         <name>Tomas V.V.Cox</name>
+         <email>cox@idecnet.com</email>
+         <role>contributor</role>
+      </maintainer>
+  </maintainers>
   <release>
     <version>1.0</version>
     <date>2001-12-28</date>
+    <state>stable</state>
     <notes>
       This is the initial release of the Mime_Mail package.
     </notes>
-  </release>
-
-  <filelist>
-    <dir name="/" baseinstalldir="Mail_Mime">
+    <filelist>
+    <dir name="/" baseinstalldir="Mail">
         <file role="php">mime.php</file>
         <file role="php">mimeDecode.php</file>
         <file role="php">mimePart.php</file>
@@ -24,4 +40,5 @@
         <file role="data">xmail.xsl</file>
     </dir>
   </filelist>
+  </release>
 </package>
