@@ -445,9 +445,18 @@ class Mail_mimeDecode extends PEAR
             if (strlen($input) > 0) {
 
                 // This splits on a semi-colon, if there's no preceeding backslash
-                // Can't handle if it's in double quotes however. (Of course anyone
-                // sending that needs a good slap).
-                $parameters = preg_split('/\s*(?<!\\\\);\s*/i', $input);
+                // Now works with quoted values; had to glue the \; breaks in PHP
+                // the regex is already bordering on incomprehensible
+                $splitRegex = '/([^;"]*"([^"]*([^"]*)*)"[^;"]*|([^;]+))(;|$)/';
+                preg_match_all($splitRegex, $input, $matches);
+                $parameters = array();
+                for ($i=0; $i<count($matches[0]); $i++) {
+                    $param = $matches[0][$i];
+                    while (substr($param, -2) == '\;') {
+                        $param .= $matches[0][++$i];
+                    }
+                    $parameters[] = $param;
+                }
 
                 for ($i = 0; $i < count($parameters); $i++) {
                     $param_name  = substr($parameters[$i], 0, $pos = strpos($parameters[$i], '='));
