@@ -32,17 +32,36 @@ require_once 'PEAR.php';
 *   Sascha Schumann <sascha@schumann.cx>.
 *
 * @author Tomas V.V.Cox <cox@idecnet.com>
+* @package Mail
+* @access public
 */
-class Mail_mime extends PEAR
+class Mail_mime extends Mail
 {
-
+    /**
+    * contains the mime encoded text
+    * @var string
+    */
     var $mime;
+    /**
+    * contains the multipart content
+    * @var string
+    */
     var $multipart;
+    /**
+    * list of the attached images
+    * @var array
+    */    
     var $html_images = array();
+    /**
+    * list of the attachements
+    * @var array
+    */        
     var $parts       = array();
 
     /*
     * Constructor function
+    *
+    * @access public
     */
     function Mail_mime()
     {
@@ -55,11 +74,12 @@ class Mail_mime extends PEAR
     * text/plain part that emails clients who don't support
     * html should show.
     *
-    * @param $data string Either a string or the file name with the
+    * @param string $data Either a string or the file name with the
     *        contents
-    * @param $isfile bool If true the first param should be trated
+    * @param bool $isfile If true the first param should be trated
     *        as a file name, else as a string (default)
     * @return mixed true on success or PEAR_Error object
+    * @access public
     */
     function setTXTBody($data, $isfile = false)
     {
@@ -78,11 +98,12 @@ class Mail_mime extends PEAR
     /*
     * Adds a html part to the mail
     *
-    * @param $data string Either a string or the file name with the
+    * @param string $data Either a string or the file name with the
     *        contents
-    * @param $isfile bool If true the first param should be trated
+    * @param bool $isfile If true the first param should be trated
     *        as a file name, else as a string (default)
     * @return mixed true on success or PEAR_Error object
+    * @access public
     */
     function setHTMLBody($data, $isfile = false)
     {
@@ -101,7 +122,9 @@ class Mail_mime extends PEAR
     /*
     * Builds html part of email.
     *
-    * @acces private
+    * @param string $orig_boundary boundary of the beginning content
+    *                               type header
+    * @access private
     */
     function build_html($orig_boundary)
     {
@@ -163,9 +186,10 @@ class Mail_mime extends PEAR
     /*
     * Adds an image to the list of embedded images.
     *
-    * @param $file_name string The image file name
-    * @param $c_type string The content type
+    * @param string $file_name The image file name
+    * @param string $c_type The content type
     * @return mixed true on success or PEAR_Error object
+    * @access public
     */
     function addHTMLImage ($file_name, $c_type='application/octet-stream')
     {
@@ -184,9 +208,10 @@ class Mail_mime extends PEAR
     /*
     * Adds a file to the list of attachments.
     *
-    * @param $file_name string The file name of the file to attach
-    * @param $c_type string The content type
+    * @param string $file_name The file name of the file to attach
+    * @param string $c_type The content type
     * @return mixed true on success or PEAR_Error object
+    * @access public
     */
     function addAttachment ($file_name, $c_type='application/octet-stream')
     {
@@ -202,7 +227,7 @@ class Mail_mime extends PEAR
 
     /*
     * Returns the contents of the given file name as string
-    * @param $file_name string
+    * @param string $file_name
     * @return string
     * @acces private
     */
@@ -222,7 +247,8 @@ class Mail_mime extends PEAR
     /*
     * Builds an embedded image part of an html mail.
     *
-    * @acces private
+    * @param integer $i number of the image to build
+    * @access private
     */
     function build_html_image ($i)
     {
@@ -239,7 +265,9 @@ class Mail_mime extends PEAR
     /*
     * Builds a single part of a multipart message.
     *
-    * @acces private
+    * @param array &$part Array containing the part data
+    * @return string containing the whole part
+    * @access private
     */
     function & build_part(&$part)
     {
@@ -272,6 +300,7 @@ class Mail_mime extends PEAR
     * returns the mime content.
     *
     * @return string The mime content
+    * @access public
     */
     function & get()
     {
@@ -302,6 +331,7 @@ class Mail_mime extends PEAR
     * (MIME-Version and Content-Type)
     *
     * @return array Assoc array with the standar mime headers
+    * @access public
     */
     function & headers()
     {
