@@ -204,8 +204,12 @@ class Mail_mimePart extends PEAR{
 
             // Add body parts to $subparts
             for ($i = 0; $i < count($this->_subparts); $i++) {
+				$headers = array();
                 $tmp = $this->_subparts[$i]->encode();
-                $subparts[] = implode(MAIL_MIMEPART_CRLF, $tmp['headers']) . MAIL_MIMEPART_CRLF . MAIL_MIMEPART_CRLF . $tmp['body'];
+				foreach ($tmp['headers'] as $key => $value) {
+					$headers[] = $key . ': ' . $value;
+				}
+                $subparts[] = implode(MAIL_MIMEPART_CRLF, $headers) . MAIL_MIMEPART_CRLF . MAIL_MIMEPART_CRLF . $tmp['body'];
             }
 
             $encoded['body'] = '--' . $boundary . MAIL_MIMEPART_CRLF .
@@ -217,9 +221,7 @@ class Mail_mimePart extends PEAR{
         }
 
         // Add headers to $encoded
-        foreach ($this->_headers as $key => $value) {
-            $encoded['headers'][] = $key . ': ' . $value;
-        }
+		$encoded['headers'] =& $this->_headers;
 
         return $encoded;
     }
