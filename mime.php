@@ -15,6 +15,7 @@
 // +----------------------------------------------------------------------+
 // | Authors: Tomas V.V.Cox <cox@idecnet.com>                             |
 // |          Richard Heyes <richard.heyes@heyes-computing.net            |
+// |                                                                      |
 // +----------------------------------------------------------------------+
 //
 // $Id$
@@ -62,22 +63,22 @@ class Mail_mime extends Mail
     /**
     * list of the attached images
     * @var array
-    */    
+    */
     var $_html_images = array();
     /**
     * list of the attachements
     * @var array
-    */        
+    */
     var $_parts = array();
     /**
     * Build parameters
     * @var array
-    */        
+    */
     var $_build_params = array();
     /**
     * Headers for the mail
     * @var array
-    */        
+    */
     var $_headers = array();
 
 
@@ -355,7 +356,7 @@ class Mail_mime extends Mail
         $eol    = MAIL_MIME_CRLF;
         $escape = '=';
         $output = '';
-        
+
         while (list(, $line) = each($lines)) {
 
             $linlen  = strlen($line);
@@ -374,7 +375,7 @@ class Mail_mime extends Mail
                 } elseif(($dec == 61) OR ($dec < 32 ) OR ($dec > 126)) {
                     $char = $escape . strtoupper(sprintf('%02s', dechex($dec)));
                 }
-    
+
                 if ((strlen($newline) + strlen($char)) >= $line_max) {
                     $output  .= $newline . $escape . $eol;
                     $newline  = '';
@@ -410,7 +411,7 @@ class Mail_mime extends Mail
 
             case 'quoted-printable':
                 $return .= 'Content-Transfer-Encoding: quoted-printable' . MAIL_MIME_CRLF . MAIL_MIME_CRLF .
-            	           $this->_quotedPrintableEncode($data);
+                           $this->_quotedPrintableEncode($data);
                 break;
 
             case 'base64':
@@ -420,8 +421,8 @@ class Mail_mime extends Mail
                 break;
         }
 
-		return $return;
-	}
+        return $return;
+    }
 
     /*
     * Builds the multipart message from the list ($this->_parts) and
