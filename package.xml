@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<package>
+<!DOCTYPE package SYSTEM "../package.dtd">
+<package version="1.0">
   <name>Mail_Mime</name>
   <summary>Provides classes to create and decode mime messages.</summary>
   <description>
