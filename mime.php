@@ -38,25 +38,40 @@ require_once 'PEAR.php';
 class Mail_mime extends Mail
 {
     /**
+    * Contains the plain text part of the email
+    * @var string
+    */
+    var $_txtbody;
+    /**
+    * Contains the html part of the email
+    * @var string
+    */
+    var $_htmlbody;
+    /**
     * contains the mime encoded text
     * @var string
     */
-    var $mime;
+    var $_mime;
     /**
     * contains the multipart content
     * @var string
     */
-    var $multipart;
+    var $_multipart;
     /**
     * list of the attached images
     * @var array
     */
-    var $html_images = array();
+    var $_html_images = array();
     /**
     * list of the attachements
     * @var array
     */
-    var $parts       = array();
+    var $_parts       = array();
+    /**
+    * Headers for the mail
+    * @var array
+    */        
+    var $_headers = array();
 
     /*
     * Constructor function
@@ -65,7 +80,7 @@ class Mail_mime extends Mail
     */
     function Mail_mime()
     {
-        $this->boundary = '=_' . md5(uniqid(time()));
+        $this->_boundary = '=_' . md5(uniqid(time()));
     }
 
     /*
@@ -81,16 +96,16 @@ class Mail_mime extends Mail
     * @return mixed true on success or PEAR_Error object
     * @access public
     */
-    function setTXTBody($data, $isfile = false)
+    function set_txtbody($data, $isfile = false)
     {
         if (!$isfile) {
-            $this->txtbody = $data;
+            $this->_txtbody = $data;
         } else {
             $cont = $this->_file2str($data);
             if (PEAR::isError($cont)) {
                 return $cont;
             }
-            $this->txtbody = $cont;
+            $this->_txtbody = $cont;
         }
         return TRUE;
     }
@@ -105,16 +120,16 @@ class Mail_mime extends Mail
     * @return mixed true on success or PEAR_Error object
     * @access public
     */
-    function setHTMLBody($data, $isfile = false)
+    function set_htmlbody($data, $isfile = false)
     {
         if (!$isfile) {
-            $this->htmlbody = $data;
+            $this->_htmlbody = $data;
         } else {
             $cont = $this->_file2str($data);
             if (PEAR::isError($cont)) {
                 return $cont;
             }
-            $this->htmlbody = $cont;
+            $this->_htmlbody = $cont;
         }
         return TRUE;
     }
@@ -126,13 +141,13 @@ class Mail_mime extends Mail
     *                               type header
     * @access private
     */
-    function build_html($orig_boundary)
+    function _buildHtml($orig_boundary)
     {
         $sec_boundary = '=_' . md5(uniqid(time()));
         $thr_boundary = '=_' . md5(uniqid(time()));
 
-        if (count($this->html_images) == 0) {
-            $this->multipart .=
+        if (count($this->_html_images) == 0) {
+            $this->_multipart .=
                 '--'.$orig_boundary."\r\n".
                 'Content-Type: multipart/alternative;'.chr(13).chr(10).chr(9).
                 'boundary="'.$sec_boundary."\"\r\n\r\n\r\n".
@@ -140,21 +155,21 @@ class Mail_mime extends Mail
                 '--'.$sec_boundary."\r\n".
                 'Content-Type: text/plain'."\r\n".
                 'Content-Transfer-Encoding: base64'."\r\n\r\n".
-                chunk_split(base64_encode($this->txtbody))."\r\n\r\n".
+                chunk_split(base64_encode($this->_txtbody))."\r\n\r\n".
 
                 '--'.$sec_boundary."\r\n".
                 'Content-Type: text/html'."\r\n".
                 'Content-Transfer-Encoding: base64'."\r\n\r\n".
-                chunk_split(base64_encode($this->htmlbody))."\r\n\r\n".
+                chunk_split(base64_encode($this->_htmlbody))."\r\n\r\n".
                 '--'.$sec_boundary."--\r\n\r\n";
         } else {
             //replaces image names with content-id's.
-            for ($i=0; $i<count($this->html_images); $i++) {
-                $this->htmlbody = ereg_replace($this->html_images[$i]['name'],
-                                   'cid:'.$this->html_images[$i]['cid'],
-                                   $this->htmlbody);
+            for ($i=0; $i<count($this->_html_images); $i++) {
+                $this->_htmlbody = ereg_replace($this->_html_images[$i]['name'],
+                                   'cid:'.$this->_html_images[$i]['cid'],
+                                   $this->_htmlbody);
             }
-            $this->multipart .=
+            $this->_multipart .=
                 '--'.$orig_boundary."\r\n".
                 'Content-Type: multipart/related;'.chr(13).chr(10).chr(9).
                 'boundary="'.$sec_boundary."\"\r\n\r\n\r\n".
@@ -166,20 +181,20 @@ class Mail_mime extends Mail
                 '--'.$thr_boundary."\r\n".
                 'Content-Type: text/plain'."\r\n".
                 'Content-Transfer-Encoding: base64'."\r\n\r\n".
-                chunk_split(base64_encode($this->txtbody))."\r\n\r\n".
+                chunk_split(base64_encode($this->_txtbody))."\r\n\r\n".
 
                 '--'.$thr_boundary."\r\n".
                 'Content-Type: text/html'."\r\n".
                 'Content-Transfer-Encoding: base64'."\r\n\r\n".
-                chunk_split(base64_encode($this->htmlbody))."\r\n\r\n".
+                chunk_split(base64_encode($this->_htmlbody))."\r\n\r\n".
                 '--'.$thr_boundary."--\r\n\r\n";
 
-            for ($i=0; $i<count($this->html_images); $i++) {
-                $this->multipart .= '--'.$sec_boundary."\r\n";
-                $this->build_html_image($i);
+            for ($i=0; $i<count($this->_html_images); $i++) {
+                $this->_multipart .= '--'.$sec_boundary."\r\n";
+                $this->_buildHtml_image($i);
             }
 
-            $this->multipart .= "--".$sec_boundary."--\r\n\r\n";
+            $this->_multipart .= "--".$sec_boundary."--\r\n\r\n";
         }
     }
 
@@ -197,7 +212,7 @@ class Mail_mime extends Mail
         if (PEAR::isError($file)) {
             return $file;
         }
-        $this->html_images[] = array( 'body'   => $file,
+        $this->_html_images[] = array( 'body'   => $file,
                                       'name'   => basename($file_name),
                                       'c_type' => $c_type,
                                       'cid'    => md5(uniqid(time()))
@@ -219,7 +234,7 @@ class Mail_mime extends Mail
         if (PEAR::isError($file)) {
             return $file;
         }
-        $this->parts[] = array( 'body'   => $file,
+        $this->_parts[] = array( 'body'   => $file,
                                 'name'   => basename($file_name),
                                 'c_type' => $c_type );
         return TRUE;
@@ -250,16 +265,16 @@ class Mail_mime extends Mail
     * @param integer $i number of the image to build
     * @access private
     */
-    function build_html_image ($i)
+    function _buildHtmlImage ($i)
     {
-        $this->multipart .= 'Content-Type: '.$this->html_images[$i]['c_type'];
+        $this->_multipart .= 'Content-Type: '.$this->_html_images[$i]['c_type'];
 
-        $fname = basename($this->html_images[$i]['name']);
-        $this->multipart .= '; name="' . $fname . "\"\r\n";
+        $fname = basename($this->_html_images[$i]['name']);
+        $this->_multipart .= '; name="' . $fname . "\"\r\n";
 
-        $this->multipart .= 'Content-Transfer-Encoding: base64'."\r\n";
-        $this->multipart .= 'Content-ID: <' . $this->html_images[$i]['cid'] . ">\r\n\r\n";
-        $this->multipart .= chunk_split(base64_encode($this->html_images[$i]['body'])) . "\r\n";
+        $this->_multipart .= 'Content-Transfer-Encoding: base64'."\r\n";
+        $this->_multipart .= 'Content-ID: <' . $this->_html_images[$i]['cid'] . ">\r\n\r\n";
+        $this->_multipart .= chunk_split(base64_encode($this->_html_images[$i]['body'])) . "\r\n";
     }
 
     /*
@@ -269,7 +284,7 @@ class Mail_mime extends Mail
     * @return string containing the whole part
     * @access private
     */
-    function & build_part(&$part)
+    function & _buildPart(&$part)
     {
         $message_part = '';
         $message_part.= 'Content-Type: '.$part['c_type'];
@@ -304,26 +319,26 @@ class Mail_mime extends Mail
     */
     function & get()
     {
-        $boundary = $this->boundary;
-        $this->multipart = "This is a MIME encoded message.\r\n\r\n";
+        $boundary = $this->_boundary;
+        $this->_multipart = "This is a MIME encoded message.\r\n\r\n";
         // For HTML bodies and HTML Images
-        if (isset($this->htmlbody)) {
-            $this->build_html($boundary);
+        if (isset($this->_htmlbody)) {
+            $this->_buildHtml($boundary);
         // For TXT bodies
-        } elseif (isset($this->txtbody)) {
-            $part = array('body' => $this->txtbody,
+        } elseif (isset($this->_txtbody)) {
+            $part = array('body' => $this->_txtbody,
                           'name' => '',
                           'c_type' => 'text/plain');
-            $this->multipart .= '--'.$boundary."\r\n".$this->build_part($part);
+            $this->_multipart .= '--'.$boundary."\r\n".$this->_buildPart($part);
         }
         // For attachments
-        for ($i=(count($this->parts)-1); $i>=0; $i--) {
-            $this->multipart .= '--'.$boundary."\r\n".
-                                $this->build_part($this->parts[$i]);
+        for ($i=(count($this->_parts)-1); $i>=0; $i--) {
+            $this->_multipart .= '--'.$boundary."\r\n".
+                                $this->_buildPart($this->_parts[$i]);
         }
 
-        $this->mime = $this->multipart."--".$boundary."--\r\n";
-        return $this->mime;
+        $this->_mime = $this->_multipart."--".$boundary."--\r\n";
+        return $this->_mime;
     }
 
     /*
@@ -338,7 +353,7 @@ class Mail_mime extends Mail
         $headers = array();
         $headers['MIME-Version'] = '1.0';
         $headers['Content-Type'] = 'multipart/mixed;'.chr(13).chr(10).chr(9).
-                                    'boundary="'.$this->boundary.'"';
+                                    'boundary="'.$this->_boundary.'"';
         return $headers;
     }
 }
