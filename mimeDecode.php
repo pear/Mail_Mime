@@ -105,13 +105,6 @@ class Mail_mimeDecode extends PEAR
     var $_crlf;
 
     /**
-     * Holds list of references indexed by mime part number
-	 * eg 1, 1.2, 1.3, 1.3.2 etc
-     * @var    array
-     */
-    var $_mime_parts;
-
-    /**
      * Constructor.
      *
      * Sets up the object, initialise the variables, and splits and
@@ -178,7 +171,7 @@ class Mail_mimeDecode extends PEAR
             $structure = $this->_decode($this->_header, $this->_body);
             if ($structure === false) {
                 $structure = $this->raiseError($this->_error);
-			}
+            }
         }
 
         return $structure;
@@ -306,37 +299,37 @@ class Mail_mimeDecode extends PEAR
         return $return;
     }
 
-	/**
+    /**
      * Given the output of the above function, this will return an
-	 * array of references to the parts, indexed by mime number.
-	 *
-	 * @param  object $structure   The structure to go through
-	 * @param  string $mime_number Internal use only.
-	 * @return array               Mime numbers
+     * array of references to the parts, indexed by mime number.
+     *
+     * @param  object $structure   The structure to go through
+     * @param  string $mime_number Internal use only.
+     * @return array               Mime numbers
      */
-	function &getMimeNumbers(&$structure, $no_refs = false, $mime_number = '')
-	{
-		$return = array();
-		if (!empty($structure->parts)) {
-			if ($mime_number != '') {
-				$return[$mime_number] = &$structure;
-			}
-			for ($i = 0; $i < count($structure->parts); $i++) {
-				$_mime_number = ($mime_number == '' ? $i + 1 : sprintf('%s.%s', $mime_number, $i + 1));
-				$arr = &Mail_mimeDecode::getMimeNumbers($structure->parts[$i], $no_refs, $_mime_number);
-				foreach ($arr as $key => $val) {
-					$no_refs ? $return[$key] = '' : $return[$key] = &$arr[$key];
-				}
-			}
-		} else {
-			if ($mime_number == '') {
-				$mime_number = '1';
-			}
-			$no_refs ? $return[$mime_number] = '' : $return[$mime_number] = &$structure;
-		}
-		
-		return $return;
-	}
+    function &getMimeNumbers(&$structure, $no_refs = false, $mime_number = '')
+    {
+        $return = array();
+        if (!empty($structure->parts)) {
+            if ($mime_number != '') {
+                $return[$mime_number] = &$structure;
+            }
+            for ($i = 0; $i < count($structure->parts); $i++) {
+                $_mime_number = ($mime_number == '' ? $i + 1 : sprintf('%s.%s', $mime_number, $i + 1));
+                $arr = &Mail_mimeDecode::getMimeNumbers($structure->parts[$i], $no_refs, $_mime_number);
+                foreach ($arr as $key => $val) {
+                    $no_refs ? $return[$key] = '' : $return[$key] = &$arr[$key];
+                }
+            }
+        } else {
+            if ($mime_number == '') {
+                $mime_number = '1';
+            }
+            $no_refs ? $return[$mime_number] = '' : $return[$mime_number] = &$structure;
+        }
+        
+        return $return;
+    }
 
     /**
      * Given a string containing a header and body
