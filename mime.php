@@ -289,7 +289,12 @@ class Mail_mime
         if (!$fd = fopen($file_name, 'rb')) {
             return PEAR::raiseError('Could not open ' . $file_name);
         }
-        $cont = fread($fd, filesize($file_name));
+        $filesize = filesize($file_name);
+        if ($filesize == 0){
+            $cont =  "";
+        }else{
+            $cont = fread($fd, $filesize);
+        }
         fclose($fd);
         return $cont;
     }
