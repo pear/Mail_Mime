@@ -317,7 +317,8 @@ class Mail_mime
         if (is_object($obj)) {
             return $obj->addSubpart($text, $params);
         } else {
-            return new Mail_mimePart($text, $params);
+            $ret = new Mail_mimePart($text, $params);
+            return $ret;
         }
     }
 
@@ -338,7 +339,8 @@ class Mail_mime
         if (is_object($obj)) {
             return $obj->addSubpart($this->_htmlbody, $params);
         } else {
-            return new Mail_mimePart($this->_htmlbody, $params);
+            $ret = new Mail_mimePart($this->_htmlbody, $params);
+            return $ret;
         }
     }
 
@@ -353,7 +355,8 @@ class Mail_mime
     function &_addMixedPart()
     {
         $params['content_type'] = 'multipart/mixed';
-        return new Mail_mimePart('', $params);
+        $ret = new Mail_mimePart('', $params);
+        return $ret;
     }
 
     /**
@@ -372,7 +375,8 @@ class Mail_mime
         if (is_object($obj)) {
             return $obj->addSubpart('', $params);
         } else {
-            return new Mail_mimePart('', $params);
+            $ret = new Mail_mimePart('', $params);
+            return $ret;
         }
     }
 
@@ -392,7 +396,8 @@ class Mail_mime
         if (is_object($obj)) {
             return $obj->addSubpart('', $params);
         } else {
-            return new Mail_mimePart('', $params);
+            $ret = new Mail_mimePart('', $params);
+            return $ret;
         }
     }
 
