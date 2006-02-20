@@ -256,9 +256,10 @@ class Mail_mime
             $filename = $name;
         }
         if (empty($filename)) {
-            return PEAR::raiseError(
-              'The supplied filename for the attachment can\'t be empty'
+            $err = PEAR::raiseError(
+              "The supplied filename for the attachment can't be empty"
             );
+	    return $err;
         }
         $filename = basename($filename);
         if (PEAR::isError($filedata)) {
@@ -284,10 +285,12 @@ class Mail_mime
     function &_file2str($file_name)
     {
         if (!is_readable($file_name)) {
-            return PEAR::raiseError('File is not readable ' . $file_name);
+            $err = PEAR::raiseError('File is not readable ' . $file_name);
+            return $err;
         }
         if (!$fd = fopen($file_name, 'rb')) {
-            return PEAR::raiseError('Could not open ' . $file_name);
+            $err = PEAR::raiseError('Could not open ' . $file_name);
+            return $err;
         }
         $filesize = filesize($file_name);
         if ($filesize == 0){
@@ -315,7 +318,8 @@ class Mail_mime
         $params['encoding']     = $this->_build_params['text_encoding'];
         $params['charset']      = $this->_build_params['text_charset'];
         if (is_object($obj)) {
-            return $obj->addSubpart($text, $params);
+            $ret = $obj->addSubpart($text, $params);
+            return $ret;
         } else {
             $ret = new Mail_mimePart($text, $params);
             return $ret;
@@ -337,7 +341,8 @@ class Mail_mime
         $params['encoding']     = $this->_build_params['html_encoding'];
         $params['charset']      = $this->_build_params['html_charset'];
         if (is_object($obj)) {
-            return $obj->addSubpart($this->_htmlbody, $params);
+            $ret = $obj->addSubpart($this->_htmlbody, $params);
+            return $ret;
         } else {
             $ret = new Mail_mimePart($this->_htmlbody, $params);
             return $ret;
@@ -568,7 +573,8 @@ class Mail_mime
             $output = $message->encode();
             $this->_headers = array_merge($this->_headers,
                                           $output['headers']);
-            return $output['body'];
+            $body = $output['body'];
+            return $body;
 
         } else {
             return false;
@@ -595,7 +601,8 @@ class Mail_mime
         }
         $this->_headers = array_merge($headers, $this->_headers);
 
-        return $this->_encodeHeaders($this->_headers);
+        $encodedHeaders = $this->_encodeHeaders($this->_headers);
+        return $encodedHeaders;
     }
 
     /**
