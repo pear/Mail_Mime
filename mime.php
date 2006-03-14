@@ -422,7 +422,9 @@ class Mail_mime
         $params['disposition']  = 'inline';
         $params['dfilename']    = $value['name'];
         $params['cid']          = $value['cid'];
-        $obj->addSubpart($value['body'], $params);
+        $ret = $obj->addSubpart($value['body'], $params);
+        return $ret;
+	
     }
 
     /**
@@ -577,7 +579,8 @@ class Mail_mime
             return $body;
 
         } else {
-            return false;
+            $ret = false;
+            return $ret;
         }
     }
 
