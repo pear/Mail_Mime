@@ -442,7 +442,8 @@ class Mail_mime
         $params['encoding']     = $value['encoding'];
         $params['disposition']  = 'attachment';
         $params['dfilename']    = $value['name'];
-        $obj->addSubpart($value['body'], $params);
+        $ret = $obj->addSubpart($value['body'], $params);
+	return $ret;
     }
 
     /**
