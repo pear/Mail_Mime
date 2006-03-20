@@ -443,7 +443,7 @@ class Mail_mime
         $params['disposition']  = 'attachment';
         $params['dfilename']    = $value['name'];
         $ret = $obj->addSubpart($value['body'], $params);
-	return $ret;
+        return $ret;
     }
 
     /**
