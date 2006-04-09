@@ -463,6 +463,35 @@ class Mail_mime
     }
 
     /**
+     * Returns the complete e-mail, ready to send using an alternative
+     * mail delivery method. Note that only the mailpart that is made
+     * with Mail_Mime is created. This means that,
+     * YOU WILL HAVE NO TO: HEADERS UNLESS YOU SET IT YOURSELF 
+     * using the $xtra_headers parameter!
+     * 
+     * @param  string $separation   The separation etween these two parts.
+     * @param  array  $build_params The Build parameters passed to the
+     *                              &get() function. See &get for more info.
+     * @param  array  $xtra_headers The extra headers that should be passed
+     *                              to the &headers() function.
+     *                              See that function for more info.
+     * @return string The complete e-mail.
+     * @access public
+     */
+    function getMessage($separation = null, $build_params = null, $xtra_headers = null)
+    {
+        if ($separation === null)
+        {
+            $separation = MAIL_MIME_CRLF;
+        }
+        $body = $this->get($build_params);
+        $head = $this->txtHeaders($xtra_headers);
+        $mail = $head . $separation . $body;
+        return $mail;
+    }
+
+
+    /**
      * Builds the multipart message from the list ($this->_parts) and
      * returns the mime content.
      *
