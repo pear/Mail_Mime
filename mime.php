@@ -475,17 +475,18 @@ class Mail_mime
      * @param  array  $xtra_headers The extra headers that should be passed
      *                              to the &headers() function.
      *                              See that function for more info.
+     * @param  bool   $overwrite    Overwrite the existing headers with new.
      * @return string The complete e-mail.
      * @access public
      */
-    function getMessage($separation = null, $build_params = null, $xtra_headers = null)
+    function getMessage($separation = null, $build_params = null, $xtra_headers = null, $overwrite = false)
     {
         if ($separation === null)
         {
             $separation = MAIL_MIME_CRLF;
         }
         $body = $this->get($build_params);
-        $head = $this->txtHeaders($xtra_headers);
+        $head = $this->txtHeaders($xtra_headers, $overwrite);
         $mail = $head . $separation . $body;
         return $mail;
     }
@@ -642,10 +643,11 @@ class Mail_mime
      *
      * @param  array $xtra_headers Assoc array with any extra headers.
      *                             Optional.
+     * @param  bool  $overwrite    Overwrite already existing headers.
      * @return array Assoc array with the mime headers
      * @access public
      */
-    function &headers($xtra_headers = null)
+    function &headers($xtra_headers = null, $overwrite = false)
     {
         // Content-Type header should already be present,
         // So just add mime version header
@@ -653,7 +655,11 @@ class Mail_mime
         if (isset($xtra_headers)) {
             $headers = array_merge($headers, $xtra_headers);
         }
-        $this->_headers = array_merge($headers, $this->_headers);
+        if ($overwrite){
+            $this->_headers = array_merge($this->_headers, $headers);
+        }else{
+            $this->_headers = array_merge($headers, $this->_headers);
+        }
 
         $encodedHeaders = $this->_encodeHeaders($this->_headers);
         return $encodedHeaders;
@@ -665,12 +671,13 @@ class Mail_mime
      *
      * @param  array   $xtra_headers Assoc array with any extra headers.
      *                               Optional.
+     * @param  bool    $overwrite    Overwrite the existing heaers with new.
      * @return string  Plain text headers
      * @access public
      */
-    function txtHeaders($xtra_headers = null)
+    function txtHeaders($xtra_headers = null, $overwrite = false)
     {
-        $headers = $this->headers($xtra_headers);
+        $headers = $this->headers($xtra_headers, $overwrite);
         $ret = '';
         foreach ($headers as $key => $val) {
             $ret .= "$key: $val" . MAIL_MIME_CRLF;
