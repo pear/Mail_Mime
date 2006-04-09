@@ -233,19 +233,27 @@ class Mail_mime
     /**
      * Adds a file to the list of attachments.
      *
-     * @param  string  $file       The file name of the file to attach
-     *                             OR the file data itself
-     * @param  string  $c_type     The content type
-     * @param  string  $name       The filename of the attachment
-     *                             Only use if $file is the file data
-     * @param  bool    $isFilename Whether $file is a filename or not
-     *                             Defaults to true
+     * @param  string  $file        The file name of the file to attach
+     *                              OR the file contents itself
+     * @param  string  $c_type      The content type
+     * @param  string  $name        The filename of the attachment
+     *                              Only use if $file is the contents
+     * @param  bool    $isFilename  Whether $file is a filename or not
+     *                              Defaults to true
+     * @param  string  $encoding    The type of encoding to use.
+     *                              Defaults to base64.
+     *                              Possible values: 7bit, 8bit, base64, 
+     *                              or quoted-printable.
+     * @param  string  $disposition The content-disposition of this file
+     *                              Defaults to attachment.
+     *                              Possible values: attachment, inline.
      * @return mixed true on success or PEAR_Error object
      * @access public
      */
     function addAttachment($file, $c_type = 'application/octet-stream',
                            $name = '', $isfilename = true,
-                           $encoding = 'base64')
+                           $encoding = 'base64',
+                           $disposition = 'attachment')
     {
         $filedata = ($isfilename === true) ? $this->_file2str($file)
                                            : $file;
@@ -267,10 +275,11 @@ class Mail_mime
         }
 
         $this->_parts[] = array(
-                                'body'     => $filedata,
-                                'name'     => $filename,
-                                'c_type'   => $c_type,
-                                'encoding' => $encoding
+                                'body'        => $filedata,
+                                'name'        => $filename,
+                                'c_type'      => $c_type,
+                                'encoding'    => $encoding,
+                                'disposition' => $disposition
                                );
         return true;
     }
@@ -446,7 +455,8 @@ class Mail_mime
     {
         $params['content_type'] = $value['c_type'];
         $params['encoding']     = $value['encoding'];
-        $params['disposition']  = 'attachment';
+        $params['disposition']  = isset($value['disposition']) ? 
+                                  $value['disposition'] : 'attachment';
         $params['dfilename']    = $value['name'];
         $ret = $obj->addSubpart($value['body'], $params);
         return $ret;
