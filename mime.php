@@ -432,7 +432,8 @@ class Mail_mime
      */
     function &_addHtmlImagePart(&$obj, $value)
     {
-        $params['content_type'] = $value['c_type'];
+        $params['content_type'] = $value['c_type'] . '; ' .
+                                  'name="' . $params['dfilename'] . '"';
         $params['encoding']     = 'base64';
         $params['disposition']  = 'inline';
         $params['dfilename']    = $value['name'];
@@ -453,7 +454,8 @@ class Mail_mime
      */
     function &_addAttachmentPart(&$obj, $value)
     {
-        $params['content_type'] = $value['c_type'];
+        $params['content_type'] = $value['c_type'] . '; ' .
+                                  'name="' . $params['dfilename'] . '"';
         $params['encoding']     = $value['encoding'];
         $params['disposition']  = isset($value['disposition']) ? 
                                   $value['disposition'] : 'attachment';
