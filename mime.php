@@ -214,9 +214,9 @@ class Mail_mime
         $filedata = ($isfilename === true) ? $this->_file2str($file)
                                            : $file;
         if ($isfilename === true) {
-            $filename = ($name == '' ? basename($file) : basename($name));
+            $filename = ($name == '' ? $file : $name);
         } else {
-            $filename = basename($name);
+            $filename = $name;
         }
         if (PEAR::isError($filedata)) {
             return $filedata;
@@ -523,7 +523,7 @@ class Mail_mime
         }
 
         if (!empty($this->_html_images) AND isset($this->_htmlbody)) {
-            foreach ($this->_html_images as $value) {
+            foreach ($this->_html_images as $key => $value) {
                 $regex = array();
                 $regex[] = '#(\s)((?i)src|background|href(?-i))\s*=\s*(["\']?)' .
                             preg_quote($value['name'], '#') . '\3#';
@@ -535,6 +535,7 @@ class Mail_mime
                 $this->_htmlbody = preg_replace($regex, $rep,
                                        $this->_htmlbody
                                    );
+                $this->_html_images[$key]['name'] = basename($this->_html_images[$key]['name']);
             }
         }
 
