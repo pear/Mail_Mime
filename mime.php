@@ -484,9 +484,14 @@ class Mail_mime
 
         if (!empty($this->_html_images) AND isset($this->_htmlbody)) {
             foreach ($this->_html_images as $value) {
-                $regex = '#(\s)((?i)src|background|href(?-i))\s*=\s*(["\']?)' . preg_quote($value['name'], '#') .
-                         '\3#';
-                $rep = '\1\2=\3cid:' . $value['cid'] .'\3';
+                $regex = array();
+                $regex[] = '#(\s)((?i)src|background|href(?-i))\s*=\s*(["\']?)' .
+                            preg_quote($value['name'], '#') . '\3#';
+                $regex[] = '#(?i)url(?-i)\(\s*(["\']?)' .
+                            preg_quote($value['name'], '#') . '\1\s*\)#';
+                $rep = array();
+                $rep[] = '\1\2=\3cid:' . $value['cid'] .'\3';
+                $rep[] = 'url(\1cid:' . $value['cid'] . '\2)';
                 $this->_htmlbody = preg_replace($regex, $rep,
                                        $this->_htmlbody
                                    );
