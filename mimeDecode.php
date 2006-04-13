@@ -62,7 +62,6 @@ require_once 'PEAR.php';
 * print_r($structure);
 *
 * TODO:
-*  o Implement multipart/appledouble
 *  o UTF8: ???
 
 		> 4. We have also found a solution for decoding the UTF-8 
@@ -284,6 +283,7 @@ class Mail_mimeDecode extends PEAR
                     break;
 
                 case 'multipart/parallel':
+                case 'multipart/appledouble': // Appledouble mail
                 case 'multipart/report': // RFC1892
                 case 'multipart/signed': // PGP
                 case 'multipart/digest':
