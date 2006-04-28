@@ -752,16 +752,56 @@ class Mail_mime
     function _encodeHeaders($input)
     {
         foreach ($input as $hdr_name => $hdr_value) {
-            preg_match_all('/(\w*[\x80-\xFF]+\w*)/', $hdr_value, $matches);
-            foreach ($matches[1] as $value) {
-                $replacement = preg_replace('/([\x80-\xFF])/e',
-                                            '"=" .
-                                            strtoupper(dechex(ord("\1")))',
-                                            $value);
-                $hdr_value = str_replace($value, '=?' .
-                                         $this->_build_params['head_charset'] .
-                                         '?Q?' . $replacement . '?=',
-                                         $hdr_value);
+            if (preg_match('#[\x80-\xFF]{1}#', $hdr_value)){
+                //This header contains non ASCII chars and should be encoded.
+
+                //Generate the header using the specified params and dynamicly 
+                //determine the maximum length of such strings.
+                //75 is the value specified in the RFC. The -2 is there so 
+                //the later regexp doesn't break any of the translated chars.
+                $prefix = '=?' . $this->_build_params['head_charset'] . '?Q?';
+                $suffix = '?=';
+                $maxLength = 75 - strlen($prefix . $suffix) - 2;
+                
+                //Replace all special characters used by the encoder.
+                $search  = array("=",   "_",   "?",   " ");
+                $replace = array("=3D", "=5F", "=3F", "_");
+                $hdr_value = str_replace($search, $replace, $hdr_value);
+                
+                //Replace all extended characters (\x80-xFF) with their
+                //ASCII values.
+                $hdr_value = preg_replace(
+                    '#([\x80-\xFF])#e',
+                    '"=" . strtoupper(dechex(ord("\1")))',
+                    $hdr_value
+                );
+                
+                $output = "";
+                while ($hdr_value) {
+                    //Split translated string at every $maxLength
+                    //But make sure not to break any translated chars.
+                    $reg = "|.{0,$maxLength}[^\=][^\=]|";
+                    $found = preg_match($reg, $hdr_value, $matches);
+
+                    //Save the found part and encapsulate it in the
+                    //prefix & suffix. Then remove the part from the
+                    //$hdr_value variable.
+                    if ($found){
+                        $part = $matches[0];
+                        $hdr_value = substr($hdr_value, strlen($matches[0]));
+                    }else{
+                        $part = $hdr_value;
+                        $hdr_value = "";
+                    }
+                    
+                    //RFC 2047 specifies that any split header should be seperated
+                    //by a CRLF SPACE. 
+                    if ($output){
+                        $output .=  "\r\n ";
+                    }
+                    $output .= $prefix . $part . $suffix;
+                }
+                $hdr_value = $output;
             }
             $input[$hdr_name] = $hdr_value;
         }
