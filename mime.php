@@ -114,6 +114,7 @@ class Mail_mime
     {
         $this->_setEOL($crlf);
         $this->_build_params = array(
+                                     'head_encoding' => 'quoted-printable',
                                      'text_encoding' => '7bit',
                                      'html_encoding' => 'quoted-printable',
                                      '7bit_wrap'     => 998,
@@ -500,9 +501,14 @@ class Mail_mime
      *
      * @param  array  Build parameters that change the way the email
      *                is built. Should be associative. Can contain:
+     *                head_encoding  -  What encoding to use for the headers. 
+     *                                  Options: quoted-printable or base64
+     *                                  Default is quoted-printable
      *                text_encoding  -  What encoding to use for plain text
+     *                                  Options: 7bit, 8bit, base64, or quoted-printable
      *                                  Default is 7bit
      *                html_encoding  -  What encoding to use for html
+     *                                  Options: 7bit, 8bit, base64, or quoted-printable
      *                                  Default is quoted-printable
      *                7bit_wrap      -  Number of characters before text is
      *                                  wrapped in 7bit encoding
@@ -745,8 +751,8 @@ class Mail_mime
     /**
      * Encodes a header as per RFC2047
      *
-     * @param  string  $input The header data to encode
-     * @return string  Encoded data
+     * @param  array $input The header data to encode
+     * @return array Encoded data
      * @access private
      */
     function _encodeHeaders($input)
@@ -754,33 +760,58 @@ class Mail_mime
         foreach ($input as $hdr_name => $hdr_value) {
             if (preg_match('#[\x80-\xFF]{1}#', $hdr_value)){
                 //This header contains non ASCII chars and should be encoded.
+                switch ($this->_build_params['head_encoding']) {
+                case 'base64':
+                    //Base64 encoding has been selected.
+                    
+                    //Generate the header using the specified params and dynamicly 
+                    //determine the maximum length of such strings.
+                    //75 is the value specified in the RFC. The -2 is there so 
+                    //the later regexp doesn't break any of the translated chars.
+                    $prefix = '=?' . $this->_build_params['head_charset'] . '?B?';
+                    $suffix = '?=';
+                    $maxLength = 75 - strlen($prefix . $suffix) - 2;
+                    
+                    //Base64 encode the entire string
+                    $hdr_value = base64_encode($hdr_value);
 
-                //Generate the header using the specified params and dynamicly 
-                //determine the maximum length of such strings.
-                //75 is the value specified in the RFC. The -2 is there so 
-                //the later regexp doesn't break any of the translated chars.
-                $prefix = '=?' . $this->_build_params['head_charset'] . '?Q?';
-                $suffix = '?=';
-                $maxLength = 75 - strlen($prefix . $suffix) - 2;
-                
-                //Replace all special characters used by the encoder.
-                $search  = array("=",   "_",   "?",   " ");
-                $replace = array("=3D", "=5F", "=3F", "_");
-                $hdr_value = str_replace($search, $replace, $hdr_value);
-                
-                //Replace all extended characters (\x80-xFF) with their
-                //ASCII values.
-                $hdr_value = preg_replace(
-                    '#([\x80-\xFF])#e',
-                    '"=" . strtoupper(dechex(ord("\1")))',
-                    $hdr_value
-                );
-                
+                    //This regexp will break base64-encoded text at every 
+                    //$maxLength but will not break any encoded letters.
+                    $reg = "|.{0,$maxLength}[^\=][^\=]|";
+                    break;
+                case 'quoted-printable':
+                default:
+                    //quoted-printable encoding has been selected
+                    
+                    //Generate the header using the specified params and dynamicly 
+                    //determine the maximum length of such strings.
+                    //75 is the value specified in the RFC. The -2 is there so 
+                    //the later regexp doesn't break any of the translated chars.
+                    $prefix = '=?' . $this->_build_params['head_charset'] . '?Q?';
+                    $suffix = '?=';
+                    $maxLength = 75 - strlen($prefix . $suffix) - 2;
+                    
+                    //Replace all special characters used by the encoder.
+                    $search  = array("=",   "_",   "?",   " ");
+                    $replace = array("=3D", "=5F", "=3F", "_");
+                    $hdr_value = str_replace($search, $replace, $hdr_value);
+                    
+                    //Replace all extended characters (\x80-xFF) with their
+                    //ASCII values.
+                    $hdr_value = preg_replace(
+                        '#([\x80-\xFF])#e',
+                        '"=" . strtoupper(dechex(ord("\1")))',
+                        $hdr_value
+                    );
+                    //This regexp will break QP-encoded text at every $maxLength
+                    //but will not break any encoded letters.
+                    $reg = "|(.{0,$maxLength})[^\=]|";
+                    break;
+                }
                 $output = "";
                 while ($hdr_value) {
                     //Split translated string at every $maxLength
                     //But make sure not to break any translated chars.
-                    $reg = "|.{0,$maxLength}[^\=][^\=]|";
                     $found = preg_match($reg, $hdr_value, $matches);
 
                     //Save the found part and encapsulate it in the
