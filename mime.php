@@ -248,13 +248,15 @@ class Mail_mime
      * @param  string  $disposition The content-disposition of this file
      *                              Defaults to attachment.
      *                              Possible values: attachment, inline.
+     * @param  string  $charset     The character set used in the filename
+     *                              of this attachment.
      * @return mixed true on success or PEAR_Error object
      * @access public
      */
     function addAttachment($file, $c_type = 'application/octet-stream',
                            $name = '', $isfilename = true,
                            $encoding = 'base64',
-                           $disposition = 'attachment')
+                           $disposition = 'attachment', $charset = '')
     {
         $filedata = ($isfilename === true) ? $this->_file2str($file)
                                            : $file;
@@ -280,6 +282,7 @@ class Mail_mime
                                 'name'        => $filename,
                                 'c_type'      => $c_type,
                                 'encoding'    => $encoding,
+                                'charset'     => $charset,
                                 'disposition' => $disposition
                                );
         return true;
@@ -455,12 +458,20 @@ class Mail_mime
      */
     function &_addAttachmentPart(&$obj, $value)
     {
+        $params['dfilename']    = $value['name'];
+        $params['encoding']     = $value['encoding'];
+        if ($value['disposition'] != "inline") {
+            $fname = array("fname" => $value['name']);
+            $fname_enc = $this->_encodeHeaders($fname);
+            $params['dfilename'] = $fname_enc['fname'];
+        }
+        if ($value['charset']) {
+            $params['charset'] = $value['charset'];
+        }
         $params['content_type'] = $value['c_type'] . '; ' .
                                   'name="' . $params['dfilename'] . '"';
-        $params['encoding']     = $value['encoding'];
         $params['disposition']  = isset($value['disposition']) ? 
                                   $value['disposition'] : 'attachment';
-        $params['dfilename']    = $value['name'];
         $ret = $obj->addSubpart($value['body'], $params);
         return $ret;
     }
@@ -746,6 +757,25 @@ class Mail_mime
         } else {
             $this->_headers['Bcc'] = $email;
         }
+    }
+
+    /**
+     * Since the PHP send function requires you to specifiy 
+     * recipients (To: header) separately from the other
+     * headers, the To: header is not properly encoded.
+     * To fix this, you can use this public method to 
+     * encode your recipients before sending to the send
+     * function
+     *
+     * @param  string $recipients A comma-delimited list of recipients
+     * @return string Encoded data
+     * @access public
+     */
+    function encodeRecipients($recipients)
+    {
+        $input = array("To" => $recipients);
+        $retval = $this->_encodeHeaders($input);
+        return $retval["To"] ;
     }
 
     /**
