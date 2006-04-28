@@ -433,7 +433,7 @@ class Mail_mime
     function &_addHtmlImagePart(&$obj, $value)
     {
         $params['content_type'] = $value['c_type'] . '; ' .
-                                  'name="' . $params['dfilename'] . '"';
+                                  'name="' . $value['name'] . '"';
         $params['encoding']     = 'base64';
         $params['disposition']  = 'inline';
         $params['dfilename']    = $value['name'];
