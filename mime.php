@@ -788,7 +788,18 @@ class Mail_mime
     function _encodeHeaders($input)
     {
         foreach ($input as $hdr_name => $hdr_value) {
-            if (preg_match('#[\x80-\xFF]{1}#', $hdr_value)){
+            if (function_exists('iconv_mime_encode') && preg_match('#[\x80-\xFF]{1}#', $hdr_value)){
+                $imePref = array();
+                if ($this->_build_params['head_encoding'] == 'base64'){
+                    $imePrefs['scheme'] = 'B';
+                }else{
+                    $imePrefs['scheme'] = 'Q';
+                }
+                $imePrefs['input-charset']  = $this->_build_params['head_charset'];
+                $imePrefs['output-charset'] = $this->_build_params['head_charset'];
+                $hdr_value = iconv_mime_encode($hdr_name, $hdr_value, $imePrefs);
+                $hdr_value = preg_replace("#^{$hdr_name}\:\ #", "", $hdr_value);
+            }elseif (preg_match('#[\x80-\xFF]{1}#', $hdr_value)){
                 //This header contains non ASCII chars and should be encoded.
                 switch ($this->_build_params['head_encoding']) {
                 case 'base64':
@@ -801,13 +812,15 @@ class Mail_mime
                     $prefix = '=?' . $this->_build_params['head_charset'] . '?B?';
                     $suffix = '?=';
                     $maxLength = 75 - strlen($prefix . $suffix) - 2;
+                    $maxLength1stLine = $maxLength - strlen($hdr_name);
                     
                     //Base64 encode the entire string
                     $hdr_value = base64_encode($hdr_value);
 
                     //This regexp will break base64-encoded text at every 
                     //$maxLength but will not break any encoded letters.
-                    $reg = "|.{0,$maxLength}[^\=][^\=]|";
+                    $reg1st = "|.{0,$maxLength1stLine}[^\=][^\=]|";
+                    $reg2nd = "|.{0,$maxLength}[^\=][^\=]|";
                     break;
                 case 'quoted-printable':
                 default:
@@ -820,6 +833,7 @@ class Mail_mime
                     $prefix = '=?' . $this->_build_params['head_charset'] . '?Q?';
                     $suffix = '?=';
                     $maxLength = 75 - strlen($prefix . $suffix) - 2;
+                    $maxLength1stLine = $maxLength - strlen($hdr_name);
                     
                     //Replace all special characters used by the encoder.
                     $search  = array("=",   "_",   "?",   " ");
@@ -835,14 +849,21 @@ class Mail_mime
                     );
                     //This regexp will break QP-encoded text at every $maxLength
                     //but will not break any encoded letters.
-                    $reg = "|(.{0,$maxLength})[^\=]|";
+                    $reg1st = "|(.{0,$maxLength})[^\=]|";
+                    $reg2nd = "|(.{0,$maxLength})[^\=]|";
                     break;
                 }
+                //Begin with the regexp for the first line.
+                $reg = $reg1st;
                 $output = "";
                 while ($hdr_value) {
                     //Split translated string at every $maxLength
                     //But make sure not to break any translated chars.
                     $found = preg_match($reg, $hdr_value, $matches);
+                    
+                    //After this first line, we need to use a different
+                    //regexp for the first line.
+                    $reg = $reg2nd;
 
                     //Save the found part and encapsulate it in the
                     //prefix & suffix. Then remove the part from the
