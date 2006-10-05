@@ -25,13 +25,6 @@
       </maintainer>
 
       <maintainer>
-       <user>sean</user>
-       <name>Sean Coates</name>
-       <email>sean@php.net</email>
-       <role>lead</role>
-      </maintainer>
-
-      <maintainer>
         <user>richard</user>
         <name>Richard Heyes</name>
         <email>richard@php.net</email>
