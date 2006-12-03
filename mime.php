@@ -1,112 +1,176 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
-// +-----------------------------------------------------------------------+
-// | Copyright (c) 2002-2003  Richard Heyes                                |
-// | Copyright (c) 2003-2005  The PHP Group                                |
-// | All rights reserved.                                                  |
-// |                                                                       |
-// | Redistribution and use in source and binary forms, with or without    |
-// | modification, are permitted provided that the following conditions    |
-// | are met:                                                              |
-// |                                                                       |
-// | o Redistributions of source code must retain the above copyright      |
-// |   notice, this list of conditions and the following disclaimer.       |
-// | o Redistributions in binary form must reproduce the above copyright   |
-// |   notice, this list of conditions and the following disclaimer in the |
-// |   documentation and/or other materials provided with the distribution.|
-// | o The names of the authors may not be used to endorse or promote      |
-// |   products derived from this software without specific prior written  |
-// |   permission.                                                         |
-// |                                                                       |
-// | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS   |
-// | "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT     |
-// | LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR |
-// | A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT  |
-// | OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, |
-// | SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT      |
-// | LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, |
-// | DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY |
-// | THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT   |
-// | (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE |
-// | OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  |
-// |                                                                       |
-// +-----------------------------------------------------------------------+
-// | Author: Richard Heyes <richard@phpguru.org>                           |
-// |         Tomas V.V.Cox <cox@idecnet.com> (port to PEAR)                |
-// +-----------------------------------------------------------------------+
-//
-// $Id$
+/**
+ * The Mail_Mime class is used to create MIME E-mail messages
+ *
+ * The Mail_Mime class provides an OO interface to create MIME
+ * enabled email messages. This way you can create emails that
+ * contain plain-text bodies, HTML bodies, attachments, inline
+ * images and specific headers.
+ *
+ * Compatible with PHP versions 4 and 5
+ *
+ * LICENSE: This LICENSE is in the BSD license style.
+ * Copyright (c) 2002-2003, Richard Heyes <richard@phpguru.org>
+ * Copyright (c) 2003-2006, PEAR <pear-group@php.net>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or
+ * without modification, are permitted provided that the following
+ * conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ * - Neither the name of the authors, nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this 
+ *   software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @category   Mail
+ * @package    Mail_Mime
+ * @author     Richard Heyes  <richard@phpguru.org>
+ * @author     Tomas V.V. Cox <cox@idecnet.com>
+ * @author     Cipriano Groenendal <cipri@php.net>
+ * @author     Sean Coates <sean@php.net>
+ * @copyright  2003-2006 PEAR <pear-group@php.net>
+ * @license    http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @version    CVS: $Id$
+ * @link       http://pear.php.net/package/Mail_mime
+ * @notes      This class is based on HTML Mime Mail class from
+ *             Richard Heyes <richard@phpguru.org> which was based also
+ *             in the mime_mail.class by Tobias Ratschiller <tobias@dnet.it>
+ *             and Sascha Schumann <sascha@schumann.cx>
+ */
 
-require_once('PEAR.php');
-require_once('Mail/mimePart.php');
 
 /**
- * Mime mail composer class. Can handle: text and html bodies, embedded html
- * images and attachments.
- * Documentation and examples of this class are avaible here:
- * http://pear.php.net/manual/
+ * require PEAR
  *
- * @notes This class is based on HTML Mime Mail class from
- *   Richard Heyes <richard@phpguru.org> which was based also
- *   in the mime_mail.class by Tobias Ratschiller <tobias@dnet.it> and
- *   Sascha Schumann <sascha@schumann.cx>
+ * This package depends on PEAR to raise errors.
+ */
+require_once('PEAR.php');
+
+/**
+ * require Mail_mimePart
  *
- * @author   Richard Heyes <richard.heyes@heyes-computing.net>
- * @author   Tomas V.V.Cox <cox@idecnet.com>
- * @package  Mail
- * @access   public
+ * Mail_mimePart contains the code required to
+ * create all the different parts a mail can
+ * consist of.
+ */
+require_once('Mail/mimePart.php');
+
+
+/**
+ * The Mail_Mime class provides an OO interface to create MIME
+ * enabled email messages. This way you can create emails that
+ * contain plain-text bodies, HTML bodies, attachments, inline
+ * images and specific headers.
+ *
+ * @category   Mail
+ * @package    Mail_Mime
+ * @author     Richard Heyes  <richard@phpguru.org>
+ * @author     Tomas V.V. Cox <cox@idecnet.com>
+ * @author     Cipriano Groenendal <cipri@php.net>
+ * @author     Sean Coates <sean@php.net>
+ * @copyright  2003-2006 PEAR <pear-group@php.net>
+ * @license    http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @version    Release: @package_version@
+ * @link       http://pear.php.net/package/Mail_mime
  */
 class Mail_mime
 {
     /**
      * Contains the plain text part of the email
+     *
      * @var string
+     * @access private
      */
     var $_txtbody;
+
     /**
      * Contains the html part of the email
+     *
      * @var string
+     * @access private
      */
     var $_htmlbody;
+
     /**
      * contains the mime encoded text
+     *
      * @var string
+     * @access private
      */
     var $_mime;
+
     /**
      * contains the multipart content
+     *
      * @var string
+     * @access private
      */
     var $_multipart;
+
     /**
      * list of the attached images
+     *
      * @var array
+     * @access private
      */
     var $_html_images = array();
+
     /**
      * list of the attachements
+     *
      * @var array
+     * @access private
      */
     var $_parts = array();
+
     /**
      * Build parameters
+     *
      * @var array
+     * @access private
      */
     var $_build_params = array();
+
     /**
      * Headers for the mail
+     *
      * @var array
+     * @access private
      */
     var $_headers = array();
+
     /**
      * End Of Line sequence (for serialize)
+     *
      * @var string
+     * @access private
      */
     var $_eol;
 
 
     /**
-     * Constructor function
+     * Constructor function.
+     *
+     * @param string $crlf  what type of linebreak to use.
+     *                       Defaults to "\r\n"
+     * @return void
      *
      * @access public
      */
@@ -125,7 +189,7 @@ class Mail_mime
     }
 
     /**
-     * Wakeup (unserialize) - re-sets EOL constant
+     * wakeup function called by unserialize. It re-sets the EOL constant
      *
      * @access private
      */
@@ -134,6 +198,7 @@ class Mail_mime
         $this->_setEOL($this->_eol);
     }
 
+
     /**
      * Accessor function to set the body text. Body text is used if
      * it's not an html mail being sent or else is used to fill the
@@ -141,12 +206,12 @@ class Mail_mime
      * html should show.
      *
      * @param  string  $data   Either a string or
-     *                         the file name with the contents
+     *                          the file name with the contents
      * @param  bool    $isfile If true the first param should be treated
-     *                         as a file name, else as a string (default)
+     *                          as a file name, else as a string (default)
      * @param  bool    $append If true the text or file is appended to
-     *                         the existing body, else the old body is
-     *                         overwritten
+     *                          the existing body, else the old body is
+     *                          overwritten
      * @return mixed   true on success or PEAR_Error object
      * @access public
      */
@@ -173,13 +238,13 @@ class Mail_mime
     }
 
     /**
-     * Adds a html part to the mail
+     * Adds a html part to the mail.
      *
-     * @param  string  $data   Either a string or the file name with the
-     *                         contents
-     * @param  bool    $isfile If true the first param should be treated
-     *                         as a file name, else as a string (default)
-     * @return mixed   true on success or PEAR_Error object
+     * @param  string  $data   either a string or the file name with the
+     *                          contents
+     * @param  bool    $isfile a flag that determines whether $data is a
+     *                          filename, or a string(false, default)
+     * @return bool    true on success
      * @access public
      */
     function setHTMLBody($data, $isfile = false)
@@ -200,21 +265,21 @@ class Mail_mime
     /**
      * Adds an image to the list of embedded images.
      *
-     * @param  string  $file       The image file name OR image data itself
-     * @param  string  $c_type     The content type
-     * @param  string  $name       The filename of the image.
-     *                             Only use if $file is the image data
-     * @param  bool    $isfilename Whether $file is a filename or not
-     *                             Defaults to true
-     * @return mixed   true on success or PEAR_Error object
+     * @param  string  $file       the image file name OR image data itself
+     * @param  string  $c_type     the content type
+     * @param  string  $name       the filename of the image.
+     *                              Only use if $file is the image data.
+     * @param  bool    $isfile     whether $file is a filename or not.
+     *                              Defaults to true
+     * @return bool                true on success
      * @access public
      */
     function addHTMLImage($file, $c_type='application/octet-stream',
-                          $name = '', $isfilename = true)
+                          $name = '', $isfile = true)
     {
-        $filedata = ($isfilename === true) ? $this->_file2str($file)
+        $filedata = ($isfile === true) ? $this->_file2str($file)
                                            : $file;
-        if ($isfilename === true) {
+        if ($isfile === true) {
             $filename = ($name == '' ? $file : $name);
         } else {
             $filename = $name;
@@ -239,7 +304,7 @@ class Mail_mime
      * @param  string  $c_type      The content type
      * @param  string  $name        The filename of the attachment
      *                              Only use if $file is the contents
-     * @param  bool    $isFilename  Whether $file is a filename or not
+     * @param  bool    $isfile      Whether $file is a filename or not
      *                              Defaults to true
      * @param  string  $encoding    The type of encoding to use.
      *                              Defaults to base64.
@@ -254,13 +319,13 @@ class Mail_mime
      * @access public
      */
     function addAttachment($file, $c_type = 'application/octet-stream',
-                           $name = '', $isfilename = true,
+                           $name = '', $isfile = true,
                            $encoding = 'base64',
                            $disposition = 'attachment', $charset = '')
     {
-        $filedata = ($isfilename === true) ? $this->_file2str($file)
+        $filedata = ($isfile === true) ? $this->_file2str($file)
                                            : $file;
-        if ($isfilename === true) {
+        if ($isfile === true) {
             // Force the name the user supplied, otherwise use $file
             $filename = (!empty($name)) ? $name : $file;
         } else {
