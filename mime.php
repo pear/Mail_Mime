@@ -872,12 +872,14 @@ class Mail_mime
                     
                     //Generate the header using the specified params and dynamicly 
                     //determine the maximum length of such strings.
-                    //75 is the value specified in the RFC. The -2 is there so 
+                    //75 is the value specified in the RFC. The first -2 is there so 
                     //the later regexp doesn't break any of the translated chars.
+                    //The -2 on the first line-regexp is to compensate for the ": "
+                    //between the header-name and the header value
                     $prefix = '=?' . $this->_build_params['head_charset'] . '?B?';
                     $suffix = '?=';
                     $maxLength = 75 - strlen($prefix . $suffix) - 2;
-                    $maxLength1stLine = $maxLength - strlen($hdr_name);
+                    $maxLength1stLine = $maxLength - strlen($hdr_name) - 2;
                     
                     //Base64 encode the entire string
                     $hdr_value = base64_encode($hdr_value);
@@ -895,10 +897,12 @@ class Mail_mime
                     //determine the maximum length of such strings.
                     //75 is the value specified in the RFC. The -2 is there so 
                     //the later regexp doesn't break any of the translated chars.
+                    //The -2 on the first line-regexp is to compensate for the ": "
+                    //between the header-name and the header value
                     $prefix = '=?' . $this->_build_params['head_charset'] . '?Q?';
                     $suffix = '?=';
                     $maxLength = 75 - strlen($prefix . $suffix) - 2;
-                    $maxLength1stLine = $maxLength - strlen($hdr_name);
+                    $maxLength1stLine = $maxLength - strlen($hdr_name) - 2;
                     
                     //Replace all special characters used by the encoder.
                     $search  = array("=",   "_",   "?",   " ");
@@ -914,12 +918,16 @@ class Mail_mime
                     );
                     //This regexp will break QP-encoded text at every $maxLength
                     //but will not break any encoded letters.
-                    $reg1st = "|(.{0,$maxLength})[^\=]|";
+                    $reg1st = "|(.{0,$maxLength1stLine})[^\=]|";
                     $reg2nd = "|(.{0,$maxLength})[^\=]|";
                     break;
                 }
                 //Begin with the regexp for the first line.
                 $reg = $reg1st;
+                //Prevent lins that are just way to short;
+                if ($maxLength1stLine >1){
+                    $reg = $reg2nd;
+                }
                 $output = "";
                 while ($hdr_value) {
                     //Split translated string at every $maxLength
