@@ -289,7 +289,7 @@ class Mail_mimePart {
     }
 
     /**
-     * quoteadPrintableEncode()
+     * quotedPrintableEncode()
      *
      * Encodes data to quoted-printable standard.
      *
