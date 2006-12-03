@@ -973,4 +973,3 @@ class Mail_mime
     
 
 } // End of class
-?>
