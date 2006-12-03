@@ -318,11 +318,12 @@ class Mail_mimePart {
 
         while(list(, $line) = each($lines)){
 
-            $linlen     = strlen($line);
+            $line    = preg_split('||', $line, -1, PREG_SPLIT_NO_EMPTY);
+            $linlen     = count($line);
             $newline = '';
 
             for ($i = 0; $i < $linlen; $i++) {
-                $char = substr($line, $i, 1);
+                $char = $line[$i];
                 $dec  = ord($char);
 
                 if (($dec == 32) AND ($i == ($linlen - 1))){    // convert space at eol only
