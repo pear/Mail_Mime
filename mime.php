@@ -527,7 +527,7 @@ class Mail_mime
         $params['encoding']     = $value['encoding'];
         if ($value['disposition'] != "inline") {
             $fname = array("fname" => $value['name']);
-            $fname_enc = $this->_encodeHeaders($fname);
+            $fname_enc = $this->_encodeHeaders($fname, array('head_charset' => $value['charset'] ? $value['charset'] : 'iso-8859-1'));
             $params['dfilename'] = $fname_enc['fname'];
         }
         if ($value['charset']) {
@@ -846,27 +846,34 @@ class Mail_mime
     /**
      * Encodes a header as per RFC2047
      *
-     * @param  array $input The header data to encode
+     * @param  array $input  The header data to encode
+     * @param  array $params Extra build parameters
      * @return array Encoded data
      * @access private
      */
-    function _encodeHeaders($input)
+    function _encodeHeaders($input, $params = array())
     {
+        
+        $build_params = $this->_build_params;
+        while (list($key, $value) = each($params)) {
+            $build_params[$key] = $value;
+        }
+        
         foreach ($input as $hdr_name => $hdr_value) {
             if (function_exists('iconv_mime_encode') && preg_match('#[\x80-\xFF]{1}#', $hdr_value)){
                 $imePref = array();
-                if ($this->_build_params['head_encoding'] == 'base64'){
+                if ($build_params['head_encoding'] == 'base64'){
                     $imePrefs['scheme'] = 'B';
                 }else{
                     $imePrefs['scheme'] = 'Q';
                 }
-                $imePrefs['input-charset']  = $this->_build_params['head_charset'];
-                $imePrefs['output-charset'] = $this->_build_params['head_charset'];
+                $imePrefs['input-charset']  = $build_params['head_charset'];
+                $imePrefs['output-charset'] = $build_params['head_charset'];
                 $hdr_value = iconv_mime_encode($hdr_name, $hdr_value, $imePrefs);
                 $hdr_value = preg_replace("#^{$hdr_name}\:\ #", "", $hdr_value);
             }elseif (preg_match('#[\x80-\xFF]{1}#', $hdr_value)){
                 //This header contains non ASCII chars and should be encoded.
-                switch ($this->_build_params['head_encoding']) {
+                switch ($build_params['head_encoding']) {
                 case 'base64':
                     //Base64 encoding has been selected.
                     
@@ -876,7 +883,7 @@ class Mail_mime
                     //the later regexp doesn't break any of the translated chars.
                     //The -2 on the first line-regexp is to compensate for the ": "
                     //between the header-name and the header value
-                    $prefix = '=?' . $this->_build_params['head_charset'] . '?B?';
+                    $prefix = '=?' . $build_params['head_charset'] . '?B?';
                     $suffix = '?=';
                     $maxLength = 75 - strlen($prefix . $suffix) - 2;
                     $maxLength1stLine = $maxLength - strlen($hdr_name) - 2;
@@ -899,7 +906,7 @@ class Mail_mime
                     //the later regexp doesn't break any of the translated chars.
                     //The -2 on the first line-regexp is to compensate for the ": "
                     //between the header-name and the header value
-                    $prefix = '=?' . $this->_build_params['head_charset'] . '?Q?';
+                    $prefix = '=?' . $build_params['head_charset'] . '?Q?';
                     $suffix = '?=';
                     $maxLength = 75 - strlen($prefix . $suffix) - 2;
                     $maxLength1stLine = $maxLength - strlen($hdr_name) - 2;
