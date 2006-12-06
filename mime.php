@@ -868,6 +868,7 @@ class Mail_mime
                     //whitespace needs to be handled with another string, or it
                     //won't show between encoded strings. Prepend this to the next item.
                     $previous .= $hdr_val;
+                    continue;
                 }else{
                     $hdr_val = $previous . $hdr_val;
                     $previous = "";
@@ -979,7 +980,6 @@ class Mail_mime
                 }
                 $hdr_value_out .= $hdr_val;
             }
-            print($hdr_value_out . "\n");
             $input[$hdr_name] = $hdr_value_out;
         }
 
