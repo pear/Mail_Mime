@@ -325,6 +325,10 @@ class Mail_mimePart {
                     ; // Do nothing if a tab.
                 } elseif(($dec == 61) OR ($dec < 32 ) OR ($dec > 126)) {
                     $char = $escape . strtoupper(sprintf('%02s', dechex($dec)));
+                } elseif (($dec == 46) AND ($newline == '')) { 
+                    //Bug #9722: convert full-stop at bol
+                    //Some Windows servers need this, won't break anything (cipri)
+                    $char = '=2E';
                 }
 
                 if ((strlen($newline) + strlen($char)) >= $line_max) {        // MAIL_MIMEPART_CRLF is not counted
