@@ -925,8 +925,9 @@ class Mail_mime
                         $maxLength1stLine = $maxLength - strlen($hdr_name) - 2;
                         
                         //Replace all special characters used by the encoder.
-                        $search  = array("=",   "_",   "?",   " ");
-                        $replace = array("=3D", "=5F", "=3F", "_");
+                        //Bug #10306, Bug #10298: Double quotes misencoded in headers.
+                        $search  = array('=',   '_',   '?',   '"',   ' ');
+                        $replace = array('=3D', '=5F', '=3F', '=22', '_');
                         $hdr_val = str_replace($search, $replace, $hdr_val);
                         
                         //Replace all extended characters (\x80-xFF) with their
