@@ -884,7 +884,7 @@ class Mail_mime
                     $imePrefs['output-charset'] = $build_params['head_charset'];
                     $hdr_val = iconv_mime_encode($hdr_name, $hdr_val, $imePrefs);
                     $hdr_val = preg_replace("#^{$hdr_name}\:\ #", "", $hdr_val);
-                }elseif (preg_match('#[\x80-\xFF]{1}#', $hdr_val)){
+                }elseif (preg_match('#([\x80-\xFF]|"){1}#', $hdr_val)){
                     //This header contains non ASCII chars and should be encoded.
                     switch ($build_params['head_encoding']) {
                     case 'base64':
