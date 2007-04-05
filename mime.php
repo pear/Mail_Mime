@@ -327,11 +327,11 @@ class Mail_mime
                                            : $file;
         if ($isfile === true) {
             // Force the name the user supplied, otherwise use $file
-            $filename = (!empty($name)) ? $name : $file;
+            $filename = (strlen($name)) ? $name : $file;
         } else {
             $filename = $name;
         }
-        if (empty($filename)) {
+        if (!strlen($filename)) {
             $err = PEAR::raiseError(
               "The supplied filename for the attachment can't be empty"
             );
@@ -606,7 +606,7 @@ class Mail_mime
             }
         }
 
-        if (!empty($this->_html_images) AND isset($this->_htmlbody)) {
+        if (count($this->_html_images) AND isset($this->_htmlbody)) {
             foreach ($this->_html_images as $key => $value) {
                 $regex = array();
                 $regex[] = '#(\s)((?i)src|background|href(?-i))\s*=\s*(["\']?)' .
@@ -624,10 +624,10 @@ class Mail_mime
         }
 
         $null        = null;
-        $attachments = !empty($this->_parts)                ? true : false;
-        $html_images = !empty($this->_html_images)          ? true : false;
-        $html        = !empty($this->_htmlbody)             ? true : false;
-        $text        = (!$html AND !empty($this->_txtbody)) ? true : false;
+        $attachments = count($this->_parts)                 ? true : false;
+        $html_images = count($this->_html_images)           ? true : false;
+        $html        = strlen($this->_htmlbody)             ? true : false;
+        $text        = (!$html AND strlen($this->_txtbody)) ? true : false;
 
         switch (true) {
         case $text AND !$attachments:
@@ -660,17 +660,16 @@ class Mail_mime
             break;
 
         case $html AND !$attachments AND $html_images:
+            $message =& $this->_addRelatedPart($null);
             if (isset($this->_txtbody)) {
-                $message =& $this->_addAlternativePart($null);
-                $this->_addTextPart($message, $this->_txtbody);
-                $related =& $this->_addRelatedPart($message);
+                $alt =& $this->_addAlternativePart($message);
+                $this->_addTextPart($alt, $this->_txtbody);
+                $this->_addHtmlPart($alt);
             } else {
-                $message =& $this->_addRelatedPart($null);
-                $related =& $message;
+                $this->_addHtmlPart($message);
             }
-            $this->_addHtmlPart($related);
             for ($i = 0; $i < count($this->_html_images); $i++) {
-                $this->_addHtmlImagePart($related, $this->_html_images[$i]);
+                $this->_addHtmlImagePart($message, $this->_html_images[$i]);
             }
             break;
 
