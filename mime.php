@@ -872,6 +872,24 @@ class Mail_mime
                     $hdr_val = $previous . $hdr_val;
                     $previous = "";
                 }
+                //Fix for Bug #10298, Ota Mares <om@viazenetti.de>
+                //Check if there is a double quote at beginning or end of the string to 
+                //prevent that an open or closing quote gets ignored because its encapsuled
+                //by an encoding prefix or suffix. 
+                
+                //Remove the double quote and set the specific prefix or suffix variable
+                //so later we can concat the encoded string and the double quotes back 
+                //together to get the intended string.
+                $quotePrefix = $quoteSuffix = '';
+                if ($hdr_val{0} == '"') {
+                    $hdr_val = substr($hdr_val, 1);
+                    $quotePrefix = '"';
+                }
+                if ($hdr_val{strlen($hdr_val)-1} == '"') {
+                    $hdr_val = substr($hdr_val, 0, -1);
+                    $quoteSuffix = '"';
+                }
+
                 if (function_exists('iconv_mime_encode') && preg_match('#[\x80-\xFF]{1}#', $hdr_val)){
                     $imePref = array();
                     if ($build_params['head_encoding'] == 'base64'){
@@ -883,7 +901,7 @@ class Mail_mime
                     $imePrefs['output-charset'] = $build_params['head_charset'];
                     $hdr_val = iconv_mime_encode($hdr_name, $hdr_val, $imePrefs);
                     $hdr_val = preg_replace("#^{$hdr_name}\:\ #", "", $hdr_val);
-                }elseif (preg_match('#([\x80-\xFF]|"){1}#', $hdr_val)){
+                }elseif (preg_match('#([\x80-\xFF]){1}#', $hdr_val)){
                     //This header contains non ASCII chars and should be encoded.
                     switch ($build_params['head_encoding']) {
                     case 'base64':
@@ -924,9 +942,8 @@ class Mail_mime
                         $maxLength1stLine = $maxLength - strlen($hdr_name) - 2;
                         
                         //Replace all special characters used by the encoder.
-                        //Bug #10306, Bug #10298: Double quotes misencoded in headers.
-                        $search  = array('=',   '_',   '?',   '"',   ' ');
-                        $replace = array('=3D', '=5F', '=3F', '=22', '_');
+                        $search  = array('=',   '_',   '?',   ' ');
+                        $replace = array('=3D', '=5F', '=3F', '_');
                         $hdr_val = str_replace($search, $replace, $hdr_val);
                         
                         //Replace all extended characters (\x80-xFF) with their
@@ -978,6 +995,9 @@ class Mail_mime
                     }
                     $hdr_val = $output;
                 }
+                //Fix for Bug #10298, Ota Mares <om@viazenetti.de>
+                //Concat the double quotes if existant and encoded string together
+                $hdr_val = $quotePrefix . $hdr_val . $quoteSuffix;
                 $hdr_value_out .= $hdr_val;
             }
             $input[$hdr_name] = $hdr_value_out;
