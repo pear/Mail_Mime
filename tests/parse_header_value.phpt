@@ -34,7 +34,10 @@ $params = array(
     'decode_headers' => TRUE
 );
 $Decoded = $Decoder->decode($params);
-print_r($Decoded->parts[1]->ctype_parameters);
+$decodedParts = $Decoded->parts[1]->ctype_parameters;
+//Bug #4057: Content-type params now have a name attribute.
+unset($decodedParts['name']);
+print_r($decodedParts);
 ?>
 --EXPECT--
 Array
