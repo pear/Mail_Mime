@@ -857,161 +857,161 @@ class Mail_mime
         while (list($key, $value) = each($params)) {
             $build_params[$key] = $value;
         }
-		//$hdr_name: Name of the heaer
-		//$hdr_value: Full line of header value.
-		//$hdr_val: Atom part of $hdr_value
-		//$hdr_value_out: The recombined $hdr_val-atoms, or the encoded string.
-		foreach ($input as $hdr_name => $hdr_value) {
-			if (preg_match('#([\x80-\xFF]){1}#', $hdr_value)){
-				if (function_exists('iconv_mime_encode')){
-		            $imePrefs = array();
-		            if ($build_params['head_encoding'] == 'base64'){
-		               $imePrefs['scheme'] = 'B';
-		            }else{
-		               $imePrefs['scheme'] = 'Q';
-		            }
-		            $imePrefs['input-charset']  = $build_params['head_charset'];
-		            $imePrefs['output-charset'] = $build_params['head_charset'];
-		            $imePrefs['line-length'] = 74;
-		            $imePrefs['line-break-chars'] = "\r\n"; //Specified in RFC2047
-					
-		            $hdr_value = iconv_mime_encode($hdr_name, $hdr_value, $imePrefs);
-		            $hdr_value = preg_replace("#^{$hdr_name}\:\ #", "", $hdr_value);
-				}else{
-	                $hdr_vals = preg_split("|(\s)|", $hdr_value, -1, PREG_SPLIT_DELIM_CAPTURE);
-	                $hdr_value_out="";
-	                $previous = "";
-	                foreach ($hdr_vals as $hdr_val){
-						$encodedLineNeedsSplitting = 0;
-	                    if (!trim($hdr_val)){
-	                        //whitespace needs to be handled with another string, or it
-	                        //won't show between encoded strings. Prepend this to the next item.
-	                        $previous .= $hdr_val;
-	                        continue;
-	                    }else{
-		                    $hdr_val = $previous . $hdr_val;
-		                    $previous = "";
-		                }
-	                    //Fix for Bug #10298, Ota Mares <om@viazenetti.de>
-	                    //Check if there is a double quote at beginning or end of the string to 
-	                    //prevent that an open or closing quote gets ignored because its encapsuled
-	                    //by an encoding prefix or suffix. 
-	                    
-	                    //Remove the double quote and set the specific prefix or suffix variable
-	                    //so later we can concat the encoded string and the double quotes back 
-	                    //together to get the intended string.
-	                    $quotePrefix = $quoteSuffix = '';
-	                    if ($hdr_val{0} == '"') {
-	                        $hdr_val = substr($hdr_val, 1);
-	                        $quotePrefix = '"';
-	                    }
-	                    if ($hdr_val{strlen($hdr_val)-1} == '"') {
-	                        $hdr_val = substr($hdr_val, 0, -1);
-	                        $quoteSuffix = '"';
-	                    }
-						switch ($build_params['head_encoding']) {
-						case 'base64':
-							//Base64 encoding has been selected.
-							
-							//Generate the header using the specified params and dynamicly 
-							//determine the maximum length of such strings.
-							//75 is the value specified in the RFC. The first -2 is there so 
-							//the later regexp doesn't break any of the translated chars.
-							//The -2 on the first line-regexp is to compensate for the ": "
-							//between the header-name and the header value
-							//The -1 finally is to compensate for 0/1 based strings
-							$prefix = '=?' . $build_params['head_charset'] . '?B?';
-							$suffix = '?=';
-							$maxLength = 75 - strlen($prefix . $suffix) - 2 - 1;
-							$maxLength1stLine = $maxLength - strlen($hdr_name) - 2;
-							
-							//Base64 encode the entire string
-							$hdr_val = base64_encode($hdr_val);
-							
-							//This regexp will break base64-encoded text at every 
-							//$maxLength but will not break any encoded letters.
-							$reg1st = "|.{0,$maxLength1stLine}[^\=][^\=]|";
-							$reg2nd = "|.{0,$maxLength}[^\=][^\=]|";
-							break;
-						case 'quoted-printable':
-						default:
-							//quoted-printable encoding has been selected
-							
-							//Generate the header using the specified params and dynamicly 
-							//determine the maximum length of such strings.
-							//75 is the value specified in the RFC. The -2 is there so 
-							//the later regexp doesn't break any of the translated chars.
-							//The -2 on the first line-regexp is to compensate for the ": "
-							//between the header-name and the header value
-							//The -1 finally is to compensate for 0/1 based strings
-							$prefix = '=?' . $build_params['head_charset'] . '?Q?';
-							$suffix = '?=';
-							$maxLength = 75 - strlen($prefix . $suffix) - 2 - 1;
-							$maxLength1stLine = $maxLength - strlen($hdr_name) - 2;
-							
-							//Replace all special characters used by the encoder.
-							$search  = array('=',   '_',   '?',   ' ');
-							$replace = array('=3D', '=5F', '=3F', '_');
-							$hdr_val = str_replace($search, $replace, $hdr_val);
-							
-							//Replace all extended characters (\x80-xFF) with their
-							//ASCII values.
-							$hdr_val = preg_replace(
-								'#([\x80-\xFF])#e',
-								'"=" . strtoupper(dechex(ord("\1")))',
-								$hdr_val
-							);
-							//This regexp will break QP-encoded text at every $maxLength
-							//but will not break any encoded letters.
-							$reg1st = "|(.{0,$maxLength1stLine})[^\=]|";
-							$reg2nd = "|(.{0,$maxLength})[^\=]|";
-							break;
-						}
-		                //Fix for Bug #10298, Ota Mares <om@viazenetti.de>
-		                //Concat the double quotes if existant and encoded string together
-		                $hdr_val = $quotePrefix . $hdr_val . $quoteSuffix;
-						//Append $hdr_val to $hdr_value_out, the final result.
-		                $hdr_value_out .= $hdr_val;
-					}
-	                if (strlen($hdr_value_out) >= $maxLength1stLine){
-	                    //Begin with the regexp for the first line.
-	                    $reg = $reg1st;
-	                    //Prevent lins that are just way to short;
-	                    if ($maxLength1stLine >1){
-	                        $reg = $reg2nd;
-	                    }
-	                    $output = "";
-	                    while ($hdr_value_out) {
-	                        //Split translated string at every $maxLength
-	                        //But make sure not to break any translated chars.
-	                        $found = preg_match($reg, $hdr_value_out, $matches);
-	                        
-	                        //After this first line, we need to use a different
-	                        //regexp for the first line.
-	                        $reg = $reg2nd;
-	                        
-	                        //Save the found part and encapsulate it in the
-	                        //prefix & suffix. Then remove the part from the
-	                        //$hdr_value_out variable.
-	                        if ($found){
-	                            $part = $matches[0];
-	                            $hdr_value_out = substr($hdr_value_out, strlen($matches[0]));
-	                        }else{
-	                            $part = $hdr_value_out;
-	                            $hdr_value_out = "";
-	                        }
-	                        
-	                        //RFC 2047 specifies that any split header should be seperated
-	                        //by a CRLF SPACE. 
-	                        if ($output){
-	                            $output .=  "\r\n ";
-	                        }
-	                        $output .= $prefix . $part . $suffix;
-	                    }
-	                    $hdr_value_out = $output;
-	                }
-					$hdr_value = $hdr_value_out;
-				}
+        //$hdr_name: Name of the heaer
+        //$hdr_value: Full line of header value.
+        //$hdr_val: Atom part of $hdr_value
+        //$hdr_value_out: The recombined $hdr_val-atoms, or the encoded string.
+        foreach ($input as $hdr_name => $hdr_value) {
+            if (preg_match('#([\x80-\xFF]){1}#', $hdr_value)){
+                if (function_exists('iconv_mime_encode')){
+                    $imePrefs = array();
+                    if ($build_params['head_encoding'] == 'base64'){
+                       $imePrefs['scheme'] = 'B';
+                    }else{
+                       $imePrefs['scheme'] = 'Q';
+                    }
+                    $imePrefs['input-charset']  = $build_params['head_charset'];
+                    $imePrefs['output-charset'] = $build_params['head_charset'];
+                    $imePrefs['line-length'] = 74;
+                    $imePrefs['line-break-chars'] = "\r\n"; //Specified in RFC2047
+                    
+                    $hdr_value = iconv_mime_encode($hdr_name, $hdr_value, $imePrefs);
+                    $hdr_value = preg_replace("#^{$hdr_name}\:\ #", "", $hdr_value);
+                }else{
+                    $hdr_vals = preg_split("|(\s)|", $hdr_value, -1, PREG_SPLIT_DELIM_CAPTURE);
+                    $hdr_value_out="";
+                    $previous = "";
+                    foreach ($hdr_vals as $hdr_val){
+                        $encodedLineNeedsSplitting = 0;
+                        if (!trim($hdr_val)){
+                            //whitespace needs to be handled with another string, or it
+                            //won't show between encoded strings. Prepend this to the next item.
+                            $previous .= $hdr_val;
+                            continue;
+                        }else{
+                            $hdr_val = $previous . $hdr_val;
+                            $previous = "";
+                        }
+                        //Fix for Bug #10298, Ota Mares <om@viazenetti.de>
+                        //Check if there is a double quote at beginning or end of the string to 
+                        //prevent that an open or closing quote gets ignored because its encapsuled
+                        //by an encoding prefix or suffix. 
+                        
+                        //Remove the double quote and set the specific prefix or suffix variable
+                        //so later we can concat the encoded string and the double quotes back 
+                        //together to get the intended string.
+                        $quotePrefix = $quoteSuffix = '';
+                        if ($hdr_val{0} == '"') {
+                            $hdr_val = substr($hdr_val, 1);
+                            $quotePrefix = '"';
+                        }
+                        if ($hdr_val{strlen($hdr_val)-1} == '"') {
+                            $hdr_val = substr($hdr_val, 0, -1);
+                            $quoteSuffix = '"';
+                        }
+                        switch ($build_params['head_encoding']) {
+                        case 'base64':
+                            //Base64 encoding has been selected.
+                            
+                            //Generate the header using the specified params and dynamicly 
+                            //determine the maximum length of such strings.
+                            //75 is the value specified in the RFC. The first -2 is there so 
+                            //the later regexp doesn't break any of the translated chars.
+                            //The -2 on the first line-regexp is to compensate for the ": "
+                            //between the header-name and the header value
+                            //The -1 finally is to compensate for 0/1 based strings
+                            $prefix = '=?' . $build_params['head_charset'] . '?B?';
+                            $suffix = '?=';
+                            $maxLength = 75 - strlen($prefix . $suffix) - 2 - 1;
+                            $maxLength1stLine = $maxLength - strlen($hdr_name) - 2;
+                            
+                            //Base64 encode the entire string
+                            $hdr_val = base64_encode($hdr_val);
+                            
+                            //This regexp will break base64-encoded text at every 
+                            //$maxLength but will not break any encoded letters.
+                            $reg1st = "|.{0,$maxLength1stLine}[^\=][^\=]|";
+                            $reg2nd = "|.{0,$maxLength}[^\=][^\=]|";
+                            break;
+                        case 'quoted-printable':
+                        default:
+                            //quoted-printable encoding has been selected
+                            
+                            //Generate the header using the specified params and dynamicly 
+                            //determine the maximum length of such strings.
+                            //75 is the value specified in the RFC. The -2 is there so 
+                            //the later regexp doesn't break any of the translated chars.
+                            //The -2 on the first line-regexp is to compensate for the ": "
+                            //between the header-name and the header value
+                            //The -1 finally is to compensate for 0/1 based strings
+                            $prefix = '=?' . $build_params['head_charset'] . '?Q?';
+                            $suffix = '?=';
+                            $maxLength = 75 - strlen($prefix . $suffix) - 2 - 1;
+                            $maxLength1stLine = $maxLength - strlen($hdr_name) - 2;
+                            
+                            //Replace all special characters used by the encoder.
+                            $search  = array('=',   '_',   '?',   ' ');
+                            $replace = array('=3D', '=5F', '=3F', '_');
+                            $hdr_val = str_replace($search, $replace, $hdr_val);
+                            
+                            //Replace all extended characters (\x80-xFF) with their
+                            //ASCII values.
+                            $hdr_val = preg_replace(
+                                '#([\x80-\xFF])#e',
+                                '"=" . strtoupper(dechex(ord("\1")))',
+                                $hdr_val
+                            );
+                            //This regexp will break QP-encoded text at every $maxLength
+                            //but will not break any encoded letters.
+                            $reg1st = "|(.{0,$maxLength1stLine})[^\=]|";
+                            $reg2nd = "|(.{0,$maxLength})[^\=]|";
+                            break;
+                        }
+                        //Fix for Bug #10298, Ota Mares <om@viazenetti.de>
+                        //Concat the double quotes if existant and encoded string together
+                        $hdr_val = $quotePrefix . $hdr_val . $quoteSuffix;
+                        //Append $hdr_val to $hdr_value_out, the final result.
+                        $hdr_value_out .= $hdr_val;
+                    }
+                    if (strlen($hdr_value_out) >= $maxLength1stLine){
+                        //Begin with the regexp for the first line.
+                        $reg = $reg1st;
+                        //Prevent lins that are just way to short;
+                        if ($maxLength1stLine >1){
+                            $reg = $reg2nd;
+                        }
+                        $output = "";
+                        while ($hdr_value_out) {
+                            //Split translated string at every $maxLength
+                            //But make sure not to break any translated chars.
+                            $found = preg_match($reg, $hdr_value_out, $matches);
+                            
+                            //After this first line, we need to use a different
+                            //regexp for the first line.
+                            $reg = $reg2nd;
+                            
+                            //Save the found part and encapsulate it in the
+                            //prefix & suffix. Then remove the part from the
+                            //$hdr_value_out variable.
+                            if ($found){
+                                $part = $matches[0];
+                                $hdr_value_out = substr($hdr_value_out, strlen($matches[0]));
+                            }else{
+                                $part = $hdr_value_out;
+                                $hdr_value_out = "";
+                            }
+                            
+                            //RFC 2047 specifies that any split header should be seperated
+                            //by a CRLF SPACE. 
+                            if ($output){
+                                $output .=  "\r\n ";
+                            }
+                            $output .= $prefix . $part . $suffix;
+                        }
+                        $hdr_value_out = $output;
+                    }
+                    $hdr_value = $hdr_value_out;
+                }
             }
             $input[$hdr_name] = $hdr_value;
         }
