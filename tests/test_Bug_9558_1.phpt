@@ -7,6 +7,7 @@ error_reporting(E_ALL); // ignore E_STRICT
 include("Mail/mime.php");
 
 $encoder = new Mail_mime();
+$encoder->_build_params['ignore-iconv'] = true;
 $input[] = "received by me
     at some point
     from some server";

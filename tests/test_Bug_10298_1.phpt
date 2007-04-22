@@ -7,12 +7,13 @@ Bug #10298  Mail_mime, double Quotes and Specialchars in from and to Adress
 error_reporting(E_ALL); // ignore E_STRICT
 include("Mail/mime.php");
 $mime = new Mail_mime();
+$mime->_build_params['ignore-iconv'] = true;
 
 
 $string = '"German Umlauts צהü" <adresse@adresse.de>';
 
-$hdrs = $mime->_encodeHeaders(array('To'=>$string));
+$hdrs = $mime->_encodeHeaders(array('header'=>$string));
 
-print($hdrs['To']);
+print($hdrs['header']);
 --EXPECT--
-=?ISO-8859-1?Q?"German=20Umlauts=20=F6=E4=FC"=20<adresse@adresse.de>?=
+=?ISO-8859-1?Q?"German_Umlauts_=F6=E4=FC"_<adresse@adresse.de>?=

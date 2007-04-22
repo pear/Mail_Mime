@@ -8,6 +8,8 @@ $test = "Süper gröse tolle grüße.txt";
 require_once('Mail/mime.php');
 
 $Mime=new Mail_Mime();
+$Mime->_build_params['ignore-iconv'] = true;
+
 $Mime->setTXTBody('');
 $Mime->addAttachment('testfile',"text/plain", $test, FALSE, 'base64', 'attachment', 'UTF-8');
 
@@ -17,4 +19,4 @@ print_r($bodyarr[3]."\r\n");
 print_r($bodyarr[4]."\r\n");
 ?>
 --EXPECT--
-Content-Disposition: attachment; filename="=?UTF-8?Q?S=C3=BCper?==?UTF-8?Q?_gr=C3=B6se?= tolle=?UTF-8?Q?_gr=C3=BC=C3=9Fe.txt?="
+Content-Disposition: attachment; filename="=?UTF-8?Q?S=C3=BCper_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe.txt?="
