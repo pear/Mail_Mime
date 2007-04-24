@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package packagerversion="1.5.2" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" 
 xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd    
+xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd     
 http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
  <name>Mail_Mime</name>
  <channel>pear.php.net</channel>
@@ -37,10 +37,10 @@ http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
   <email>cox@idecnet.com</email>
   <active>no</active>
  </contributor>
- <date>2007-04-22</date>
+ <date>2007-04-24</date>
  <time>00:00:00</time>
  <version>
-  <release>1.4.0RC2</release>
+  <release>1.4.0RC3</release>
   <api>1.3.1</api>
  </version>
  <stability>
@@ -49,15 +49,15 @@ http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">bsd style</license>
  <notes>
- * Fix Bug #10791: Unit tests fail [cipri]
- * Fix Bug #10792: No unit tests for recently fixed bugs [cipri]
- * Fix Bug #10793: Long headers don&apos;t get wrapped since fix for Bug #10298 [cipri]
+ * Fix Bug #10816: Unwanted linebreak at the end of output [cipri]
  </notes>
  <contents>
   <dir name="/">
-   <dir name="/scripts">
-    <file baseinstalldir="Mail" name="phail.php" role="doc" />
-   </dir> <!-- /scripts -->
+   <dir name="">
+    <dir name="scripts">
+     <file baseinstalldir="Mail" name="phail.php" role="doc" />
+    </dir> <!-- //scripts -->
+   </dir> <!-- / -->
    <dir name="tests">
     <file baseinstalldir="Mail" name="class-filename.phpt" role="test" />
     <file baseinstalldir="Mail" name="encoding_case.phpt" role="test" />
@@ -78,7 +78,7 @@ http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
     <file baseinstalldir="Mail" name="test_Bug_9558_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_9722_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_9725_1.phpt" role="test" />
-    <file baseinstalldir="Mail" name="test_Bug_9976_1.phpt" role="test" />    
+    <file baseinstalldir="Mail" name="test_Bug_9976_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_10298_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_10596_1.phpt" role="test" />
    </dir> <!-- /tests -->
@@ -102,6 +102,20 @@ http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
  <phprelease />
  <changelog>
   <release>
+   <version>
+    <release>1.4.0RC2</release>
+    <api>1.3.1</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>stable</api>
+   </stability>
+   <date>2007-04-22</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">bsd style</license>
+   <notes>* Fix Bug #10791: Unit tests fail [cipri]
+* Fix Bug #10792: No unit tests for recently fixed bugs [cipri]
+* Fix Bug #10793: Long headers don&apos;t get wrapped since fix for Bug #10298 [cipri]</notes>
+  </release>  <release>
    <version>
     <release>1.4.0RC1</release>
     <api>1.3.1</api>
