@@ -316,6 +316,7 @@ class Mail_mime
      * @param  string  $charset     The character set used in the filename
      *                              of this attachment.
      * @param  string  $language    The language of the attachment
+     * @param  string  $location    The RFC 2557.4 location of the attachment
      * @return mixed true on success or PEAR_Error object
      * @access public
      */
@@ -323,7 +324,8 @@ class Mail_mime
                            $name = '', $isfile = true,
                            $encoding = 'base64',
                            $disposition = 'attachment',
-                           $charset = '', $language = '')
+                           $charset = '', $language = '',
+                           $location = '')
     {
         $filedata = ($isfile === true) ? $this->_file2str($file)
                                            : $file;
@@ -351,6 +353,7 @@ class Mail_mime
                                 'encoding'    => $encoding,
                                 'charset'     => $charset,
                                 'language'    => $language,
+                                'location'    => $location,
                                 'disposition' => $disposition
                                );
         return true;
@@ -532,6 +535,9 @@ class Mail_mime
         }
         if ($value['language']) {
             $params['language'] = $value['language'];
+        }
+        if ($value['location']) {
+            $params['location'] = $value['location'];
         }
         $params['content_type'] = $value['c_type'];
         $params['disposition']  = isset($value['disposition']) ? 

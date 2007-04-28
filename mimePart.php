@@ -175,6 +175,11 @@ class Mail_mimePart {
                     $contentType['language'] = $value;
                     $contentDisp['language'] = $value;
                     break;
+
+                case 'location':
+                    $headers['Content-Location'] = $value;
+                    break;
+
             }
         }
         if (isset($contentType['type'])){
