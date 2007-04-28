@@ -135,10 +135,13 @@ class Mail_mimePart {
             define('MAIL_MIMEPART_CRLF', defined('MAIL_MIME_CRLF') ? MAIL_MIME_CRLF : "\r\n", TRUE);
         }
 
+        $contentType = array();
+        $contentDisp = array();
         foreach ($params as $key => $value) {
             switch ($key) {
                 case 'content_type':
-                    $headers['Content-Type'] = $value . (isset($charset) ? '; charset="' . $charset . '"' : '');
+                    $contentType['type'] = $value;
+                    //$headers['Content-Type'] = $value . (isset($charset) ? '; charset="' . $charset . '"' : '');
                     break;
 
                 case 'encoding':
@@ -151,15 +154,12 @@ class Mail_mimePart {
                     break;
 
                 case 'disposition':
-                    $headers['Content-Disposition'] = $value . (isset($dfilename) ? '; filename="' . $dfilename . '"' : '');
+                    $contentDisp['disp'] = $value;
                     break;
 
                 case 'dfilename':
-                    if (isset($headers['Content-Disposition'])) {
-                        $headers['Content-Disposition'] .= '; filename="' . $value . '"';
-                    } else {
-                        $dfilename = $value;
-                    }
+                    $contentDisp['filename'] = $value;
+                    $contentType['name'] = $value;
                     break;
 
                 case 'description':
@@ -167,15 +167,42 @@ class Mail_mimePart {
                     break;
 
                 case 'charset':
-                    if (isset($headers['Content-Type'])) {
-                        $headers['Content-Type'] .= '; charset="' . $value . '"';
-                    } else {
-                        $charset = $value;
-                    }
+                    $contentType['charset'] = $value;
+                    $contentDisp['charset'] = $value;
+                    break;
+
+                case 'language':
+                    $contentType['language'] = $value;
+                    $contentDisp['language'] = $value;
                     break;
             }
         }
+        if (isset($contentType['type'])){
+            $headers['Content-Type'] = $contentType['type'];
+            if (isset($contentType['name'])){
+                $headers['Content-Type'] .= ';' . MAIL_MIMEPART_CRLF;
+                $headers['Content-Type'] .= $this->_buildHeaderParam('name', $contentType['name'], 
+                                                isset($contentType['charset']) ? $contentType['charset'] : 'US-ASCII', 
+                                                isset($contentType['language']) ? $contentType['language'] : NULL);
+            }elseif (isset($contentType['charset'])){
+                $headers['Content-Type'] .= "; charset=\"{$contentType['charset']}\"";
+            }
+        }
 
+
+        if (isset($contentDisp['disp'])){
+            $headers['Content-Disposition'] = $contentDisp['disp'];
+            if (isset($contentDisp['filename'])){
+                $headers['Content-Disposition'] .= ';' . MAIL_MIMEPART_CRLF;
+                $headers['Content-Disposition'] .= $this->_buildHeaderParam('filename', $contentDisp['filename'], 
+                                                isset($contentDisp['charset']) ? $contentDisp['charset'] : 'US-ASCII', 
+                                                isset($contentDisp['language']) ? $contentDisp['language'] : NULL);
+            }
+        }
+        
+        
+        
+        
         // Default content-type
         if (!isset($headers['Content-Type'])) {
             $headers['Content-Type'] = 'text/plain';
@@ -341,5 +368,67 @@ class Mail_mimePart {
         }
         $output = substr($output, 0, -1 * strlen($eol)); // Don't want last crlf
         return $output;
+    }
+
+    /**
+     * _buildHeaderParam()
+     *
+     * Encodes the paramater of a header.
+     *
+     * @param $name         The name of the header-parameter
+     * @param $value        The value of the paramter
+     * @param $charset      The characterset of $value
+     * @param $language     The language used in $value
+     * @param $maxLength    The maximum length of a line. Defauls to 75
+     *
+     * @access private
+     */
+    function _buildHeaderParam($name, $value, $charset=NULL, $language=NULL, $maxLength=75)
+    {
+        //If we find chars to encode, or if charset or language
+        //is not any of the defaults, we need to encode the value.
+        $shouldEncode = 0;
+        $secondAsterisk = '';
+        if (preg_match('#([\x80-\xFF]){1}#', $value)){
+            $shouldEncode = 1;
+        }elseif ($charset && (strtolower($charset) != 'us-ascii')){
+            $shouldEncode = 1;
+        }elseif ($language && ($language != 'en' && $language != 'en-us')){
+            $shouldEncode = 1;
+        }
+        if ($shouldEncode){
+            $search  = array('%',   ' ',   "\t");
+            $replace = array('%25', '%20', '%09');
+            $encValue = str_replace($search, $replace, $value);
+            $encValue = preg_replace('#([\x80-\xFF])#e', '"%" . strtoupper(dechex(ord("\1")))', $encValue);
+            $value = "$charset'$language'$encValue";
+            $secondAsterisk = '*';
+        }
+        $header = " {$name}{$secondAsterisk}=\"{$value}\"; ";
+        if (strlen($header) <= $maxLength){
+            return $header;
+        }
+
+        $preLength = strlen(" {$name}*0{$secondAsterisk}=\"");
+        $sufLength = strlen("\";");
+        $maxLength = MAX(16, $maxLength - $preLength - $sufLength - 2);
+        $maxLengthReg = "|(.{0,$maxLength}[^\%][^\%])|";
+
+        $headers = array();
+        $headCount = 0;
+        while ($value){
+            $matches = array();
+            $found = preg_match($maxLengthReg, $value, $matches);
+            if ($found){
+                $headers[] = " {$name}*{$headCount}{$secondAsterisk}=\"{$matches[0]}\"";
+                $value = substr($value, strlen($matches[0]));
+            }else{
+                $headers[] = " {$name}*{$headCount}{$secondAsterisk}=\"{$value}\"";
+                $value = "";
+            }
+            $headCount++;
+        }
+        $headers = implode(MAIL_MIMEPART_CRLF, $headers) . ';';
+        return $headers;
     }
 } // End of class

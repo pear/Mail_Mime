@@ -315,13 +315,15 @@ class Mail_mime
      *                              Possible values: attachment, inline.
      * @param  string  $charset     The character set used in the filename
      *                              of this attachment.
+     * @param  string  $language    The language of the attachment
      * @return mixed true on success or PEAR_Error object
      * @access public
      */
     function addAttachment($file, $c_type = 'application/octet-stream',
                            $name = '', $isfile = true,
                            $encoding = 'base64',
-                           $disposition = 'attachment', $charset = '')
+                           $disposition = 'attachment',
+                           $charset = '', $language = '')
     {
         $filedata = ($isfile === true) ? $this->_file2str($file)
                                            : $file;
@@ -348,6 +350,7 @@ class Mail_mime
                                 'c_type'      => $c_type,
                                 'encoding'    => $encoding,
                                 'charset'     => $charset,
+                                'language'    => $language,
                                 'disposition' => $disposition
                                );
         return true;
@@ -501,8 +504,7 @@ class Mail_mime
      */
     function &_addHtmlImagePart(&$obj, $value)
     {
-        $params['content_type'] = $value['c_type'] . '; ' .
-                                  'name="' . $value['name'] . '"';
+        $params['content_type'] = $value['c_type'];
         $params['encoding']     = 'base64';
         $params['disposition']  = 'inline';
         $params['dfilename']    = $value['name'];
@@ -525,16 +527,13 @@ class Mail_mime
     {
         $params['dfilename']    = $value['name'];
         $params['encoding']     = $value['encoding'];
-        if ($value['disposition'] != "inline") {
-            $fname = array("fname" => $value['name']);
-            $fname_enc = $this->_encodeHeaders($fname, array('head_charset' => $value['charset'] ? $value['charset'] : 'iso-8859-1'));
-            $params['dfilename'] = $fname_enc['fname'];
-        }
         if ($value['charset']) {
             $params['charset'] = $value['charset'];
         }
-        $params['content_type'] = $value['c_type'] . '; ' .
-                                  'name="' . $params['dfilename'] . '"';
+        if ($value['language']) {
+            $params['language'] = $value['language'];
+        }
+        $params['content_type'] = $value['c_type'];
         $params['disposition']  = isset($value['disposition']) ? 
                                   $value['disposition'] : 'attachment';
         $ret = $obj->addSubpart($value['body'], $params);
