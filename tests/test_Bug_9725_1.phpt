@@ -15,6 +15,7 @@ $head = $mime->headers();
 $headCT = $head['Content-Type'];
 $headCT = explode(";", $headCT);
 $headCT = $headCT[0];
+
 $ct = preg_match_all('|Content-Type: (.*);|', $body, $matches);
 print($headCT);
 print("\n");
@@ -22,7 +23,6 @@ foreach ($matches[1] as $match){
     print($match);
     print("\n");
 }
-
 --EXPECT--
 multipart/related
 multipart/alternative

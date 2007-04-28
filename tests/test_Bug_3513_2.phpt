@@ -6,17 +6,13 @@ Bug #3513   support of RFC2231 in header fields. (UTF-8)
 error_reporting(E_ALL);
 $test = "Süper gröse tolle grüße.txt";
 require_once('Mail/mime.php');
-
 $Mime=new Mail_Mime();
 $Mime->_build_params['ignore-iconv'] = true;
-
-$Mime->setTXTBody('');
-$Mime->addAttachment('testfile',"text/plain", $test, FALSE, 'base64', 'attachment', 'UTF-8');
-
-$body = $Mime->get();
-$bodyarr=explode("\r\n",$body);
-print_r($bodyarr[3]."\r\n");
-print_r($bodyarr[4]."\r\n");
-?>
+$Mime->addAttachment('testfile',"text/plain", $test, FALSE, 'base64', 'attachment', 'UTF-8', 'de');
+$root = $Mime->_addMixedPart();
+$enc = $Mime->_addAttachmentPart($root, $Mime->_parts[0]);
+print($enc->_headers['Content-Disposition']);
 --EXPECT--
-Content-Disposition: attachment; filename="=?UTF-8?Q?S=C3=BCper_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe.txt?="
+attachment;
+ filename*0*="UTF-8'de'S%C3%BCper%20gr%C3%B6se%20tolle%20gr%C3%BC%C3%9Fe."
+ filename*1*="txt";
