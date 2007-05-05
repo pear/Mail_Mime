@@ -1,56 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package packagerversion="1.5.3" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" 
 xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd      
+xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd       
 http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
  <name>Mail_Mime</name>
  <channel>pear.php.net</channel>
- <summary>Provides classes to create and decode mime messages.</summary>
- <description>Provides classes to deal with creation and manipulation of mime messages.</description>
+ <summary>Mail_Mime provides classes create and decode mime messages.</summary>
+ <description>Mail_Mime provides classes to deal with the creation and manipulation of mime messages.
+It allows people to create Email messages consisting of:
+* Text Parts
+* HTML Parts
+* Inline HTML Images
+* Attachments
+* Attached messages
+
+Starting with version 1.4.0, it also allows non US-ASCII chars in filenames, subjects, recipients, etc, etc.
+</description>
  <lead>
   <name>Cipriano Groenendal</name>
   <user>cipri</user>
   <email>cipri@php.net</email>
   <active>yes</active>
  </lead>
- <contributor>
-  <name>George Schlossnagle</name>
-  <user>gschlossnagle</user>
-  <email>gschlossnagle@php.net</email>
-  <active>no</active>
- </contributor>
- <contributor>
-  <name>Sean Coates</name>
-  <user>sean</user>
-  <email>sean@php.net</email>
-  <active>no</active>
- </contributor>
- <contributor>
-  <name>Richard Heyes</name>
-  <user>richard</user>
-  <email>richard@php.net</email>
-  <active>no</active>
- </contributor>
- <contributor>
-  <name>Tomas V.V.Cox</name>
-  <user>cox</user>
-  <email>cox@idecnet.com</email>
-  <active>no</active>
- </contributor>
- <date>2007-04-28</date>
- <time>05:32:56</time>
+ <date>2007-05-05</date>
+ <time>00:00:00</time>
  <version>
-  <release>1.4.0RC4</release>
+  <release>1.4.0</release>
   <api>1.3.1</api>
  </version>
  <stability>
-  <release>beta</release>
+  <release>stable</release>
   <api>stable</api>
  </stability>
- <license uri="http://www.opensource.org/licenses/bsd-license.php">bsd style</license>
+ <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
+
+Release nots:
+ * No more notices in PHP 5 /4.4.0.
+ * Improved inline HTML image function.
+ * Improved header encoding with foreign charsets.
+ * Improved long header rendering.
+ * More control over used Charsets and encoding schemes.
+ * More configurable attachments and inline images.
+ * Full RFC 2047 Support
+ * Full RFC 2231 Support
+ * Unit-tests
+
+Fixed bugs:
+ * Fix Bug #30: Mail_Mime: _encodeHeaders is not RFC-2047 compliant. [cipri]
  * Fix Bug #3513: support of RFC2231 in header fields. [cipri]
+ * Fix Bug #4696: addAttachment crash [cipri]
+ * Fix Bug #5333: Only variables should be returned by reference; triggers notices since
+   php 4.4.0 [cipri]
+ * Fix Bug #5400: Do not return function reference [cipri]
+ * Fix Bug #5710: Little reference bugs [cipri]
+ * Fix Bug #5890: Only variable references should be returned by reference [cipri]
+ * Fix Bug #6260: Just a notice with PHP5 [cipri]
+ * Fix Bug #6261: php 5.1.1 upgrade [cipri]
+ * Fix Bug #6663: Notice about reference passing [cipri]
+ * Fix Bug #7561: Mail_mimePart::_quotedPrintableEncode() misbehavior with mbstring
+   overload [cipri]
+ * Fix Bug #7713: PHP5 Notice: Only variable references should be returned by reference [cipri]
+ * Fix Bug #8223: Incorrectly encoded quoted-printable headers [cipri]
+ * Fix Bug #8386: HTML body not correctly encoded if attachments present [cipri]
+ * Fix Bug #8541: mimePart.php line delimiter is \r [cipri]
+ * Fix Bug #8812: user header updates overwritten [cipri]
+ * Fix Bug #9347: Notices about references [cweiske]
+ * Fix Bug #9558: Broken multiline headers [cipri]
+ * Fix Bug #9722: _quotedPrintableEncode does not encode dot at start of line on Windows
+   platform [cipri]
+ * Fix Bug #9725: multipart/related &amp; alternative wrong order [cipri]
+ * Fix Bug #9956: Notices being thrown [cipri]
+ * Fix Bug #9976: Subject encoded twice [cipri]
+ * Fix Bug #10146: mbstring fails to recognize encodings. [cipri]
+ * Fix Bug #10158: Inline images not displayed on Mozilla Thunderbird [cipri]
+ * Fix Bug #10232: Gmail creates double line break when \r\n is used [cipri]
+ * Fix Bug #10298: Mail_mime, double Quotes and Specialchars in from and to Adress [cipri]
+ * Fix Bug #10306: Strings with Double Quotes get encoded wrongly [cipri]
+ * Fix Bug #10596: Incorrect handling of text and html &apos;0&apos; bodies [cipri]
+ * Fix Bug #10791: Unit tests fail [cipri]
+ * Fix Bug #10792: No unit tests for recently fixed bugs [cipri]
+ * Fix Bug #10793: Long headers don&apos;t get wrapped since fix for Bug #10298 [cipri]
+ * Fix Bug #10816: Unwanted linebreak at the end of output [cipri]
  * Fix Bug #10838: bad use of MIME encoding in header. [cipri]
+Implemented Features:
+ * Implement Feature #2952: Mail_mime::headers() saves extra headers [cipri]
+ * Implement Feature #3636: Allow specification of charsets and encoding [cipri]
+ * Implement Feature #4057: Mail_Mime: Add name parameter for Content-Type [cipri]
+ * Implement Feature #4504: addHTMLImage does not work in cases when filename contains a path [cipri]
+ * Implement Feature #5837: Mail_Mime: Build message for Net_SMTP [cipri]
+ * Implement Feature #5934: Mail_Mime: choice for content disposition [cipri]
+ * Implement Feature #6568: Mail_Mime: inline images referenced in CSS definitions not replaced. [cipri]
+ * Implement Feature #10604: Put an option to specify Content-Location in the header [cipri]
  </notes>
  <contents>
   <dir name="/">
@@ -72,14 +113,17 @@ http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
     <file baseinstalldir="Mail" name="test_Bug_3513_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_3513_2.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_3513_3.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_7561_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_8223_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_8386_1.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_8541_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_9558_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_9722_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_9725_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_9976_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_10298_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_10596_1.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_10816_1.phpt" role="test" />
    </dir> <!-- /tests -->
    <file baseinstalldir="Mail" name="mime.php" role="php" />
    <file baseinstalldir="Mail" name="mimeDecode.php" role="php" />
@@ -102,78 +146,104 @@ http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
  <changelog>
   <release>
    <version>
-    <release>1.4.0RC3</release>
-    <api>1.3.1</api>
+    <release>1.0</release>
+    <api>1.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2001-12-28</date>
+   <license uri="http://www.php.net/license">PHP</license>
+   <notes>This is the initial release of the Mime_Mail package.</notes>
+  </release>
+  <release>
+   <version>
+    <release>1.1</release>
+    <api>1.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2002-04-03</date>
+   <license uri="http://www.php.net/license">PHP</license>
+   <notes>This is a maintenance release with various bugfixes and minor enhancements.</notes>
+  </release>
+  <release>
+   <version>
+    <release>1.2</release>
+    <api>1.2</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2002-07-14</date>
+   <license uri="http://www.php.net/license">PHP</license>
+   <notes>o Added header encoding
+o Altered mimePart to put boundary parameter on newline
+o Changed addFrom() to setFrom()
+o Added setSubject()
+o Made mimePart inherit crlf setting from mime</notes>
+  </release>
+  <release>
+   <version>
+    <release>1.2.1</release>
+    <api>1.2.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2002-07-27</date>
+   <license uri="http://www.php.net/license">PHP</license>
+   <notes>o License change
+o Applied a few changes From Ilia Alshanetsky</notes>
+  </release>
+  <release>
+   <version>
+    <release>1.3.0RC1</release>
+    <api>1.3.0RC1</api>
    </version>
    <stability>
     <release>beta</release>
-    <api>stable</api>
+    <api>beta</api>
    </stability>
-   <date>2007-04-24</date>
-   <license uri="http://www.opensource.org/licenses/bsd-license.php">bsd style</license>
-   <notes>* Fix Bug #10816: Unwanted linebreak at the end of output [cipri]</notes>
+   <date>2005-03-20</date>
+   <license uri="http://www.php.net/license">PHP</license>
+   <notes>o First release in over 2.5 years (!)
+o MANY bugfixes (see the bugtracker)
+o added a few tests</notes>
   </release>
   <release>
    <version>
-    <release>1.4.0RC2</release>
-    <api>1.3.1</api>
+    <release>1.3.0</release>
+    <api>1.3.0</api>
    </version>
    <stability>
-    <release>beta</release>
+    <release>stable</release>
     <api>stable</api>
    </stability>
-   <date>2007-04-22</date>
-   <license uri="http://www.opensource.org/licenses/bsd-license.php">bsd style</license>
-   <notes>* Fix Bug #10791: Unit tests fail [cipri]
-* Fix Bug #10792: No unit tests for recently fixed bugs [cipri]
-* Fix Bug #10793: Long headers don&apos;t get wrapped since fix for Bug #10298 [cipri]</notes>
+   <date>2005-04-01</date>
+   <license uri="http://www.php.net/license">PHP</license>
+   <notes>o First (stable) release in over 2.5 years (!)
+o MANY bugfixes (see the bugtracker)
+o added a few tests
+o one small fix after RC1 (bug #3940)</notes>
   </release>
   <release>
    <version>
-    <release>1.4.0RC1</release>
+    <release>1.3.1</release>
     <api>1.3.1</api>
    </version>
    <stability>
-    <release>beta</release>
+    <release>stable</release>
     <api>stable</api>
    </stability>
-   <date>2007-04-12</date>
-   <license uri="http://www.opensource.org/licenses/bsd-license.php">bsd style</license>
-   <notes>* Fix Bug #10232: Gmail creates double line break when \r\n is used [cipri]</notes>
-  </release>
-  <release>
-   <version>
-    <release>1.4.0a3</release>
-    <api>1.3.1</api>
-   </version>
-   <stability>
-    <release>alpha</release>
-    <api>stable</api>
-   </stability>
-   <date>2007-04-05</date>
-   <license uri="http://www.opensource.org/licenses/bsd-license.php">bsd style</license>
-   <notes>* Fix Bug #10298: Mail_mime, double Quotes and Specialchars in from and to Adress [cipri]
-* Fix Bug #10306: Strings with Double Quotes get encoded wrongly [cipri]</notes>
-  </release>
-  <release>
-   <version>
-    <release>1.4.0a2</release>
-    <api>1.3.1</api>
-   </version>
-   <stability>
-    <release>alpha</release>
-    <api>stable</api>
-   </stability>
-   <date>2007-04-05</date>
-   <license uri="http://www.opensource.org/licenses/bsd-license.php">bsd style</license>
-   <notes>* Fix Bug #9722: _quotedPrintableEncode does not encode dot at start of line on Windows
-  platform [cipri]
-* Fix Bug #9725: multipart/related &amp; alternative wrong order [cipri]
-* Fix Bug #10146: mbstring fails to recognize encodings. [cipri]
-* Fix Bug #10158: Inline images not displayed on Mozilla Thunderbird [cipri]
-* Fix Bug #10298: Mail_mime, double Quotes and Specialchars in from and to Adress [cipri]
-* Fix Bug #10306: Strings with Double Quotes get encoded wrongly [cipri]
-* Fix Bug #10596: Incorrect handling of text and html &apos;0&apos; bodies [cipri]</notes>
+   <date>2005-07-13</date>
+   <license uri="http://www.php.net/license">PHP</license>
+   <notes>A bugfix release:</notes>
   </release>
   <release>
    <version>
@@ -209,293 +279,92 @@ http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
   </release>
   <release>
    <version>
-    <release>1.3.1</release>
+    <release>1.4.0a2</release>
     <api>1.3.1</api>
    </version>
    <stability>
-    <release>stable</release>
+    <release>alpha</release>
     <api>stable</api>
    </stability>
-   <date>2005-07-13</date>
-   <license uri="http://www.php.net/license">PHP</license>
-   <notes>A bugfix release:</notes>
+   <date>2007-04-05</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">bsd style</license>
+   <notes>* Fix Bug #9722: _quotedPrintableEncode does not encode dot at start of line on Windows
+  platform [cipri]
+* Fix Bug #9725: multipart/related &amp; alternative wrong order [cipri]
+* Fix Bug #10146: mbstring fails to recognize encodings. [cipri]
+* Fix Bug #10158: Inline images not displayed on Mozilla Thunderbird [cipri]
+* Fix Bug #10298: Mail_mime, double Quotes and Specialchars in from and to Adress [cipri]
+* Fix Bug #10306: Strings with Double Quotes get encoded wrongly [cipri]
+* Fix Bug #10596: Incorrect handling of text and html &apos;0&apos; bodies [cipri]</notes>
   </release>
   <release>
    <version>
-    <release>1.3.0</release>
-    <api>1.3.0</api>
+    <release>1.4.0a3</release>
+    <api>1.3.1</api>
    </version>
    <stability>
-    <release>stable</release>
+    <release>alpha</release>
     <api>stable</api>
    </stability>
-   <date>2005-04-01</date>
-   <license uri="http://www.php.net/license">PHP</license>
-   <notes>o First (stable) release in over 2.5 years (!)
-o MANY bugfixes (see the bugtracker)
-o added a few tests
-o one small fix after RC1 (bug #3940)</notes>
+   <date>2007-04-05</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">bsd style</license>
+   <notes>* Fix Bug #10298: Mail_mime, double Quotes and Specialchars in from and to Adress [cipri]
+* Fix Bug #10306: Strings with Double Quotes get encoded wrongly [cipri]</notes>
   </release>
   <release>
    <version>
-    <release>1.3.0RC1</release>
-    <api>1.3.0RC1</api>
+    <release>1.4.0RC1</release>
+    <api>1.3.1</api>
    </version>
    <stability>
     <release>beta</release>
-    <api>beta</api>
+    <api>stable</api>
    </stability>
-   <date>2005-03-20</date>
-   <license uri="http://www.php.net/license">PHP</license>
-   <notes>o First release in over 2.5 years (!)
-o MANY bugfixes (see the bugtracker)
-o added a few tests</notes>
+   <date>2007-04-12</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">bsd style</license>
+   <notes>* Fix Bug #10232: Gmail creates double line break when \r\n is used [cipri]</notes>
   </release>
   <release>
    <version>
-    <release>1.2.1</release>
-    <api>1.2.1</api>
+    <release>1.4.0RC2</release>
+    <api>1.3.1</api>
    </version>
    <stability>
-    <release>stable</release>
+    <release>beta</release>
     <api>stable</api>
    </stability>
-   <date>2002-07-27</date>
-   <license uri="http://www.php.net/license">PHP</license>
-   <notes>o License change
-o Applied a few changes From Ilia Alshanetsky</notes>
+   <date>2007-04-22</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">bsd style</license>
+   <notes>* Fix Bug #10791: Unit tests fail [cipri]
+* Fix Bug #10792: No unit tests for recently fixed bugs [cipri]
+* Fix Bug #10793: Long headers don&apos;t get wrapped since fix for Bug #10298 [cipri]</notes>
   </release>
   <release>
    <version>
-    <release>1.2</release>
-    <api>1.2</api>
+    <release>1.4.0RC3</release>
+    <api>1.3.1</api>
    </version>
    <stability>
-    <release>stable</release>
+    <release>beta</release>
     <api>stable</api>
    </stability>
-   <date>2002-07-14</date>
-   <license uri="http://www.php.net/license">PHP</license>
-   <notes>o Added header encoding
-o Altered mimePart to put boundary parameter on newline
-o Changed addFrom() to setFrom()
-o Added setSubject()
-o Made mimePart inherit crlf setting from mime</notes>
+   <date>2007-04-24</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">bsd style</license>
+   <notes>* Fix Bug #10816: Unwanted linebreak at the end of output [cipri]</notes>
   </release>
   <release>
    <version>
-    <release>1.1</release>
-    <api>1.1</api>
+    <release>1.4.0RC4</release>
+    <api>1.3.1</api>
    </version>
    <stability>
-    <release>stable</release>
+    <release>beta</release>
     <api>stable</api>
    </stability>
-   <date>2002-04-03</date>
-   <license uri="http://www.php.net/license">PHP</license>
-   <notes>This is a maintenance release with various bugfixes and minor enhancements.</notes>
-  </release>
-  <release>
-   <version>
-    <release>1.0</release>
-    <api>1.0</api>
-   </version>
-   <stability>
-    <release>stable</release>
-    <api>stable</api>
-   </stability>
-   <date>2001-12-28</date>
-   <license uri="http://www.php.net/license">PHP</license>
-   <notes>This is the initial release of the Mime_Mail package.</notes>
+   <date>2007-04-28</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">bsd style</license>
+   <notes>* Fix Bug #3513: support of RFC2231 in header fields. [cipri]
+* Fix Bug #10838: bad use of MIME encoding in header. [cipri]</notes>
   </release>
  </changelog>
 </package>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
