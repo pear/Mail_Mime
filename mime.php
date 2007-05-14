@@ -639,7 +639,7 @@ class Mail_mime
             }
         }
         
-        $domain=strstr($this->_headers['From'],'@');
+        $domain=@strstr($this->_headers['From'],'@');
         foreach($this->_html_images as &$im){
             $im['cid']=$im['cid'].$domain;
         }
