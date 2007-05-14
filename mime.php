@@ -812,8 +812,8 @@ class Mail_mime
      *
      * @param string $subject String to set the subject to.
      *
-     * @access public
      * @return void
+     * @access public
      */
     function setSubject($subject)
     {
@@ -825,8 +825,8 @@ class Mail_mime
      *
      * @param string $email The email address to use
      *
-     * @access public
      * @return void
+     * @access public
      */
     function setFrom($email)
     {
@@ -839,8 +839,8 @@ class Mail_mime
      *
      * @param string $email The email direction to add
      *
-     * @access public
      * @return void
+     * @access public
      */
     function addCc($email)
     {
@@ -857,8 +857,8 @@ class Mail_mime
      *
      * @param string $email The email direction to add
      *
-     * @access public
      * @return void
+     * @access public
      */
     function addBcc($email)
     {
@@ -1069,8 +1069,8 @@ class Mail_mime
      *
      * @param string $eol End Of Line sequence
      *
-     * @access private
      * @return void
+     * @access private
      */
     function _setEOL($eol)
     {
