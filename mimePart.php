@@ -182,22 +182,22 @@ class Mail_mimePart {
 
             }
         }
-        if (isset($contentType['type'])){
+        if (isset($contentType['type'])) {
             $headers['Content-Type'] = $contentType['type'];
-            if (isset($contentType['name'])){
+            if (isset($contentType['name'])) {
                 $headers['Content-Type'] .= ';' . MAIL_MIMEPART_CRLF;
                 $headers['Content-Type'] .= $this->_buildHeaderParam('name', $contentType['name'], 
                                                 isset($contentType['charset']) ? $contentType['charset'] : 'US-ASCII', 
                                                 isset($contentType['language']) ? $contentType['language'] : NULL);
-            }elseif (isset($contentType['charset'])){
+            } elseif (isset($contentType['charset'])) {
                 $headers['Content-Type'] .= "; charset=\"{$contentType['charset']}\"";
             }
         }
 
 
-        if (isset($contentDisp['disp'])){
+        if (isset($contentDisp['disp'])) {
             $headers['Content-Disposition'] = $contentDisp['disp'];
-            if (isset($contentDisp['filename'])){
+            if (isset($contentDisp['filename'])) {
                 $headers['Content-Disposition'] .= ';' . MAIL_MIMEPART_CRLF;
                 $headers['Content-Disposition'] .= $this->_buildHeaderParam('filename', $contentDisp['filename'], 
                                                 isset($contentDisp['charset']) ? $contentDisp['charset'] : 'US-ASCII', 
@@ -338,7 +338,7 @@ class Mail_mimePart {
         $escape = '=';
         $output = '';
 
-        while(list(, $line) = each($lines)){
+        while (list(, $line) = each($lines)) {
 
             $line    = preg_split('||', $line, -1, PREG_SPLIT_NO_EMPTY);
             $linlen     = count($line);
@@ -348,16 +348,16 @@ class Mail_mimePart {
                 $char = $line[$i];
                 $dec  = ord($char);
 
-                if (($dec == 32) AND ($i == ($linlen - 1))){    // convert space at eol only
+                if (($dec == 32) AND ($i == ($linlen - 1))) {    // convert space at eol only
                     $char = '=20';
 
-                } elseif(($dec == 9) AND ($i == ($linlen - 1))) {  // convert tab at eol only
+                } elseif (($dec == 9) AND ($i == ($linlen - 1))) {  // convert tab at eol only
                     $char = '=09';
-                } elseif($dec == 9) {
+                } elseif ($dec == 9) {
                     ; // Do nothing if a tab.
-                } elseif(($dec == 61) OR ($dec < 32 ) OR ($dec > 126)) {
+                } elseif (($dec == 61) OR ($dec < 32 ) OR ($dec > 126)) {
                     $char = $escape . strtoupper(sprintf('%02s', dechex($dec)));
-                } elseif (($dec == 46) AND ($newline == '')) { 
+                } elseif (($dec == 46) AND ($newline == '')) {
                     //Bug #9722: convert full-stop at bol
                     //Some Windows servers need this, won't break anything (cipri)
                     $char = '=2E';
@@ -394,14 +394,14 @@ class Mail_mimePart {
         //is not any of the defaults, we need to encode the value.
         $shouldEncode = 0;
         $secondAsterisk = '';
-        if (preg_match('#([\x80-\xFF]){1}#', $value)){
+        if (preg_match('#([\x80-\xFF]){1}#', $value)) {
             $shouldEncode = 1;
-        }elseif ($charset && (strtolower($charset) != 'us-ascii')){
+        } elseif ($charset && (strtolower($charset) != 'us-ascii')) {
             $shouldEncode = 1;
-        }elseif ($language && ($language != 'en' && $language != 'en-us')){
+        } elseif ($language && ($language != 'en' && $language != 'en-us')) {
             $shouldEncode = 1;
         }
-        if ($shouldEncode){
+        if ($shouldEncode) {
             $search  = array('%',   ' ',   "\t");
             $replace = array('%25', '%20', '%09');
             $encValue = str_replace($search, $replace, $value);
@@ -410,7 +410,7 @@ class Mail_mimePart {
             $secondAsterisk = '*';
         }
         $header = " {$name}{$secondAsterisk}=\"{$value}\"; ";
-        if (strlen($header) <= $maxLength){
+        if (strlen($header) <= $maxLength) {
             return $header;
         }
 
@@ -421,13 +421,13 @@ class Mail_mimePart {
 
         $headers = array();
         $headCount = 0;
-        while ($value){
+        while ($value) {
             $matches = array();
             $found = preg_match($maxLengthReg, $value, $matches);
-            if ($found){
+            if ($found) {
                 $headers[] = " {$name}*{$headCount}{$secondAsterisk}=\"{$matches[0]}\"";
                 $value = substr($value, strlen($matches[0]));
-            }else{
+            } else {
                 $headers[] = " {$name}*{$headCount}{$secondAsterisk}=\"{$value}\"";
                 $value = "";
             }
