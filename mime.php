@@ -1,4 +1,5 @@
 <?php
+xx
 /**
  * The Mail_Mime class is used to create MIME E-mail messages
  *
@@ -639,9 +640,11 @@ class Mail_mime
             }
         }
         
-        $domain=@strstr($this->_headers['From'],'@');
-        foreach($this->_html_images as &$im){
-            $im['cid']=$im['cid'].$domain;
+        if (isset($this->_headers['From'])){
+            $domain = @strstr($this->_headers['From'],'@');
+            foreach($this->_html_images as &$img){
+                $img['cid'] = $img['cid'].$domain;
+            }
         }
         
         if (count($this->_html_images) AND isset($this->_htmlbody)) {
