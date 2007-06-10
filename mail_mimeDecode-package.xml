@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.5.3" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0     http://pear.php.net/dtd/tasks-1.0.xsd     http://pear.php.net/dtd/package-2.0     http://pear.php.net/dtd/package-2.0.xsd">
+ <name>Mail_mimeDecode</name>
+ <channel>pear.php.net</channel>
+ <summary>Provides a class to decode mime messages.</summary>
+ <description>Provides a class to deal with the decoding and interpreting of mime messages.
+This package used to be part of the Mail_Mime package, but has been split off.</description>
+ <lead>
+  <name>Cipriano Groenendal</name>
+  <user>cipri</user>
+  <email>cipri@php.net</email>
+  <active>yes</active>
+ </lead>
+ <developer>
+  <name>George Schlossnagle</name>
+  <user>gschlossnagle</user>
+  <email>george@omniti.com</email>
+  <active>no</active>
+ </developer>
+ <date>2007-06-10</date>
+ <time>00:00:00</time>
+ <version>
+  <release>0.1.0</release>
+  <api>0.1.0</api>
+ </version>
+ <stability>
+  <release>alpha</release>
+  <api>alpha</api>
+ </stability>
+ <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+ <notes>Initial Release</notes>
+ <contents>
+  <dir name="/">
+   <file baseinstalldir="Mail" md5sum="4d281676833bf650f720a8ffeba9cbe9" name="mimeDecode.php" role="php" />
+  </dir>
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>4.3.0</min>
+   </php>
+   <pearinstaller>
+    <min>1.6.0</min>
+   </pearinstaller>
+   <package>
+    <name>Mail_Mime</name>
+    <channel>pear.php.net</channel>
+    <min>1.4.0</min>
+    <exclude>1.4.0</exclude>
+   </package>
+  </required>
+ </dependencies>
+ <phprelease />
+</package>
