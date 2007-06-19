@@ -641,8 +641,8 @@ class Mail_mime
         
         if (isset($this->_headers['From'])){
             $domain = @strstr($this->_headers['From'],'@');
-            foreach($this->_html_images as &$img){
-                $img['cid'] = $img['cid'].$domain;
+            foreach($this->_html_images as $i => $img){
+                $this->_html_images[$i]['cid'] = $this->_html_images[$i]['cid'] . $domain;
             }
         }
         
