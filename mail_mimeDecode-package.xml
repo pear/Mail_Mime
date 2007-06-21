@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package packagerversion="1.5.3" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0     http://pear.php.net/dtd/tasks-1.0.xsd     http://pear.php.net/dtd/package-2.0     http://pear.php.net/dtd/package-2.0.xsd">
+<package packagerversion="1.6.0" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" 
+xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0     http://pear.php.net/dtd/tasks-1.0.xsd     
+http://pear.php.net/dtd/package-2.0     http://pear.php.net/dtd/package-2.0.xsd">
  <name>Mail_mimeDecode</name>
  <channel>pear.php.net</channel>
  <summary>Provides a class to decode mime messages.</summary>
@@ -17,22 +20,26 @@ This package used to be part of the Mail_Mime package, but has been split off.</
   <email>george@omniti.com</email>
   <active>no</active>
  </developer>
- <date>2007-06-10</date>
- <time>00:00:00</time>
+ <date>2007-06-17</date>
+ <time>17:20:44</time>
  <version>
-  <release>1.0.0RC1</release>
+  <release>1.5.0</release>
   <api>1.3.1</api>
  </version>
  <stability>
-  <release>beta</release>
+  <release>stable</release>
   <api>stable</api>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
- <notes>Initial Release</notes>
+ <notes>First release of mail_mimeDecode as a seperate package.</notes>
  <contents>
   <dir name="/">
+   <dir name="tests">
+    <file baseinstalldir="Mail" name="parse_header_value.phpt" role="test" />
+    <file baseinstalldir="Mail" name="semicolon_content_type_bug1724.phpt" role="test" />
+   </dir> <!-- /tests -->
    <file baseinstalldir="Mail" md5sum="4d281676833bf650f720a8ffeba9cbe9" name="mimeDecode.php" role="php" />
-  </dir>
+  </dir> <!-- / -->
  </contents>
  <dependencies>
   <required>
@@ -51,4 +58,32 @@ This package used to be part of the Mail_Mime package, but has been split off.</
   </required>
  </dependencies>
  <phprelease />
+ <changelog>
+  <release>
+   <version>
+    <release>0.1.0</release>
+    <api>1.3.1</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>stable</api>
+   </stability>
+   <date>2007-06-10</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+   <notes>Initial Release</notes>
+  </release>
+  <release>
+   <version>
+    <release>1.0.0RC1</release>
+    <api>1.3.1</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>stable</api>
+   </stability>
+   <date>2007-06-10</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+   <notes>Initial Release</notes>
+  </release>
+ </changelog>
 </package>
