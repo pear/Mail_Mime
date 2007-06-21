@@ -925,6 +925,16 @@ class Mail_mime
         }            
         foreach ($input as $hdr_name => $hdr_value) {
             if (preg_match('#([\x80-\xFF]){1}#', $hdr_value)) {
+                $preNoEncode = null;
+                $sufNoEncode = null;
+                if (preg_match("#^([^\"\x80-\xFF]*[\s])#", $hdr_value, $noEncodeMatches)){
+                    $preNoEncode = $noEncodeMatches[1];
+                    $hdr_value = substr($hdr_value, strlen($preNoEncode));
+                }
+                if (preg_match("#([\s][^\"\x80-\xFF]*)$#", $hdr_value, $noEncodeMatches)){
+                    $sufNoEncode = $noEncodeMatches[1];
+                    $hdr_value = substr($hdr_value, 0, -1*strlen($sufNoEncode));
+                }
                 if (function_exists('iconv_mime_encode') && $useIconv) {
                     $imePrefs = array();
                     if ($build_params['head_encoding'] == 'base64') {
@@ -934,7 +944,7 @@ class Mail_mime
                     }
                     $imePrefs['input-charset']  = $build_params['head_charset'];
                     $imePrefs['output-charset'] = $build_params['head_charset'];
-                    $imePrefs['line-length'] = 74;
+                    $imePrefs['line-length'] = 74 - strlen($preNoEncode . $sufNoEncode);
                     $imePrefs['line-break-chars'] = "\r\n"; //Specified in RFC2047
                     
                     $hdr_value = iconv_mime_encode($hdr_name, $hdr_value, $imePrefs);
@@ -953,6 +963,7 @@ class Mail_mime
                     $prefix = '=?' . $build_params['head_charset'] . '?B?';
                     $suffix = '?=';
                     $maxLength = 75 - strlen($prefix . $suffix) - 2;
+                    $maxLength = $maxLength - strlen($preNoEncode . $sufNoEncode);
                     $maxLength1stLine = $maxLength - strlen($hdr_name) - 2;
 
                     //We can cut base4 every 4 characters, so the real max
@@ -1005,6 +1016,7 @@ class Mail_mime
                     $prefix = '=?' . $build_params['head_charset'] . '?Q?';
                     $suffix = '?=';
                     $maxLength = 75 - strlen($prefix . $suffix) - 2 - 1;
+                    $maxLength = $maxLength - strlen($preNoEncode . $sufNoEncode);
                     $maxLength1stLine = $maxLength - strlen($hdr_name) - 2;
                     $maxLength = $maxLength - 1;
                     
@@ -1068,6 +1080,7 @@ class Mail_mime
                     }
                     $hdr_value = $hdr_value_out;
                 }
+                $hdr_value = $preNoEncode . $hdr_value . $sufNoEncode;
             }
             $input[$hdr_name] = $hdr_value;
         }
