@@ -16,4 +16,4 @@ $hdrs = $mime->_encodeHeaders(array('header'=>$string));
 
 print($hdrs['header']);
 --EXPECT--
-=?ISO-8859-1?Q?"German_Umlauts_=F6=E4=FC"_<adresse@adresse.de>?=
+=?ISO-8859-1?Q?"German_Umlauts_=F6=E4=FC"?= <adresse@adresse.de>
