@@ -640,12 +640,14 @@ class Mail_mime
         }
         
         if (isset($this->_headers['From'])){
-            $domain = @strstr($this->_headers['From'],'@');
             //Bug #11381: Illegal characters in domain ID
-            $domain = str_replace(array("<", ">", "&", "(", ")", " ", "\"", "'"), "", $domain);
-            $domain = urlencode($domain);
+            if (preg_match("|(@[0-9a-zA-Z\-\.]+)|", $this->_headers['From'], $matches)){
+                $domainID = $matches[1];
+            }else{
+                $domainID = "@localhost";
+            }
             foreach($this->_html_images as $i => $img){
-                $this->_html_images[$i]['cid'] = $this->_html_images[$i]['cid'] . $domain;
+                $this->_html_images[$i]['cid'] = $this->_html_images[$i]['cid'] . $domainID;
             }
         }
         
