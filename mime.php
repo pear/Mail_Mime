@@ -919,13 +919,33 @@ class Mail_mime
         }
         //$hdr_name: Name of the heaer
         //$hdr_value: Full line of header value.
+        //$atoms: The $hdr_value split into atoms*
+        //$atom: A single atom to encode.*
         //$hdr_value_out: The recombined $hdr_val-atoms, or the encoded string.
+        //Note: Atom as specified here is not exactly the same as an RFC822 atom,
+        //as $atom's may contain just a single space.
                 
         $useIconv = true;        
         if (isset($build_params['ignore-iconv'])) {
             $useIconv = !$build_params['ignore-iconv'];
         }            
         foreach ($input as $hdr_name => $hdr_value) {
+            /*
+            $parts = preg_split('/([ ])/', $hdr_value, -1, PREG_SPLIT_DELIM_CAPTURE);
+            $atoms = array();
+            foreach ($parts as $part){
+                $atom .= $part;
+                $quoteMatch = preg_match_all('|"|', $atom, $matches) % 2;
+                if (!$quoteMatch){
+                    $atoms[] = $atom;
+                    $atom = null;
+                }
+            }
+            if ($atom){
+                $atoms[] = $atom;
+            }
+            foreach ($atoms as $atom){
+            */
             if (preg_match('#([\x80-\xFF]){1}#', $hdr_value)) {
                 if (function_exists('iconv_mime_encode') && $useIconv) {
                     $imePrefs = array();
