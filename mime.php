@@ -378,27 +378,29 @@ class Mail_mime
      */
     function &_file2str($file_name)
     {
+        //Check state of file and raise an error properly
+        if (!file_exists($file_name)) {
+            $err = PEAR::raiseError('File not found: ' . $file_name);
+            return $err;
+        }
+        if (!is_file($file_name)) {
+            $err = PEAR::raiseError('Not a regular file: ' . $file_name);
+            return $err;
+        }
         if (!is_readable($file_name)) {
-            $err = PEAR::raiseError('File is not readable ' . $file_name);
+            $err = PEAR::raiseError('File is not readable: ' . $file_name);
             return $err;
         }
-        if (!$fd = fopen($file_name, 'rb')) {
-            $err = PEAR::raiseError('Could not open ' . $file_name);
-            return $err;
+        
+        //Temporarily reset magic_quotes_runtime and read file contents
+        if ($magic_quote_setting = get_magic_quotes_runtime()) {
+            set_magic_quotes_runtime(0);
         }
-        $filesize = filesize($file_name);
-        if ($filesize == 0) {
-            $cont =  "";
-        } else {
-            if ($magic_quote_setting = get_magic_quotes_runtime()) {
-                set_magic_quotes_runtime(0);
-            }
-            $cont = fread($fd, $filesize);
-            if ($magic_quote_setting) {
-                set_magic_quotes_runtime($magic_quote_setting);
-            }
+        $cont = file_get_contents($file_name);        
+        if ($magic_quote_setting) {
+            set_magic_quotes_runtime($magic_quote_setting);
         }
-        fclose($fd);
+        
         return $cont;
     }
 
