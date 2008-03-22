@@ -661,7 +661,7 @@ class Mail_mime
 
                 $rep   = array();
                 $rep[] = '\1\2=\3cid:' . $value['cid'] .'\3';
-                $rep[] = 'url(\1cid:' . $value['cid'] . '\2)';
+                $rep[] = 'url(\1cid:' . $value['cid'] . '\1)';
 
                 $this->_htmlbody = preg_replace($regex, $rep, $this->_htmlbody);
                 $this->_html_images[$key]['name'] = 
