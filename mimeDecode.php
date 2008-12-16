@@ -148,6 +148,15 @@ class Mail_mimeDecode extends PEAR
     var $_decode_headers;
 
     /**
+     * Flag to determine whether to include attached messages
+     * as body in the returned object. Depends on $_include_bodies
+     *
+     * @var    boolean
+     * @access private
+     */
+    var $_rfc822_bodies;
+
+    /**
      * Constructor.
      *
      * Sets up the object, initialise the variables, and splits and
@@ -165,6 +174,7 @@ class Mail_mimeDecode extends PEAR
         $this->_body           = $body;
         $this->_decode_bodies  = false;
         $this->_include_bodies = true;
+        $this->_rfc822_bodies  = false;
     }
 
     /**
@@ -208,6 +218,8 @@ class Mail_mimeDecode extends PEAR
 	                             $params['decode_bodies']  : false;
             $this->_decode_headers = isset($params['decode_headers']) ?
 	                             $params['decode_headers'] : false;
+            $this->_rfc822_bodies  = isset($params['rfc_822bodies']) ?
+	                             $params['rfc_822bodies']  : false;
 
             $structure = $this->_decode($this->_header, $this->_body);
             if ($structure === false) {
@@ -321,6 +333,10 @@ class Mail_mimeDecode extends PEAR
                     break;
 
                 case 'message/rfc822':
+					if ($this->_rfc822_bodies) {
+						$encoding = isset($content_transfer_encoding) ? $content_transfer_encoding['value'] : '7bit';
+						$return->body = ($this->_decode_bodies ? $this->_decodeBody($body, $encoding) : $body);
+					}
                     $obj = &new Mail_mimeDecode($body);
                     $return->parts[] = $obj->decode(array('include_bodies' => $this->_include_bodies,
 					                                      'decode_bodies'  => $this->_decode_bodies,
