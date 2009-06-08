@@ -494,7 +494,7 @@ class Mail_mimeDecode extends PEAR
                 for ($i = 0; $i < count($parameters); $i++) {
                     $param_name  = trim(substr($parameters[$i], 0, $pos = strpos($parameters[$i], '=')), "'\";\t\\ ");
                     $param_value = trim(str_replace('\;', ';', substr($parameters[$i], $pos + 1)), "'\";\t\\ ");
-                    if ($param_value[0] == '"') {
+                    if (!empty($param_value[0]) && $param_value[0] == '"') {
                         $param_value = substr($param_value, 1, -1);
                     }
                     $return['other'][$param_name] = $param_value;
