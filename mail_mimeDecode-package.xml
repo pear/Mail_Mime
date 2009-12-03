@@ -19,12 +19,12 @@ http://pear.php.net/dtd/package-2.0     http://pear.php.net/dtd/package-2.0.xsd"
   <email>cipri@php.net</email>
   <active>yes</active>
  </lead>
- <developer>
+ <lead>
   <name>Alan Knowles</name>
   <user>alan_k</user>
   <email>alan@akbkhome.com</email>
   <active>yes</active>
- </developer>
+ </lead>
  <developer>
   <name>George Schlossnagle</name>
   <user>gschlossnagle</user>
