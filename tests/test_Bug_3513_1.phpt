@@ -14,4 +14,4 @@ $enc = $Mime->_addAttachmentPart($root, $Mime->_parts[0]);
 print($enc->_headers['Content-Disposition']);
 --EXPECT--
 attachment;
- filename*="ISO-8859-1''F%F3%F3b%E6r.txt";
+ filename*="ISO-8859-1''F%F3%F3b%E6r.txt"

@@ -412,7 +412,7 @@ class Mail_mimePart {
             $value = "$charset'$language'$encValue";
             $secondAsterisk = '*';
         }
-        $header = " {$name}{$secondAsterisk}=\"{$value}\"; ";
+        $header = " {$name}{$secondAsterisk}=\"{$value}\"";
         if (strlen($header) <= $maxLength) {
             return $header;
         }
@@ -436,7 +436,7 @@ class Mail_mimePart {
             }
             $headCount++;
         }
-        $headers = implode(MAIL_MIMEPART_CRLF, $headers) . ';';
+        $headers = implode(MAIL_MIMEPART_CRLF, $headers);
         return $headers;
     }
 } // End of class
