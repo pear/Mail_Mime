@@ -240,7 +240,7 @@ class Mail_mimePart {
 
         if (count($this->_subparts)) {
             $boundary = '=_' . md5(rand() . microtime());
-            $this->_headers['Content-Type'] .= ';' . MAIL_MIMEPART_CRLF . "\t" . 'boundary="' . $boundary . '"';
+            $this->_headers['Content-Type'] .= ';' . MAIL_MIMEPART_CRLF . ' boundary="' . $boundary . '"';
 
             // Add body parts to $subparts
             for ($i = 0; $i < count($this->_subparts); $i++) {
@@ -253,8 +253,8 @@ class Mail_mimePart {
             }
 
             $encoded['body'] = '--' . $boundary . MAIL_MIMEPART_CRLF . 
-                               rtrim(implode('--' . $boundary . MAIL_MIMEPART_CRLF , $subparts), MAIL_MIMEPART_CRLF) . MAIL_MIMEPART_CRLF . 
-                               '--' . $boundary.'--' . MAIL_MIMEPART_CRLF;
+                               implode('--' . $boundary . MAIL_MIMEPART_CRLF , $subparts) . 
+                               '--' . $boundary . '--' . MAIL_MIMEPART_CRLF;
 
         } else {
             $encoded['body'] = $this->_getEncodedData($this->_body, $this->_encoding);
