@@ -407,7 +407,8 @@ class Mail_mimePart {
             $search  = array('%',   ' ',   "\t");
             $replace = array('%25', '%20', '%09');
             $encValue = str_replace($search, $replace, $value);
-            $encValue = preg_replace('#([\x80-\xFF])#e', '"%" . strtoupper(dechex(ord("\1")))', $encValue);
+            $encValue = preg_replace_callback('/([\x80-\xFF])/',
+                array($this, '_encode_replace_callback'), $encValue);
             $value = "$charset'$language'$encValue";
             $secondAsterisk = '*';
         }
@@ -438,4 +439,16 @@ class Mail_mimePart {
         $headers = implode(';' . MAIL_MIMEPART_CRLF, $headers);
         return $headers;
     }
+
+    /**
+     * Callback function to replace extended characters (\x80-xFF) with their
+     * ASCII values (RFC2231)
+     *
+     * @access private
+     */
+    function _encode_replace_callback($matches)
+    {
+        return '%' . strtoupper(dechex(ord($matches[1])));
+    }
+
 } // End of class
