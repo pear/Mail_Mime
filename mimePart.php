@@ -435,7 +435,7 @@ class Mail_mimePart {
             }
             $headCount++;
         }
-        $headers = implode(MAIL_MIMEPART_CRLF, $headers);
+        $headers = implode(';' . MAIL_MIMEPART_CRLF, $headers);
         return $headers;
     }
 } // End of class
