@@ -182,6 +182,7 @@ class Mail_mimePart {
 
             }
         }
+
         if (isset($contentType['type'])) {
             $headers['Content-Type'] = $contentType['type'];
             if (isset($contentType['name'])) {
@@ -189,11 +190,11 @@ class Mail_mimePart {
                 $headers['Content-Type'] .= $this->_buildHeaderParam('name', $contentType['name'], 
                                                 isset($contentType['charset']) ? $contentType['charset'] : 'US-ASCII', 
                                                 isset($contentType['language']) ? $contentType['language'] : NULL);
-            } elseif (isset($contentType['charset'])) {
-                $headers['Content-Type'] .= "; charset=\"{$contentType['charset']}\"";
+            }
+            if (isset($contentType['charset'])) {
+                $headers['Content-Type'] .= ';' . MAIL_MIMEPART_CRLF . " charset={$contentType['charset']}";
             }
         }
-
 
         if (isset($contentDisp['disp'])) {
             $headers['Content-Disposition'] = $contentDisp['disp'];
@@ -204,10 +205,8 @@ class Mail_mimePart {
                                                 isset($contentDisp['language']) ? $contentDisp['language'] : NULL);
             }
         }
-        
-        
-        
-        
+
+
         // Default content-type
         if (!isset($headers['Content-Type'])) {
             $headers['Content-Type'] = 'text/plain';
