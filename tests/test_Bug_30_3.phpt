@@ -5,7 +5,6 @@ Bug #30     Mail_Mime: _encodeHeaders is not RFC-2047 compliant. (ISO-8859-1, ba
 <?php
 error_reporting(E_ALL); // ignore E_STRICT
 include("Mail/mime.php");
-include("Mail/mimeDecode.php");
 $encoder = new Mail_mime();
 
 $encoder->_build_params['ignore-iconv'] = true;

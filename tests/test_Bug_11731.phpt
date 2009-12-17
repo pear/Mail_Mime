@@ -5,7 +5,6 @@ Bug #11731  Full stops after soft line breaks are not encoded
 <?php
 error_reporting(E_ALL); // ignore E_STRICT
 include("Mail/mime.php");
-include("Mail/mimeDecode.php");
 // Second full stop will be at the start of the second line after quoted-printable
 // encoding (full stop '=2E' + 72 characters + line-continuation '=' = 76)
 $text     = '.123456789012345678901234567890123456789012345678901234567890123456789012.3456';
