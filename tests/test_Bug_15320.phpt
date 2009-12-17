@@ -1,5 +1,5 @@
 --TEST--
-Bug #15320: Charset parameter in Content-Type of mail parts
+Bug #15320  Charset parameter in Content-Type of mail parts
 --SKIPIF--
 --FILE--
 <?php

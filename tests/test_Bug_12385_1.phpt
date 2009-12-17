@@ -1,5 +1,5 @@
 --TEST--
-Bug #12385   Bad regex when replacing css style attachments
+Bug #12385  Bad regex when replacing css style attachments
 --SKIPIF--
 --FILE--
 <?php

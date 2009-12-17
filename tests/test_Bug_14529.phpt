@@ -1,5 +1,5 @@
 --TEST--
-Bug #14529:  basename() workaround
+Bug #14529  basename() workaround
 --SKIPIF--
 --FILE--
 <?php

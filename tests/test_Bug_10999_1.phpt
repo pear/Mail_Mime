@@ -1,5 +1,5 @@
 --TEST--
-Bug #10999   Bad Content-ID(cid) format
+Bug #10999  Bad Content-ID(cid) format
 --SKIPIF--
 --FILE--
 <?php

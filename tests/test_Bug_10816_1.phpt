@@ -1,5 +1,5 @@
 --TEST--
-Bug #10816   Unwanted linebreak at the end of output
+Bug #10816  Unwanted linebreak at the end of output
 --SKIPIF--
 --FILE--
 <?php
