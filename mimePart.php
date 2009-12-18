@@ -242,19 +242,18 @@ class Mail_mimePart {
             $boundary = '=_' . md5(rand() . microtime());
             $this->_headers['Content-Type'] .= ';' . MAIL_MIMEPART_CRLF . ' boundary="' . $boundary . '"';
 
-            // Add body parts to $subparts
+            $encoded['body'] = ''; 
+
             for ($i = 0; $i < count($this->_subparts); $i++) {
-                $headers = array();
+                $encoded['body'] .= '--' . $boundary . MAIL_MIMEPART_CRLF;
                 $tmp = $this->_subparts[$i]->encode();
                 foreach ($tmp['headers'] as $key => $value) {
-                    $headers[] = $key . ': ' . $value;
+                    $encoded['body'] .= $key . ': ' . $value . MAIL_MIMEPART_CRLF;
                 }
-                $subparts[] = implode(MAIL_MIMEPART_CRLF, $headers) . MAIL_MIMEPART_CRLF . MAIL_MIMEPART_CRLF . $tmp['body'] . MAIL_MIMEPART_CRLF;
+                $encoded['body'] .= MAIL_MIMEPART_CRLF . $tmp['body'] . MAIL_MIMEPART_CRLF;
             }
 
-            $encoded['body'] = '--' . $boundary . MAIL_MIMEPART_CRLF . 
-                               implode('--' . $boundary . MAIL_MIMEPART_CRLF , $subparts) . 
-                               '--' . $boundary . '--' . MAIL_MIMEPART_CRLF;
+            $encoded['body'] .= '--' . $boundary . '--' . MAIL_MIMEPART_CRLF;
 
         } else {
             $encoded['body'] = $this->_getEncodedData($this->_body, $this->_encoding);
@@ -408,7 +407,7 @@ class Mail_mimePart {
             $replace = array('%25', '%20', '%09');
             $encValue = str_replace($search, $replace, $value);
             $encValue = preg_replace_callback('/([\x80-\xFF])/',
-                array($this, '_encode_replace_callback'), $encValue);
+                array($this, '_encodeReplaceCallback'), $encValue);
             $value = "$charset'$language'$encValue";
             $secondAsterisk = '*';
         }
@@ -446,7 +445,7 @@ class Mail_mimePart {
      *
      * @access private
      */
-    function _encode_replace_callback($matches)
+    function _encodeReplaceCallback($matches)
     {
         return '%' . strtoupper(dechex(ord($matches[1])));
     }

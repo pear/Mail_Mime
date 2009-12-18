@@ -1039,7 +1039,7 @@ class Mail_mime
                     //Replace all extended characters (\x80-xFF) with their
                     //ASCII values.
                     $hdr_value = preg_replace_callback('/([\x80-\xFF])/',
-                        array($this, '_qp_replace_callback'), $hdr_value);
+                        array($this, '_qpReplaceCallback'), $hdr_value);
 
                     //This regexp will break QP-encoded text at every $maxLength
                     //but will not break any encoded letters.
@@ -1134,7 +1134,7 @@ class Mail_mime
      *
      * @access private
      */
-    function _qp_replace_callback($matches)
+    function _qpReplaceCallback($matches)
     {
         return '=' . strtoupper(dechex(ord($matches[1])));
     }

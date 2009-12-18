@@ -48,6 +48,8 @@ Starting with version 1.4.0, it also allows non US-ASCII chars in filenames, sub
  * Fix Bug #16911: Lack of semicolon separator for MIME header parameters [alec]
  * Fix Bug #16846: Use preg_replace_callback() instead of /e modifier [alec]
  * Fix Bug #14779: Problem with an empty attachment [alec]
+ * Fix Bug #15913: Optimize the memory used by Mail_mimePart::encode.
+                   Avoid having attachments data duplicated in memory [alec]
  </notes>
  <contents>
   <dir name="/">
