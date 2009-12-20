@@ -283,15 +283,15 @@ class Mail_mime
     function addHTMLImage($file, $c_type='application/octet-stream',
                           $name = '', $isfile = true)
     {
-        $filedata = ($isfile === true) ? $this->_file2str($file)
-                                           : $file;
-        if ($isfile === true) {
-            $filename = ($name == '' ? $file : $name);
+        if ($isfile) {
+            $filedata = $this->_file2str($file);
+            if (PEAR::isError($filedata)) {
+                return $filedata;
+            }
+            $filename = ($name ? $name : $file);
         } else {
+            $filedata = $file;
             $filename = $name;
-        }
-        if (PEAR::isError($filedata)) {
-            return $filedata;
         }
         $this->_html_images[] = array(
                                       'body'   => $filedata,
@@ -337,12 +337,15 @@ class Mail_mime
                             $language   = '',
                            $location    = '')
     {
-        $filedata = ($isfile === true) ? $this->_file2str($file)
-                                           : $file;
-        if ($isfile === true) {
+        if ($isfile) {
+            $filedata = $this->_file2str($file);
+            if (PEAR::isError($filedata)) {
+                return $filedata;
+            }
             // Force the name the user supplied, otherwise use $file
-            $filename = (strlen($name)) ? $name : $file;
+            $filename = ($name ? $name : $file);
         } else {
+            $filedata = $file;
             $filename = $name;
         }
         if (!strlen($filename)) {
@@ -351,9 +354,6 @@ class Mail_mime
             return $err;
         }
         $filename = $this->_basename($filename);
-        if (PEAR::isError($filedata)) {
-            return $filedata;
-        }
 
         $this->_parts[] = array(
                                 'body'        => $filedata,
