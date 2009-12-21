@@ -23,6 +23,8 @@ array('Subject', 'Short ASCII subject'),
 array('Subject', 'Long ASCII subject - multiline space separated words - too long for one line'),
 array('Subject', 'Short Unicode ż subject'),
 array('Subject', 'Long Unicode subject - zażółć gęślą jaźń - too long for one line'),
+array('References', '<hglvja$jg7$1@nemesis.news.neostrada.pl>  <4b2e87ac$1@news.home.net.pl> <hgm5b1$3a7$1@atlantis.news.neostrada.pl>'),
+array('To', '"Frank Do" <adresse@adresse.de>,, "James Clark" <james@domain.com>'),
 );
 
 $i = 1;
@@ -71,3 +73,9 @@ foreach ($headers as $header) {
  =?UTF-8?B?bMSFIGphxbrFhCAtIHRvbyBsb25nIGZvciBvbmUgbGluZQ==?=
 [15] Subject: =?UTF-8?Q?Long_Unicode_subject_-_za=C5=BC=C3=B3=C5=82=C4=87_g?=
  =?UTF-8?Q?=C4=99=C5=9Bl=C4=85_ja=C5=BA=C5=84_-_too_long_for_one_line?=
+[16] References: <hglvja$jg7$1@nemesis.news.neostrada.pl>
+ <4b2e87ac$1@news.home.net.pl> <hgm5b1$3a7$1@atlantis.news.neostrada.pl>
+[16] References: <hglvja$jg7$1@nemesis.news.neostrada.pl>
+ <4b2e87ac$1@news.home.net.pl> <hgm5b1$3a7$1@atlantis.news.neostrada.pl>
+[17] To: "Frank Do" <adresse@adresse.de>, "James Clark" <james@domain.com>
+[17] To: "Frank Do" <adresse@adresse.de>, "James Clark" <james@domain.com>

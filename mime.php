@@ -963,6 +963,9 @@ class Mail_mime
 
             foreach($parts as $part) {
                 $part = trim($part);
+                if (!$part) {
+                    continue;
+                }
                 if ($value) {
                     $value .= $separator==',' ? $separator.' ' : ' ';
                 } else {
