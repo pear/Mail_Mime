@@ -1241,7 +1241,7 @@ class Mail_mime
      */
     function _qpReplaceCallback($matches)
     {
-        return '=' . strtoupper(dechex(ord($matches[1])));
+        return sprintf('=%0X', ord($matches[1]));
     }
 
 } // End of class
