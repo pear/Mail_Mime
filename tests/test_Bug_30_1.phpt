@@ -6,7 +6,6 @@ Bug #30     Mail_Mime: _encodeHeaders is not RFC-2047 compliant. (ISO-8859-1, qu
 error_reporting(E_ALL); // ignore E_STRICT
 include("Mail/mime.php");
 $encoder = new Mail_mime();
-$encoder->_build_params['ignore-iconv'] = true;
 
 $input[] = "Just a simple test";
 $input[] = "_this=?Q?U:I:T:E_a_test?=";
@@ -33,5 +32,5 @@ Array
     [6] => =?ISO-8859-1?Q?TEST__S=FCper_gr=F6se_tolle_gr=FC=DFe_von_mir_S=FCper_?=
  =?ISO-8859-1?Q?gr=F6se_tolle_gr=FC=DFe_von_mir_S=FCper_gr=F6se_tolle_gr?=
  =?ISO-8859-1?Q?=FC=DFe_von_mir!!!=3F?=
-    [7] => =?ISO-8859-1?Q?"German_Umlauts_=F6=E4=FC"?=
+    [7] => =?ISO-8859-1?Q?German_Umlauts_=F6=E4=FC?=
 )

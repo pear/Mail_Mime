@@ -40,6 +40,7 @@ Starting with version 1.4.0, it also allows non US-ASCII chars in filenames, sub
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
+Fixed bugs:
  * Fix Bug #14678: srand() lowers security [clockwerx]
  * Fix Bug #12921: _file2str not binary safe [walter]
  * Fix Bug #12385: Bad regex when replacing css style attachments [cipri]
@@ -50,6 +51,12 @@ Starting with version 1.4.0, it also allows non US-ASCII chars in filenames, sub
  * Fix Bug #14779: Problem with an empty attachment [alec]
  * Fix Bug #15913: Optimize the memory used by Mail_mimePart::encode.
                    Avoid having attachments data duplicated in memory [alec]
+ * Fix Bug #16539: Headers longer than 998 characters aren't wrapped [alec]
+ * Fix Bug #11238: Wrong encoding of structured headers [alec]
+ * Fix Bug #13641: iconv_mime_encode() seems to work different/errorious than
+                   the build in logic. Removed 'ignore_iconv' param.  [alec]
+Implemented Features:
+ * Implement Feature #10438: Function (encodeHeader) for encoding of given header [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -59,6 +66,7 @@ Starting with version 1.4.0, it also allows non US-ASCII chars in filenames, sub
    <dir name="tests">
     <file baseinstalldir="Mail" name="class-filename.phpt" role="test" />
     <file baseinstalldir="Mail" name="encoding_case.phpt" role="test" />
+    <file baseinstalldir="Mail" name="headers_encoding.phpt" role="test" />
     <file baseinstalldir="Mail" name="sleep_wakeup_EOL-bug3488-part1.phpt" role="test" />
     <file baseinstalldir="Mail" name="sleep_wakeup_EOL-bug3488-part2.phpt" role="test" />
     <file baseinstalldir="Mail" name="tabs_quoted_printable.phpt" role="test" />
@@ -336,7 +344,7 @@ o one small fix after RC1 (bug #3940)</notes>
    </stability>
    <date>2007-05-05</date>
    <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
-   <notes>Release nots:
+   <notes>Release notes:
  * No more notices in PHP 5 /4.4.0.
  * Improved inline HTML image function.
  * Improved header encoding with foreign charsets.

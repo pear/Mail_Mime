@@ -6,7 +6,6 @@ Bug #30     Mail_Mime: _encodeHeaders is not RFC-2047 compliant. (UTF-8)
 error_reporting(E_ALL); // ignore E_STRICT
 include("Mail/mime.php");
 $encoder = new Mail_mime();
-$encoder->_build_params['ignore-iconv'] = true;
 
 $input[] = "Just a simple test";
 $input[] = "UTF-8 test for bug #30. #2 so Helgi Þormar Þorbjörnsson <dufuz@php.net> doesn't complain";
@@ -38,5 +37,5 @@ Array
     [8] => =?utf-8?B?VEVTVCAgU8O8cGVyIGdyw7ZzZSB0b2xsZSBncsO8w59lIHZvbiBtaXIg?=
  =?utf-8?B?U8O8cGVyIGdyw7ZzZSB0b2xsZSBncsO8w59lIHZvbiBtaXIgU8O8cGVyIGdy?=
  =?utf-8?B?w7ZzZSB0b2xsZSBncsO8w59lIHZvbiBtaXIhISE/?=
-    [9] => =?utf-8?B?Ikdlcm1hbiBVbWxhdXRzIMO2w6TDvCI=?=
+    [9] => =?utf-8?B?R2VybWFuIFVtbGF1dHMgw7bDpMO8?=
 )

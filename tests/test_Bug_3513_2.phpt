@@ -7,7 +7,6 @@ error_reporting(E_ALL);
 $test = "Süper gröse tolle tolle grüße.txt";
 require_once('Mail/mime.php');
 $Mime=new Mail_Mime();
-$Mime->_build_params['ignore-iconv'] = true;
 $Mime->addAttachment('testfile',"text/plain", $test, FALSE, 'base64', 'attachment', 'UTF-8', 'de');
 $root = $Mime->_addMixedPart();
 $enc = $Mime->_addAttachmentPart($root, $Mime->_parts[0]);

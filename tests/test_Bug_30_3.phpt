@@ -7,8 +7,6 @@ error_reporting(E_ALL); // ignore E_STRICT
 include("Mail/mime.php");
 $encoder = new Mail_mime();
 
-$encoder->_build_params['ignore-iconv'] = true;
-
 $input[] = "Just a simple test";
 $input[] = "_this=?Q?U:I:T:E_a_test?=";
 $input[] = "_=?Süper?=_";
@@ -31,7 +29,7 @@ Array
     [3] => =?ISO-8859-1?B?XyA9ID8gU/xwZXIgPyA9IF8=?=
     [4] => =?ISO-8859-1?B?U/xwZXIgZ3L2c2UgdG9sbGUgZ3L832U/ISBGdXIgbWlyIT8=?=
     [5] => =?ISO-8859-1?B?U/xwZXIgPSBncvZzZSB0b2xsZSBncvzfZSB2b24gbWly?=
-    [6] => =?ISO-8859-1?B?Ikdlcm1hbiBVbWxhdXRzIPbk/CI=?=
+    [6] => =?ISO-8859-1?B?R2VybWFuIFVtbGF1dHMg9uT8?=
     [7] => =?ISO-8859-1?B?VEVTVCAgU/xwZXIgZ3L2c2UgdG9sbGUgZ3L832Ugdm9uIG1pciBT?=
  =?ISO-8859-1?B?/HBlciBncvZzZSB0b2xsZSBncvzfZSB2b24gbWlyIFP8cGVyIGdy9nNl?=
  =?ISO-8859-1?B?IHRvbGxlIGdy/N9lIHZvbiBtaXIhISE/?=

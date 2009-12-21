@@ -9,7 +9,6 @@ $testEncoded="GyRCRnxLXDhsGyhCLnR4dA==";
 $test = base64_decode($testEncoded); // Japanese filename in ISO-2022-JP charset.
 require_once('Mail/mime.php');
 $Mime=new Mail_Mime();
-$Mime->_build_params['ignore-iconv'] = true;
 $Mime->addAttachment('testfile',"text/plain", $test, FALSE, 'base64', 'attachment', 'iso-2022-jp', '');
 $root = $Mime->_addMixedPart();
 $enc = $Mime->_addAttachmentPart($root, $Mime->_parts[0]);

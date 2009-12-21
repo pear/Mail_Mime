@@ -9,4 +9,4 @@ $m = new Mail_mime();
 print_r($m->encodeRecipients("Testø Testå <me@example.com>"));
 ?>
 --EXPECT--
-=?ISO-8859-1?Q?Test=F8=20Test=E5?= <me@example.com>
+=?ISO-8859-1?Q?Test=F8_Test=E5?= <me@example.com>
