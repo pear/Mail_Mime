@@ -18,9 +18,9 @@ if (preg_match('/(Content.*)--=.*/s', $result, $matches)) {
 --EXPECT--
 Content-Transfer-Encoding: base64
 Content-Type: text/plain;
- name="file.txt"
+ name=file.txt
 Content-Disposition: attachment;
- filename="file.txt"
+ filename=file.txt
 
 
 END

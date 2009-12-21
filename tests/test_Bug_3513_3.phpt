@@ -16,4 +16,4 @@ print($enc->_headers['Content-Disposition']);
 ?>
 --EXPECT--
 attachment;
- filename*=iso-2022-jp''%1B%24BF%7CK%5C8l%1B%28B.txt
+ filename*=iso-2022-jp''%1B$BF|K%5C8l%1B%28B.txt

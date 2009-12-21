@@ -353,7 +353,7 @@ class Mail_mimePart {
                 } elseif ($dec == 9) {
                     ; // Do nothing if a tab.
                 } elseif (($dec == 61) OR ($dec < 32 ) OR ($dec > 126)) {
-                    $char = $escape . strtoupper(sprintf('%02s', dechex($dec)));
+                    $char = $escape . sprintf('%0X', $dec);
                 } elseif (($dec == 46) AND (($newline == '') || ((strlen($newline) + strlen("=2E")) >= $line_max))) {
                     //Bug #9722: convert full-stop at bol,
                     //some Windows servers need this, won't break anything (cipri)
@@ -391,36 +391,39 @@ class Mail_mimePart {
      */
     function _buildHeaderParam($name, $value, $charset=NULL, $language=NULL, $maxLength=75)
     {
-        //If we find chars to encode, or if charset or language
-        //is not any of the defaults, we need to encode the value.
-        $shouldEncode = 0;
-        $secondAsterisk = $quote = '';
-        if (preg_match('#([\x80-\xFF]){1}#', $value)) {
-            $shouldEncode = 1;
-        } elseif ($charset && (strtolower($charset) != 'us-ascii')) {
-            $shouldEncode = 1;
-        } elseif ($language && ($language != 'en' && $language != 'en-us')) {
-            $shouldEncode = 1;
+        // RFC 2045:
+        // value needs encoding if contains non-ASCII chars or is longer than 78 chars
+        if (!preg_match('#[^\x20-\x7E]#', $value) && // ASCII characters
+            (!$charset || strtolower($charset) == 'us-ascii') && // ASCII charset
+            (!$language || preg_match('/^(en|en-us)$/i', $language)) // EN language
+        ) {
+            // token
+            if (!preg_match('#([^\x21,\x23-\x27,\x2A,\x2B,\x2D,\x2E,\x30-\x39,\x41-\x5A,\x5E-\x7E])#', $value)) {
+                if (strlen($name) + strlen($value) + 3 <= $maxLength) {
+                    return " {$name}={$value}";
+                }
+            // quoted-string
+            } else {
+                $quoted = addcslashes($value, '\\"');
+                if (strlen($name) + strlen($quoted) + 5 <= $maxLength) {
+                    return " {$name}=\"{$quoted}\"";
+                }
+            }
         }
-        if ($shouldEncode) {
-            $search  = array('%',   ' ',   "\t");
-            $replace = array('%25', '%20', '%09');
-            $encValue = str_replace($search, $replace, $value);
-            $encValue = preg_replace_callback('/([\x80-\xFF])/',
-                array($this, '_encodeReplaceCallback'), $encValue);
-            $value = "$charset'$language'$encValue";
-            $secondAsterisk = '*';
-        } else {
-            $quote = "\"";
-        }
-        $header = " {$name}{$secondAsterisk}={$quote}{$value}{$quote}";
+
+        // RFC2231:
+        $encValue = preg_replace_callback(
+            '/([^\x21,\x23,\x24,\x26,\x2B,\x2D,\x2E,\x30-\x39,\x41-\x5A,\x5E-\x7E])/',
+            array($this, '_encodeReplaceCallback'), $value);
+        $value = "$charset'$language'$encValue";
+
+        $header = " {$name}*={$value}";
         if (strlen($header) <= $maxLength) {
             return $header;
         }
 
-        $preLength = strlen(" {$name}*0{$secondAsterisk}={$quote}");
-        $sufLength = strlen("{$quote};");
-        $maxLength = MAX(16, $maxLength - $preLength - $sufLength - 2);
+        $preLength = strlen(" {$name}*0*=");
+        $maxLength = max(16, $maxLength - $preLength - 3);
         $maxLengthReg = "|(.{0,$maxLength}[^\%][^\%])|";
 
         $headers = array();
@@ -429,14 +432,15 @@ class Mail_mimePart {
             $matches = array();
             $found = preg_match($maxLengthReg, $value, $matches);
             if ($found) {
-                $headers[] = " {$name}*{$headCount}{$secondAsterisk}={$quote}{$matches[0]}{$quote}";
+                $headers[] = " {$name}*{$headCount}*={$matches[0]}";
                 $value = substr($value, strlen($matches[0]));
             } else {
-                $headers[] = " {$name}*{$headCount}{$secondAsterisk}={$quote}{$value}{$quote}";
-                $value = "";
+                $headers[] = " {$name}*{$headCount}*={$value}";
+                $value = '';
             }
             $headCount++;
         }
+
         $headers = implode(';' . MAIL_MIMEPART_CRLF, $headers);
         return $headers;
     }

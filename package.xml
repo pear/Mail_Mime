@@ -56,6 +56,7 @@ Fixed bugs:
  * Fix Bug #13641: iconv_mime_encode() seems to work different/errorious than
                    the build in logic. Removed 'ignore_iconv' param.  [alec]
  * Fix Bug #16706: Incorrect double-quotes RFC 2231-encoded parameter values [alec]
+ * Fix Bug #14232: RFC2231: tspecials encoding in _buildHeaderParam() [alec]
 Implemented Features:
  * Implement Feature #10438: Function (encodeHeader) for encoding of given header [alec]
  </notes>
