@@ -394,7 +394,7 @@ class Mail_mimePart {
         //If we find chars to encode, or if charset or language
         //is not any of the defaults, we need to encode the value.
         $shouldEncode = 0;
-        $secondAsterisk = '';
+        $secondAsterisk = $quote = '';
         if (preg_match('#([\x80-\xFF]){1}#', $value)) {
             $shouldEncode = 1;
         } elseif ($charset && (strtolower($charset) != 'us-ascii')) {
@@ -410,14 +410,16 @@ class Mail_mimePart {
                 array($this, '_encodeReplaceCallback'), $encValue);
             $value = "$charset'$language'$encValue";
             $secondAsterisk = '*';
+        } else {
+            $quote = "\"";
         }
-        $header = " {$name}{$secondAsterisk}=\"{$value}\"";
+        $header = " {$name}{$secondAsterisk}={$quote}{$value}{$quote}";
         if (strlen($header) <= $maxLength) {
             return $header;
         }
 
-        $preLength = strlen(" {$name}*0{$secondAsterisk}=\"");
-        $sufLength = strlen("\";");
+        $preLength = strlen(" {$name}*0{$secondAsterisk}={$quote}");
+        $sufLength = strlen("{$quote};");
         $maxLength = MAX(16, $maxLength - $preLength - $sufLength - 2);
         $maxLengthReg = "|(.{0,$maxLength}[^\%][^\%])|";
 
@@ -427,10 +429,10 @@ class Mail_mimePart {
             $matches = array();
             $found = preg_match($maxLengthReg, $value, $matches);
             if ($found) {
-                $headers[] = " {$name}*{$headCount}{$secondAsterisk}=\"{$matches[0]}\"";
+                $headers[] = " {$name}*{$headCount}{$secondAsterisk}={$quote}{$matches[0]}{$quote}";
                 $value = substr($value, strlen($matches[0]));
             } else {
-                $headers[] = " {$name}*{$headCount}{$secondAsterisk}=\"{$value}\"";
+                $headers[] = " {$name}*{$headCount}{$secondAsterisk}={$quote}{$value}{$quote}";
                 $value = "";
             }
             $headCount++;

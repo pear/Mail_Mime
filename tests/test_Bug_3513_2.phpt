@@ -13,5 +13,5 @@ $enc = $Mime->_addAttachmentPart($root, $Mime->_parts[0]);
 print($enc->_headers['Content-Disposition']);
 --EXPECT--
 attachment;
- filename*0*="UTF-8'de'S%C3%BCper%20gr%C3%B6se%20tolle%20tolle%20gr%C3%BC";
- filename*1*="%C3%9Fe.txt"
+ filename*0*=UTF-8'de'S%C3%BCper%20gr%C3%B6se%20tolle%20tolle%20gr%C3%BC;
+ filename*1*=%C3%9Fe.txt
