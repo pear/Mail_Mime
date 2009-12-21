@@ -25,6 +25,8 @@ array('Subject', 'Short Unicode ż subject'),
 array('Subject', 'Long Unicode subject - zażółć gęślą jaźń - too long for one line'),
 array('References', '<hglvja$jg7$1@nemesis.news.neostrada.pl>  <4b2e87ac$1@news.home.net.pl> <hgm5b1$3a7$1@atlantis.news.neostrada.pl>'),
 array('To', '"Frank Do" <adresse@adresse.de>,, "James Clark" <james@domain.com>'),
+array('To', '"Frank \\" \\\\Do" <adresse@adresse.de>'),
+array('To', 'Frank " \\Do <adresse@adresse.de>'),
 );
 
 $i = 1;
@@ -79,3 +81,7 @@ foreach ($headers as $header) {
  <4b2e87ac$1@news.home.net.pl> <hgm5b1$3a7$1@atlantis.news.neostrada.pl>
 [17] To: "Frank Do" <adresse@adresse.de>, "James Clark" <james@domain.com>
 [17] To: "Frank Do" <adresse@adresse.de>, "James Clark" <james@domain.com>
+[18] To: "Frank \" \\Do" <adresse@adresse.de>
+[18] To: "Frank \" \\Do" <adresse@adresse.de>
+[19] To: "Frank \" \\Do" <adresse@adresse.de>
+[19] To: "Frank \" \\Do" <adresse@adresse.de>

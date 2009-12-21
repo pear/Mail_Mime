@@ -990,7 +990,9 @@ class Mail_mime
                                 $word[strlen($word)-1] == '"') {
                                 // de-quote quoted-string, encoding changes
                                 // string to atom
-                                $word = str_replace('\\"', '', $word);
+                                $search = array("\\\"", "\\\\");
+                                $replace = array("\"", "\\");
+                                $word = str_replace($search, $replace, $word);
                                 $word = substr($word, 1, -1);
                             }
                             // find length of last line
@@ -1004,7 +1006,7 @@ class Mail_mime
                         // ASCII: quote string if needed
                         } else if (($word[0] != '"' || $word[strlen($word)-1] != '"')
                             && preg_match('/[\(\)\<\>\\\.\[\]@,;:"]/', $word)) {
-                            $word = '"'.addcslashes($word, '"').'"';
+                            $word = '"'.addcslashes($word, '\\"').'"';
                         }
                     }
                     $value .= $word.' '.$address;
@@ -1026,7 +1028,9 @@ class Mail_mime
                 if ($value[0] == '"' && $value[strlen($value)-1] == '"') {
                     // de-quote quoted-string, encoding changes
                     // string to atom
-                    $value = str_replace('\\"', '', $value);
+                    $search = array("\\\"", "\\\\");
+                    $replace = array("\"", "\\");
+                    $value = str_replace($search, $replace, $value);
                     $value = substr($value, 1, -1);
                 }
                 $value = $this->_encodeString($value, $charset, $encoding,
