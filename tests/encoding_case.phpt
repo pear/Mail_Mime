@@ -1,5 +1,5 @@
 --TEST--
-tabs in _quotedPrintableEncode() (bug #2364)
+Bug #2364   Tabs in _quotedPrintableEncode()
 --SKIPIF--
 --FILE--
 <?php

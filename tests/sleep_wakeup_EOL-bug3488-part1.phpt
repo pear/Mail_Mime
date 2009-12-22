@@ -1,5 +1,5 @@
 --TEST--
-Sleep/Wakeup EOL Consistency - Bug #3488 - Part 1
+Bug #3488   Sleep/Wakeup EOL Consistency - Part 1
 --SKIPIF--
 --FILE--
 <?php

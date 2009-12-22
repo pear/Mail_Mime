@@ -1,5 +1,5 @@
 --TEST--
-Bug #30     Mail_Mime: _encodeHeaders is not RFC-2047 compliant. (ISO-8859-1, base64 encoding)
+Bug #30     _encodeHeaders is not RFC-2047 compliant. (ISO-8859-1, base64 encoding)
 --SKIPIF--
 --FILE--
 <?php

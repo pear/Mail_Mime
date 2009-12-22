@@ -1,5 +1,5 @@
 --TEST--
-Quoted Semicolons in Content-Type (bug #1724)
+Bug #1724   Quoted Semicolons in Content-Type
 --SKIPIF--
 --FILE--
 <?php

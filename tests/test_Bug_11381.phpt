@@ -1,5 +1,5 @@
 --TEST--
-Bug #11381  domain name is attached to content-id, trailing greater-than sign is not remove
+Bug #11381  Domain name is attached to content-id, trailing greater-than sign is not removed
 --SKIPIF--
 --FILE--
 <?php

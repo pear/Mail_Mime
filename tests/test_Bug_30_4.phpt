@@ -1,5 +1,5 @@
 --TEST--
-Bug #30     Mail_Mime: _encodeHeaders is not RFC-2047 compliant. (UTF-8)
+Bug #30     _encodeHeaders is not RFC-2047 compliant. (UTF-8)
 --SKIPIF--
 --FILE--
 <?php

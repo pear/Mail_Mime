@@ -27,6 +27,8 @@ array('References', '<hglvja$jg7$1@nemesis.news.neostrada.pl>  <4b2e87ac$1@news.
 array('To', '"Frank Do" <adresse@adresse.de>,, "James Clark" <james@domain.com>'),
 array('To', '"Frank \\" \\\\Do" <adresse@adresse.de>'),
 array('To', 'Frank " \\Do <adresse@adresse.de>'),
+array('Subject', "A REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY /REALLY/ LONG test"),
+array('Subject', "TEST Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir!!!?"),
 );
 
 $i = 1;
@@ -85,3 +87,25 @@ foreach ($headers as $header) {
 [18] To: "Frank \" \\Do" <adresse@adresse.de>
 [19] To: "Frank \" \\Do" <adresse@adresse.de>
 [19] To: "Frank \" \\Do" <adresse@adresse.de>
+[20] Subject: A REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY
+ REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY
+ REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY
+ REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY /REALLY/ LONG test
+[20] Subject: A REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY
+ REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY
+ REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY
+ REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY /REALLY/ LONG test
+[21] Subject: =?UTF-8?B?VEVTVCBT/HBlciBncvZzZSB0b2xsZSBncvzfZSB2b24gbWlyIFP8?=
+ =?UTF-8?B?cGVyIGdy9nNlIHRvbGxlIGdy/N9lIHZvbiBtaXIgU/xwZXIgZ3L2c2UgdG9s?=
+ =?UTF-8?B?bGUgZ3L832Ugdm9uIG1pciBT/HBlciBncvZzZSB0b2xsZSBncvzfZSB2b24g?=
+ =?UTF-8?B?bWlyIFP8cGVyIGdy9nNlIHRvbGxlIGdy/N9lIHZvbiBtaXIgU/xwZXIgZ3L2?=
+ =?UTF-8?B?c2UgdG9sbGUgZ3L832Ugdm9uIG1pciBT/HBlciBncvZzZSB0b2xsZSBncvzf?=
+ =?UTF-8?B?ZSB2b24gbWlyIFP8cGVyIGdy9nNlIHRvbGxlIGdy/N9lIHZvbiBtaXIgU/xw?=
+ =?UTF-8?B?ZXIgZ3L2c2UgdG9sbGUgZ3L832Ugdm9uIG1pciEhIT8=?=
+[21] Subject: =?UTF-8?Q?TEST_S=FCper_gr=F6se_tolle_gr=FC=DFe_von_mir_S=FCper_?=
+ =?UTF-8?Q?gr=F6se_tolle_gr=FC=DFe_von_mir_S=FCper_gr=F6se_tolle_gr=FC?=
+ =?UTF-8?Q?=DFe_von_mir_S=FCper_gr=F6se_tolle_gr=FC=DFe_von_mir_S=FCper_?=
+ =?UTF-8?Q?gr=F6se_tolle_gr=FC=DFe_von_mir_S=FCper_gr=F6se_tolle_gr=FC?=
+ =?UTF-8?Q?=DFe_von_mir_S=FCper_gr=F6se_tolle_gr=FC=DFe_von_mir_S=FCper_?=
+ =?UTF-8?Q?gr=F6se_tolle_gr=FC=DFe_von_mir_S=FCper_gr=F6se_tolle_gr=FC?=
+ =?UTF-8?Q?=DFe_von_mir!!!=3F?=

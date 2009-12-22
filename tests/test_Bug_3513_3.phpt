@@ -1,5 +1,5 @@
 --TEST--
-Bug #3513   support of RFC2231 in header fields. (ISO-2022-JP)
+Bug #3513   Support of RFC2231 in header fields. (ISO-2022-JP)
 --SKIPIF--
 --FILE--
 <?php
