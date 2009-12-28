@@ -281,8 +281,8 @@ class Mail_mime
      * @access public
      */
     function addHTMLImage($file, $c_type='application/octet-stream',
-                          $name = '', $isfile = true)
-    {
+        $name = '', $isfile = true
+    ) {
         if ($isfile) {
             $filedata = $this->_file2str($file);
             if (PEAR::isError($filedata)) {
@@ -328,15 +328,15 @@ class Mail_mime
      * @access public
      */
     function addAttachment($file,
-                           $c_type      = 'application/octet-stream',
-                           $name        = '',
-                            $isfile     = true,
-                           $encoding    = 'base64',
-                           $disposition = 'attachment',
-                           $charset     = '',
-                            $language   = '',
-                           $location    = '')
-    {
+        $c_type      = 'application/octet-stream',
+        $name        = '',
+        $isfile      = true,
+        $encoding    = 'base64',
+        $disposition = 'attachment',
+        $charset     = '',
+        $language    = '',
+        $location    = ''
+    ) {
         if ($isfile) {
             $filedata = $this->_file2str($file);
             if (PEAR::isError($filedata)) {
@@ -586,12 +586,11 @@ class Mail_mime
      * @access public
      */
     function getMessage(
-                        $separation   = null,
-                        $build_params = null,
-                        $xtra_headers = null,
-                        $overwrite    = false
-                       )
-    {
+        $separation   = null,
+        $build_params = null,
+        $xtra_headers = null,
+        $overwrite    = false
+    ) {
         if ($separation === null) {
             $separation = MAIL_MIME_CRLF;
         }
@@ -637,15 +636,16 @@ class Mail_mime
             }
         }
 
-        if (isset($this->_headers['From'])){
+        if (isset($this->_headers['From'])) {
             //Bug #11381: Illegal characters in domain ID
-            if (preg_match("|(@[0-9a-zA-Z\-\.]+)|", $this->_headers['From'], $matches)){
+            if (preg_match("|(@[0-9a-zA-Z\-\.]+)|", $this->_headers['From'], $matches)) {
                 $domainID = $matches[1];
-            }else{
+            } else {
                 $domainID = "@localhost";
             }
-            foreach($this->_html_images as $i => $img){
-                $this->_html_images[$i]['cid'] = $this->_html_images[$i]['cid'] . $domainID;
+            foreach ($this->_html_images as $i => $img) {
+                $this->_html_images[$i]['cid']
+                    = $this->_html_images[$i]['cid'] . $domainID;
             }
         }
 
@@ -662,8 +662,8 @@ class Mail_mime
                 $rep[] = 'url(\1cid:' . $value['cid'] . '\1)';
 
                 $this->_htmlbody = preg_replace($regex, $rep, $this->_htmlbody);
-                $this->_html_images[$key]['name'] =
-                    $this->_basename($this->_html_images[$key]['name']);
+                $this->_html_images[$key]['name']
+                    = $this->_basename($this->_html_images[$key]['name']);
             }
         }
 
@@ -754,8 +754,8 @@ class Mail_mime
         if (isset($message)) {
             $output = $message->encode();
 
-            $this->_headers = array_merge($this->_headers,
-                                          $output['headers']);
+            $this->_headers = array_merge($this->_headers, $output['headers']);
+
             $body = $output['body'];
             return $body;
 
@@ -916,8 +916,10 @@ class Mail_mime
         }
 
         foreach ($input as $hdr_name => $hdr_value) {
-            $input[$hdr_name] = $this->encodeHeader($hdr_name, $hdr_value,
-                $build_params['head_charset'], $build_params['head_encoding']);
+            $input[$hdr_name] = $this->encodeHeader(
+                $hdr_name, $hdr_value,
+                $build_params['head_charset'], $build_params['head_encoding']
+            );
         }
 
         return $input;
@@ -954,15 +956,16 @@ class Mail_mime
             $separator = ' ';
         }
 
-        if (!$charset)
+        if (!$charset) {
             $charset = 'ISO-8859-1';
+        }
 
         // Structured header (make sure addr-spec inside is not encoded)
         if (!empty($separator)) {
             $parts = $this->_explodeQuotedString($separator, $value);
             $value = '';
 
-            foreach($parts as $part) {
+            foreach ($parts as $part) {
                 $part = trim($part);
                 if (!$part) {
                     continue;
@@ -972,14 +975,15 @@ class Mail_mime
                 } else {
                     $value = $name . ': ';
                 }
+
                 // let's find phrase (name) and/or addr-spec
                 if (preg_match('/^<\S+@\S+>$/', $part)) {
                     $value .= $part;
-                // address without brackets and without name
                 } else if (preg_match('/^\S+@\S+$/', $part)) {
+                    // address without brackets and without name
                     $value .= $part;
-                // address with name (handle name)
                 } else if (preg_match('/<*\S+@\S+>*$/', $part, $matches)) {
+                    // address with name (handle name)
                     $address = $matches[0];
                     $word = str_replace($address, '', $part);
                     $word = trim($word);
@@ -987,8 +991,7 @@ class Mail_mime
                     if ($word) {
                         // non-ASCII: require encoding
                         if (preg_match('#([\x80-\xFF]){1}#', $word)) {
-                            if ($word[0] == '"' &&
-                                $word[strlen($word)-1] == '"') {
+                            if ($word[0] == '"' && $word[strlen($word)-1] == '"') {
                                 // de-quote quoted-string, encoding changes
                                 // string to atom
                                 $search = array("\\\"", "\\\\");
@@ -1002,17 +1005,19 @@ class Mail_mime
                             } else {
                                 $last_len = strlen($value);
                             }
-                            $word = $this->_encodeString($word, $charset,
-                                $encoding, $last_len);
-                        // ASCII: quote string if needed
+                            $word = $this->_encodeString(
+                                $word, $charset, $encoding, $last_len
+                            );
                         } else if (($word[0] != '"' || $word[strlen($word)-1] != '"')
-                            && preg_match('/[\(\)\<\>\\\.\[\]@,;:"]/', $word)) {
+                            && preg_match('/[\(\)\<\>\\\.\[\]@,;:"]/', $word)
+                        ) {
+                            // ASCII: quote string if needed
                             $word = '"'.addcslashes($word, '\\"').'"';
                         }
                     }
                     $value .= $word.' '.$address;
-                // addr-spec not found, don't encode (?)
                 } else {
+                    // addr-spec not found, don't encode (?)
                     $value .= $part;
                 }
 
@@ -1022,8 +1027,8 @@ class Mail_mime
 
             $value = preg_replace('/^'.$name.': /', '', $value);
 
-        // Unstructured header
         } else {
+            // Unstructured header
             // non-ASCII: require encoding
             if (preg_match('#([\x80-\xFF]){1}#', $value)) {
                 if ($value[0] == '"' && $value[strlen($value)-1] == '"') {
@@ -1034,11 +1039,11 @@ class Mail_mime
                     $value = str_replace($search, $replace, $value);
                     $value = substr($value, 1, -1);
                 }
-                $value = $this->_encodeString($value, $charset, $encoding,
-                    strlen($name) + 2);
-            // ASCII: check if header line isn't too long...
+                $value = $this->_encodeString(
+                    $value, $charset, $encoding, strlen($name) + 2
+                );
             } else if (strlen($name.': '.$value) > 78) {
-                // ...and use folding
+                // ASCII: check if header line isn't too long and use folding
                 $tmp = wordwrap($name.': '.$value, 78, MAIL_MIME_CRLF.' ');
                 $value = preg_replace('/^'.$name.':\s*/', '', $tmp);
                 // hard limit 998 (RFC2822)
@@ -1052,10 +1057,10 @@ class Mail_mime
     /**
      * Encodes a header value as per RFC2047
      *
-     * @param string $value    The header data to encode
-     * @param string $charset  Character set name
-     * @param string $encoding Encoding name (base64 or quoted-printable)
-     * @param int $prefix_len  Prefix length
+     * @param string $value      The header data to encode
+     * @param string $charset    Character set name
+     * @param string $encoding   Encoding name (base64 or quoted-printable)
+     * @param int    $prefix_len Prefix length
      *
      * @return string Encoded header data
      * @access private
@@ -1174,15 +1179,16 @@ class Mail_mime
 
         // Replace all extended characters (\x80-xFF) with their
         // ASCII values.
-        return preg_replace_callback('/([\x80-\xFF])/',
-            array($this, '_qpReplaceCallback'), $str);
+        return preg_replace_callback(
+            '/([\x80-\xFF])/', array($this, '_qpReplaceCallback'), $str
+        );
     }
 
     /**
      * Explode quoted string
      *
-     * @param string Delimiter expression string for preg_match()
-     * @param string Input string
+     * @param string $delimiter Delimiter expression string for preg_match()
+     * @param string $string    Input string
      *
      * @return array
      * @access private
@@ -1193,7 +1199,9 @@ class Mail_mime
         $strlen = strlen($string);
 
         for ($q=$p=$i=0; $i < $strlen; $i++) {
-            if ($string[$i] == "\"" && (empty($string[$i-1]) || $string[$i-1] != "\\")) {
+            if ($string[$i] == "\""
+                && (empty($string[$i-1]) || $string[$i-1] != "\\")
+            ) {
                 $q = $q ? false : true;
             } else if (!$q && preg_match("/$delimiter/", $string[$i])) {
                 $result[] = substr($string, $p, $i - $p);
@@ -1224,7 +1232,7 @@ class Mail_mime
     /**
      * Get file's basename (locale independent) 
      *
-     * @param string Filename
+     * @param string $filename Filename
      *
      * @return string Basename
      * @access private
@@ -1232,16 +1240,20 @@ class Mail_mime
     function _basename($filename)
     {
         // basename() is not unicode safe and locale dependent
-        if (stristr(PHP_OS, 'win') || stristr(PHP_OS, 'netware'))
+        if (stristr(PHP_OS, 'win') || stristr(PHP_OS, 'netware')) {
             return preg_replace('/^.*[\\\\\\/]/', '', $filename);
-        else
+        } else {
             return preg_replace('/^.*[\/]/', '', $filename);
+        }
     }
 
     /**
      * Callback function to replace extended characters (\x80-xFF) with their
      * ASCII values (quoted-printable)
      *
+     * @param array $matches Preg_replace's matches array
+     *
+     * @return string Encoded character string
      * @access private
      */
     function _qpReplaceCallback($matches)
