@@ -170,8 +170,7 @@ class Mail_mime
     /**
      * Constructor function.
      *
-     * @param string $crlf what type of linebreak to use.
-     *                     Defaults to "\r\n"
+     * @param string $crlf what type of linebreak to use. Defaults to "\r\n"
      *
      * @return void
      *
@@ -209,14 +208,14 @@ class Mail_mime
      * html should show.
      *
      * @param string $data   Either a string or
-     *                        the file name with the contents
+     *                       the file name with the contents
      * @param bool   $isfile If true the first param should be treated
-     *                        as a file name, else as a string (default)
+     *                       as a file name, else as a string (default)
      * @param bool   $append If true the text or file is appended to
-     *                        the existing body, else the old body is
-     *                        overwritten
+     *                       the existing body, else the old body is
+     *                       overwritten
      *
-     * @return mixed   true on success or PEAR_Error object
+     * @return mixed         True on success or PEAR_Error object
      * @access public
      */
     function setTXTBody($data, $isfile = false, $append = false)
@@ -244,12 +243,12 @@ class Mail_mime
     /**
      * Adds a html part to the mail.
      *
-     * @param string $data   either a string or the file name with the
-     *                        contents
-     * @param bool   $isfile a flag that determines whether $data is a
-     *                        filename, or a string(false, default)
+     * @param string $data   Either a string or the file name with the
+     *                       contents
+     * @param bool   $isfile A flag that determines whether $data is a
+     *                       filename, or a string(false, default)
      *
-     * @return bool    true on success
+     * @return bool          True on success
      * @access public
      */
     function setHTMLBody($data, $isfile = false)
@@ -270,14 +269,14 @@ class Mail_mime
     /**
      * Adds an image to the list of embedded images.
      *
-     * @param string $file   the image file name OR image data itself
-     * @param string $c_type the content type
-     * @param string $name   the filename of the image.
-     *                        Only used if $file is the image data.
-     * @param bool   $isfile whether $file is a filename or not.
-     *                        Defaults to true
+     * @param string $file   The image file name OR image data itself
+     * @param string $c_type The content type
+     * @param string $name   The filename of the image.
+     *                       Only used if $file is the image data.
+     * @param bool   $isfile Whether $file is a filename or not.
+     *                       Defaults to true
      *
-     * @return bool          true on success
+     * @return bool          True on success
      * @access public
      */
     function addHTMLImage($file, $c_type='application/octet-stream',
@@ -306,25 +305,25 @@ class Mail_mime
      * Adds a file to the list of attachments.
      *
      * @param string $file        The file name of the file to attach
-     *                             OR the file contents itself
+     *                            OR the file contents itself
      * @param string $c_type      The content type
      * @param string $name        The filename of the attachment
-     *                             Only use if $file is the contents
+     *                            Only use if $file is the contents
      * @param bool   $isfile      Whether $file is a filename or not
-     *                             Defaults to true
+     *                            Defaults to true
      * @param string $encoding    The type of encoding to use.
-     *                             Defaults to base64.
-     *                             Possible values: 7bit, 8bit, base64, 
-     *                             or quoted-printable.
+     *                            Defaults to base64.
+     *                            Possible values: 7bit, 8bit, base64, 
+     *                            or quoted-printable.
      * @param string $disposition The content-disposition of this file
-     *                             Defaults to attachment.
-     *                             Possible values: attachment, inline.
+     *                            Defaults to attachment.
+     *                            Possible values: attachment, inline.
      * @param string $charset     The character set used in the filename
-     *                             of this attachment.
+     *                            of this attachment.
      * @param string $language    The language of the attachment
      * @param string $location    The RFC 2557.4 location of the attachment
      *
-     * @return mixed true on success or PEAR_Error object
+     * @return mixed              True on success or PEAR_Error object
      * @access public
      */
     function addAttachment($file,
@@ -371,14 +370,14 @@ class Mail_mime
     /**
      * Get the contents of the given file name as string
      *
-     * @param string $file_name path of file to process
+     * @param string $file_name Path of file to process
      *
-     * @return string  contents of $file_name
+     * @return string           Contents of $file_name
      * @access private
      */
     function &_file2str($file_name)
     {
-        //Check state of file and raise an error properly
+        // Check state of file and raise an error properly
         if (!file_exists($file_name)) {
             $err = PEAR::raiseError('File not found: ' . $file_name);
             return $err;
@@ -392,7 +391,7 @@ class Mail_mime
             return $err;
         }
 
-        //Temporarily reset magic_quotes_runtime and read file contents
+        // Temporarily reset magic_quotes_runtime and read file contents
         if ($magic_quote_setting = get_magic_quotes_runtime()) {
             set_magic_quotes_runtime(0);
         }
@@ -409,10 +408,10 @@ class Mail_mime
      * returns it during the build process.
      *
      * @param mixed  &$obj The object to add the part to, or
-     *                      null if a new object is to be created.
+     *                     null if a new object is to be created.
      * @param string $text The text to add.
      *
-     * @return object  The text mimePart object
+     * @return object      The text mimePart object
      * @access private
      */
     function &_addTextPart(&$obj, $text)
@@ -434,9 +433,9 @@ class Mail_mime
      * returns it during the build process.
      *
      * @param mixed &$obj The object to add the part to, or
-     *                     null if a new object is to be created.
+     *                    null if a new object is to be created.
      *
-     * @return object The html mimePart object
+     * @return object     The html mimePart object
      * @access private
      */
     function &_addHtmlPart(&$obj)
@@ -466,7 +465,7 @@ class Mail_mime
         $params                 = array();
         $params['content_type'] = 'multipart/mixed';
 
-        //Create empty multipart/mixed Mail_mimePart object to return
+        // Create empty multipart/mixed Mail_mimePart object to return
         $ret = new Mail_mimePart('', $params);
         return $ret;
     }
@@ -477,9 +476,9 @@ class Mail_mime
      * the build process.
      *
      * @param mixed &$obj The object to add the part to, or
-     *                     null if a new object is to be created.
+     *                    null if a new object is to be created.
      *
-     * @return object  The multipart/mixed mimePart object
+     * @return object     The multipart/mixed mimePart object
      * @access private
      */
     function &_addAlternativePart(&$obj)
@@ -499,9 +498,9 @@ class Mail_mime
      * the build process.
      *
      * @param mixed &$obj The object to add the part to, or
-     *                     null if a new object is to be created
+     *                    null if a new object is to be created
      *
-     * @return object  The multipart/mixed mimePart object
+     * @return object     The multipart/mixed mimePart object
      * @access private
      */
     function &_addRelatedPart(&$obj)
@@ -522,7 +521,7 @@ class Mail_mime
      * @param object &$obj  The mimePart to add the image to
      * @param array  $value The image information
      *
-     * @return object  The image mimePart object
+     * @return object       The image mimePart object
      * @access private
      */
     function &_addHtmlImagePart(&$obj, $value)
@@ -544,7 +543,7 @@ class Mail_mime
      * @param object &$obj  The mimePart to add the image to
      * @param array  $value The attachment information
      *
-     * @return object  The image mimePart object
+     * @return object       The image mimePart object
      * @access private
      */
     function &_addAttachmentPart(&$obj, $value)
@@ -582,7 +581,7 @@ class Mail_mime
      *                             See that function for more info.
      * @param bool   $overwrite    Overwrite the existing headers with new.
      *
-     * @return string The complete e-mail.
+     * @return string              The complete e-mail.
      * @access public
      */
     function getMessage(
@@ -606,7 +605,7 @@ class Mail_mime
      * returns the mime content.
      *
      * @param array $build_params Build parameters that change the way the email
-     *                             is built. Should be associative. Can contain:
+     *                            is built. Should be associative. Can contain:
      *                head_encoding  -  What encoding to use for the headers. 
      *                                  Options: quoted-printable or base64
      *                                  Default is quoted-printable
@@ -625,7 +624,7 @@ class Mail_mime
      *                head_charset   -  The character set to use for headers.
      *                                  Default is iso-8859-1
      *
-     * @return string The mime content
+     * @return string             The mime content
      * @access public
      */
     function &get($build_params = null)
@@ -637,7 +636,7 @@ class Mail_mime
         }
 
         if (isset($this->_headers['From'])) {
-            //Bug #11381: Illegal characters in domain ID
+            // Bug #11381: Illegal characters in domain ID
             if (preg_match("|(@[0-9a-zA-Z\-\.]+)|", $this->_headers['From'], $matches)) {
                 $domainID = $matches[1];
             } else {
@@ -770,11 +769,10 @@ class Mail_mime
      * (MIME-Version and Content-Type). Format of argument is:
      * $array['header-name'] = 'header-value';
      *
-     * @param array $xtra_headers Assoc array with any extra headers.
-     *                             Optional.
+     * @param array $xtra_headers Assoc array with any extra headers (optional)
      * @param bool  $overwrite    Overwrite already existing headers.
      * 
-     * @return array Assoc array with the mime headers
+     * @return array              Assoc array with the mime headers
      * @access public
      */
     function &headers($xtra_headers = null, $overwrite = false)
@@ -799,11 +797,10 @@ class Mail_mime
      * Get the text version of the headers
      * (usefull if you want to use the PHP mail() function)
      *
-     * @param array $xtra_headers Assoc array with any extra headers.
-     *                             Optional.
+     * @param array $xtra_headers Assoc array with any extra headers (optional)
      * @param bool  $overwrite    Overwrite the existing heaers with new.
      *
-     * @return string  Plain text headers
+     * @return string             Plain text headers
      * @access public
      */
     function txtHeaders($xtra_headers = null, $overwrite = false)
@@ -889,7 +886,7 @@ class Mail_mime
      *
      * @param string $recipients A comma-delimited list of recipients
      *
-     * @return string Encoded data
+     * @return string            Encoded data
      * @access public
      */
     function encodeRecipients($recipients)
@@ -905,7 +902,7 @@ class Mail_mime
      * @param array $input  The header data to encode
      * @param array $params Extra build parameters
      *
-     * @return array Encoded data
+     * @return array        Encoded data
      * @access private
      */
     function _encodeHeaders($input, $params = array())
@@ -933,7 +930,7 @@ class Mail_mime
      * @param string $charset  Character set name
      * @param string $encoding Encoding name (base64 or quoted-printable)
      *
-     * @return string Encoded header data (without a name)
+     * @return string          Encoded header data (without a name)
      * @access public
      */
     function encodeHeader($name, $value, $charset, $encoding)
@@ -1062,7 +1059,7 @@ class Mail_mime
      * @param string $encoding   Encoding name (base64 or quoted-printable)
      * @param int    $prefix_len Prefix length
      *
-     * @return string Encoded header data
+     * @return string            Encoded header data
      * @access private
      */
     function _encodeString($value, $charset, $encoding, $prefix_len=0)
@@ -1167,7 +1164,7 @@ class Mail_mime
      *
      * @param string $str String to encode
      *
-     * @return string
+     * @return string     Encoded string
      * @access private
      */
     function _encodeQP($str)
@@ -1190,7 +1187,7 @@ class Mail_mime
      * @param string $delimiter Delimiter expression string for preg_match()
      * @param string $string    Input string
      *
-     * @return array
+     * @return array            String tokens array
      * @access private
      */
     function _explodeQuotedString($delimiter, $string)
@@ -1234,7 +1231,7 @@ class Mail_mime
      *
      * @param string $filename Filename
      *
-     * @return string Basename
+     * @return string          Basename
      * @access private
      */
     function _basename($filename)
@@ -1253,7 +1250,7 @@ class Mail_mime
      *
      * @param array $matches Preg_replace's matches array
      *
-     * @return string Encoded character string
+     * @return string        Encoded character string
      * @access private
      */
     function _qpReplaceCallback($matches)

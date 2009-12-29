@@ -222,7 +222,7 @@ class Mail_mimePart
             $headers['Content-Type'] = 'text/plain';
         }
 
-        //Default encoding
+        // Default encoding
         if (!isset($this->_encoding)) {
             $this->_encoding = '7bit';
         }
@@ -373,15 +373,15 @@ class Mail_mimePart
                 } elseif (($dec == 46) AND (($newline == '')
                     || ((strlen($newline) + strlen("=2E")) >= $line_max))
                 ) {
-                    //Bug #9722: convert full-stop at bol,
-                    //some Windows servers need this, won't break anything (cipri)
-                    //Bug #11731: full-stop at bol also needs to be encoded
-                    //if this line would push us over the line_max limit.
+                    // Bug #9722: convert full-stop at bol,
+                    // some Windows servers need this, won't break anything (cipri)
+                    // Bug #11731: full-stop at bol also needs to be encoded
+                    // if this line would push us over the line_max limit.
                     $char = '=2E';
                 }
 
-                //Note, when changing this line, also change the ($dec == 46)
-                //check line, as it mimics this line due to Bug #11731
+                // Note, when changing this line, also change the ($dec == 46)
+                // check line, as it mimics this line due to Bug #11731
                 // MAIL_MIMEPART_CRLF is not counted
                 if ((strlen($newline) + strlen($char)) >= $line_max) {
                     // soft line break; " =\r\n" is okay
@@ -392,7 +392,8 @@ class Mail_mimePart
             } // end of for
             $output .= $newline . $eol;
         }
-        $output = substr($output, 0, -1 * strlen($eol)); // Don't want last crlf
+        // Don't want last crlf
+        $output = substr($output, 0, -1 * strlen($eol));
         return $output;
     }
 
@@ -474,7 +475,7 @@ class Mail_mimePart
      *
      * @param array $matches Preg_replace's matches array
      *
-     * @return string Encoded character string
+     * @return string        Encoded character string
      * @access private
      */
     function _encodeReplaceCallback($matches)
