@@ -21,12 +21,12 @@ Starting with version 1.4.0, it also allows non US-ASCII chars in filenames, sub
   <email>cipri@php.net</email>
   <active>yes</active>
  </lead>
- <developer>
+ <lead>
   <name>Aleksander Machniak</name>
   <user>alec</user>
   <email>alec@php.net</email>
   <active>yes</active>
- </developer>
+ </lead>
 
  <date>2009-12-29</date>
  <version>
