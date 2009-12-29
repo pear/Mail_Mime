@@ -28,11 +28,10 @@ Starting with version 1.4.0, it also allows non US-ASCII chars in filenames, sub
   <active>yes</active>
  </developer>
 
- <date></date>
- <time></time>
+ <date>2009-12-29</date>
  <version>
   <release>1.5.3</release>
-  <api>1.3.1</api>
+  <api>1.3.2</api>
  </version>
  <stability>
   <release>stable</release>
@@ -51,10 +50,10 @@ Fixed bugs:
  * Fix Bug #14779: Problem with an empty attachment [alec]
  * Fix Bug #15913: Optimize the memory used by Mail_mimePart::encode.
                    Avoid having attachments data duplicated in memory [alec]
- * Fix Bug #16539: Headers longer than 998 characters aren't wrapped [alec]
+ * Fix Bug #16539: Headers longer than 998 characters aren&apos;t wrapped [alec]
  * Fix Bug #11238: Wrong encoding of structured headers [alec]
  * Fix Bug #13641: iconv_mime_encode() seems to work different/errorious than
-                   the build in logic. Removed 'ignore_iconv' param.  [alec]
+                   the build in logic. Removed &apos;ignore_iconv&apos; param.  [alec]
  * Fix Bug #16706: Incorrect double-quotes RFC 2231-encoded parameter values [alec]
  * Fix Bug #14232: RFC2231: tspecials encoding in _buildHeaderParam() [alec]
 Implemented Features:
