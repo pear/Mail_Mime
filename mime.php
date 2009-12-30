@@ -821,6 +821,37 @@ class Mail_mime
             break;
 
         case $html AND !$attachments AND $html_images:
+            // * Content-Type: multipart/alternative;
+            //    * text
+            //    * Content-Type: multipart/related;
+            //       * html
+            //       * image...
+           if (isset($this->_txtbody)) {
+                $message =& $this->_addAlternativePart($null);
+                $this->_addTextPart($message, $this->_txtbody);
+
+                $ht =& $this->_addRelatedPart($message);
+                $this->_addHtmlPart($ht);
+                for ($i = 0; $i < count($this->_html_images); $i++) {
+                    $this->_addHtmlImagePart($ht, $this->_html_images[$i]);
+                }
+            // * Content-Type: multipart/related;
+            //    * html
+            //    * image...
+            } else {
+                $message =& $this->_addRelatedPart($null);
+                $this->_addHtmlPart($message);
+                for ($i = 0; $i < count($this->_html_images); $i++) {
+                    $this->_addHtmlImagePart($message, $this->_html_images[$i]);
+                }
+            }
+/*
+            // #13444, #9725: the code below was a non-RFC compliant hack
+            // * Content-Type: multipart/related;
+            //    * Content-Type: multipart/alternative;
+            //        * text
+            //        * html
+            //    * image...
             $message =& $this->_addRelatedPart($null);
             if (isset($this->_txtbody)) {
                 $alt =& $this->_addAlternativePart($message);
@@ -832,6 +863,7 @@ class Mail_mime
             for ($i = 0; $i < count($this->_html_images); $i++) {
                 $this->_addHtmlImagePart($message, $this->_html_images[$i]);
             }
+*/
             break;
 
         case $html AND $attachments AND !$html_images:

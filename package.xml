@@ -39,6 +39,9 @@ Starting with version 1.4.0, it also allows non US-ASCII chars in filenames, sub
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
+Fixed Bugs:
+ * Bug #13444: Problem in multipart mail with txt, html and images. Reverted fix for #9725 [alec]
+
 Implemented Features:
  * Feature #10884: Provide easy way to set build params [alec]
  </notes>
@@ -65,11 +68,11 @@ Implemented Features:
     <file baseinstalldir="Mail" name="test_Bug_8541_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_9558_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_9722_1.phpt" role="test" />
-    <file baseinstalldir="Mail" name="test_Bug_9725_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_9976_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_10596_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_10816_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_11731.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_13444.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_14779.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_15320.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_14529.phpt" role="test" />

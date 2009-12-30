@@ -24,8 +24,8 @@ foreach ($matches[1] as $match){
     print("\n");
 }
 --EXPECT--
-multipart/related
 multipart/alternative
 text/plain
+multipart/related
 text/html
 application/octet-stream
