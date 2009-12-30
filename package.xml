@@ -45,6 +45,7 @@ Fixed Bugs:
 Implemented Features:
  * Feature #10884: Provide easy way to set build params [alec]
  * Feature #13962: Multiple header support [alec]
+ * Use class (private) variables instead of MAIL_MIME_CRLF and MAIL_MIMEPART_CRLF constants [alec]
  </notes>
  <contents>
   <dir name="/">

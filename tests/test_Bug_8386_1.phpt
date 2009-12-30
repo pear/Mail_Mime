@@ -4,14 +4,14 @@ Bug #8386   HTML body not correctly encoded if attachments present
 --FILE--
 <?php
 error_reporting(E_ALL); // ignore E_STRICT
-define("MAIL_MIMEPART_CRLF", "\n#");
+$eol = "\n#";
 include("Mail/mime.php");
-$encoder = new Mail_mime();
+$encoder = new Mail_mime(array('eol'=>$eol));
 $encoder->setTXTBody('test');
 $encoder->setHTMLBody('<b>test</b>');
 $encoder->addAttachment('Just a test', 'application/octet-stream', 'test.txt', false);
 $body = $encoder->get();
-if (strpos($body, '--' . MAIL_MIMEPART_CRLF . '--=')){
+if (strpos($body, '--' . $eol . '--=')){
     print("FAILED\n");
     print("Single delimiter() between 2 parts found.\n");
     print($body);

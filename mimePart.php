@@ -116,6 +116,14 @@ class Mail_mimePart
     var $_body;
 
     /**
+    * The end-of-line sequence
+    *
+    * @var string
+    * @access private
+    */
+    var $_eol;
+
+    /**
     * Constructor.
     *
     * Sets up the object.
@@ -130,17 +138,18 @@ class Mail_mimePart
     *                dfilename    - Optional filename parameter for content disposition
     *                description  - Content description
     *                charset      - Character set to use
+    *                eol          - End of line sequence. Default: "\r\n"
     *
     * @access public
     */
     function Mail_mimePart($body = '', $params = array())
     {
-        if (!defined('MAIL_MIMEPART_CRLF')) {
-            define(
-                'MAIL_MIMEPART_CRLF',
-                defined('MAIL_MIME_CRLF') ? MAIL_MIME_CRLF : "\r\n", true
-            );
-        }
+        if (!empty($params['eol']))
+            $this->_eol = $params['eol'];
+        else if (defined('MAIL_MIMEPART_CRLF')) // backward-copat.
+            $this->_eol = MAIL_MIMEPART_CRLF;     
+        else
+            $this->_eol = "\r\n";
 
         $contentType = array();
         $contentDisp = array();
@@ -192,7 +201,7 @@ class Mail_mimePart
         if (isset($contentType['type'])) {
             $headers['Content-Type'] = $contentType['type'];
             if (isset($contentType['name'])) {
-                $headers['Content-Type'] .= ';' . MAIL_MIMEPART_CRLF;
+                $headers['Content-Type'] .= ';' . $this->_eol;
                 $headers['Content-Type'] .= $this->_buildHeaderParam(
                     'name', $contentType['name'], 
                     isset($contentType['charset']) ? $contentType['charset'] : 'US-ASCII', 
@@ -201,14 +210,14 @@ class Mail_mimePart
             }
             if (isset($contentType['charset'])) {
                 $headers['Content-Type']
-                    .= ';' . MAIL_MIMEPART_CRLF . " charset={$contentType['charset']}";
+                    .= ';' . $this->_eol . " charset={$contentType['charset']}";
             }
         }
 
         if (isset($contentDisp['disp'])) {
             $headers['Content-Disposition'] = $contentDisp['disp'];
             if (isset($contentDisp['filename'])) {
-                $headers['Content-Disposition'] .= ';' . MAIL_MIMEPART_CRLF;
+                $headers['Content-Disposition'] .= ';' . $this->_eol;
                 $headers['Content-Disposition'] .= $this->_buildHeaderParam(
                     'filename', $contentDisp['filename'], 
                     isset($contentDisp['charset']) ? $contentDisp['charset'] : 'US-ASCII', 
@@ -251,22 +260,22 @@ class Mail_mimePart
 
         if (count($this->_subparts)) {
             $boundary = '=_' . md5(rand() . microtime());
-            $crlf = MAIL_MIMEPART_CRLF;
+            $eol = $this->_eol;
 
-            $this->_headers['Content-Type'] .= ";$crlf boundary=\"$boundary\"";
+            $this->_headers['Content-Type'] .= ";$eol boundary=\"$boundary\"";
 
             $encoded['body'] = ''; 
 
             for ($i = 0; $i < count($this->_subparts); $i++) {
-                $encoded['body'] .= '--' . $boundary . $crlf;
+                $encoded['body'] .= '--' . $boundary . $eol;
                 $tmp = $this->_subparts[$i]->encode();
                 foreach ($tmp['headers'] as $key => $value) {
-                    $encoded['body'] .= $key . ': ' . $value . $crlf;
+                    $encoded['body'] .= $key . ': ' . $value . $eol;
                 }
-                $encoded['body'] .= $crlf . $tmp['body'] . $crlf;
+                $encoded['body'] .= $eol . $tmp['body'] . $eol;
             }
 
-            $encoded['body'] .= '--' . $boundary . '--' . $crlf;
+            $encoded['body'] .= '--' . $boundary . '--' . $eol;
 
         } else {
             $encoded['body'] = $this->_getEncodedData($this->_body, $this->_encoding);
@@ -325,7 +334,7 @@ class Mail_mimePart
             break;
 
         case 'base64':
-            return rtrim(chunk_split(base64_encode($data), 76, MAIL_MIMEPART_CRLF));
+            return rtrim(chunk_split(base64_encode($data), 76, $this->_eol));
             break;
 
         default:
@@ -349,7 +358,7 @@ class Mail_mimePart
     function _quotedPrintableEncode($input , $line_max = 76)
     {
         $lines  = preg_split("/\r?\n/", $input);
-        $eol    = MAIL_MIMEPART_CRLF;
+        $eol    = $this->_eol;
         $escape = '=';
         $output = '';
 
@@ -385,7 +394,7 @@ class Mail_mimePart
 
                 // Note, when changing this line, also change the ($dec == 46)
                 // check line, as it mimics this line due to Bug #11731
-                // MAIL_MIMEPART_CRLF is not counted
+                // EOL is not counted
                 if ((strlen($newline) + strlen($char)) >= $line_max) {
                     // soft line break; " =\r\n" is okay
                     $output  .= $newline . $escape . $eol;
@@ -470,7 +479,7 @@ class Mail_mimePart
             $headCount++;
         }
 
-        $headers = implode(';' . MAIL_MIMEPART_CRLF, $headers);
+        $headers = implode(';' . $this->_eol, $headers);
         return $headers;
     }
 

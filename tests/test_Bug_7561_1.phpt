@@ -16,12 +16,11 @@ ini_set('mbstring.func_overload',       6);
 ini_set('mbstring.internal_encoding',   'UTF-8');
 ini_set('mbstring.http_output',         'UTF-8');
 
-define('MAIL_MIMEPART_CRLF', "\n");
 include("Mail/mimePart.php");
-
+$part = new Mail_mimePart('', array('eol'=>"\n"));
 // string is UTF-8 encoded
 $input = "Micha\xC3\xABl \xC3\x89ric St\xC3\xA9phane";
-$rv = Mail_mimePart::_quotedPrintableEncode($input);
+$rv = $part->_quotedPrintableEncode($input);
 echo $rv, "\n";
 --EXPECT--
 Micha=C3=ABl =C3=89ric St=C3=A9phane

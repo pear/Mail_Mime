@@ -159,15 +159,6 @@ class Mail_mime
     var $_headers = array();
 
     /**
-     * End Of Line sequence (for serialize)
-     *
-     * @var string
-     * @access private
-     */
-    var $_eol;
-
-
-    /**
      * Constructor function.
      *
      * @param mixed $params Build parameters that change the way the email
@@ -187,7 +178,7 @@ class Mail_mime
      *                           Default is iso-8859-1
      *          head_charset   - The character set to use for headers.
      *                           Default is iso-8859-1
-     *          eof            - Type of linebreak to use. Default is "\r\n"
+     *          eol            - End-of-line sequence. Default is "\r\n"
      *
      * @return void
      * @access public
@@ -201,32 +192,20 @@ class Mail_mime
             'html_charset'  => 'ISO-8859-1',
             'text_charset'  => 'ISO-8859-1',
             'head_charset'  => 'ISO-8859-1',
-            'eof'           => "\r\n"
+            'eol'           => "\r\n"
         );
 
         // Backward-compat.
         if (is_string($params)) {
-            $params = array('eof' => $params);
-        }
+            $params = array('eol' => $params);
+        } else if (defined('MAIL_MIME_CRLF') && !isset($params['eol']))
+            $params = array('eol' => MAIL_MIME_CRLF);
 
         if (!empty($params) && is_array($params)) {
             while (list($key, $value) = each($params)) {
                 $this->_build_params[$key] = $value;
             }
         }
-
-        $this->_setEOL($this->_build_params['eof']);
-    }
-
-    /**
-     * wakeup function called by unserialize. It re-sets the EOL constant
-     *
-     * @access private
-     * @return void
-     */
-    function __wakeup()
-    {
-        $this->_setEOL($this->_eol);
     }
 
     /**
@@ -311,19 +290,16 @@ class Mail_mime
     }
 
     /**
-     * Set the object's end-of-line and define the constant if applicable.
+     * Set the object's end-of-line sequence
      *
      * @param string $eol End Of Line sequence
      *
      * @return void
-     * @access private
+     * @access public
      */
-    function _setEOL($eol)
+    function setEOL($eol)
     {
-        $this->_eol = $eol;
-        if (!defined('MAIL_MIME_CRLF')) {
-            define('MAIL_MIME_CRLF', $this->_eol, true);
-        }
+        $this->_build_params['eol'] = $eol;
     }
 
     /**
@@ -417,12 +393,13 @@ class Mail_mime
             $filedata = $file;
             $filename = $name;
         }
+
         $this->_html_images[] = array(
-                                      'body'   => $filedata,
-                                      'name'   => $filename,
-                                      'c_type' => $c_type,
-                                      'cid'    => md5(uniqid(time()))
-                                     );
+            'body'   => $filedata,
+            'name'   => $filename,
+            'c_type' => $c_type,
+            'cid'    => md5(uniqid(time()))
+        );
         return true;
     }
 
@@ -480,15 +457,15 @@ class Mail_mime
         $filename = $this->_basename($filename);
 
         $this->_parts[] = array(
-                                'body'        => $filedata,
-                                'name'        => $filename,
-                                'c_type'      => $c_type,
-                                'encoding'    => $encoding,
-                                'charset'     => $charset,
-                                'language'    => $language,
-                                'location'    => $location,
-                                'disposition' => $disposition
-                               );
+            'body'        => $filedata,
+            'name'        => $filename,
+            'c_type'      => $c_type,
+            'encoding'    => $encoding,
+            'charset'     => $charset,
+            'language'    => $language,
+            'location'    => $location,
+            'disposition' => $disposition
+        );
         return true;
     }
 
@@ -544,6 +521,8 @@ class Mail_mime
         $params['content_type'] = 'text/plain';
         $params['encoding']     = $this->_build_params['text_encoding'];
         $params['charset']      = $this->_build_params['text_charset'];
+        $params['eol']          = $this->_build_params['eol'];
+
         if (is_object($obj)) {
             $ret = $obj->addSubpart($text, $params);
             return $ret;
@@ -568,6 +547,8 @@ class Mail_mime
         $params['content_type'] = 'text/html';
         $params['encoding']     = $this->_build_params['html_encoding'];
         $params['charset']      = $this->_build_params['html_charset'];
+        $params['eol']          = $this->_build_params['eol'];
+
         if (is_object($obj)) {
             $ret = $obj->addSubpart($this->_htmlbody, $params);
             return $ret;
@@ -589,6 +570,7 @@ class Mail_mime
     {
         $params                 = array();
         $params['content_type'] = 'multipart/mixed';
+        $params['eol']          = $this->_build_params['eol'];
 
         // Create empty multipart/mixed Mail_mimePart object to return
         $ret = new Mail_mimePart('', $params);
@@ -609,6 +591,8 @@ class Mail_mime
     function &_addAlternativePart(&$obj)
     {
         $params['content_type'] = 'multipart/alternative';
+        $params['eol']          = $this->_build_params['eol'];
+
         if (is_object($obj)) {
             return $obj->addSubpart('', $params);
         } else {
@@ -631,6 +615,8 @@ class Mail_mime
     function &_addRelatedPart(&$obj)
     {
         $params['content_type'] = 'multipart/related';
+        $params['eol']          = $this->_build_params['eol'];
+
         if (is_object($obj)) {
             return $obj->addSubpart('', $params);
         } else {
@@ -656,6 +642,7 @@ class Mail_mime
         $params['disposition']  = 'inline';
         $params['dfilename']    = $value['name'];
         $params['cid']          = $value['cid'];
+        $params['eol']          = $this->_build_params['eol'];
 
         $ret = $obj->addSubpart($value['body'], $params);
         return $ret;
@@ -673,8 +660,12 @@ class Mail_mime
      */
     function &_addAttachmentPart(&$obj, $value)
     {
-        $params['dfilename'] = $value['name'];
-        $params['encoding']  = $value['encoding'];
+        $params['eol']          = $this->_build_params['eol'];
+        $params['dfilename']    = $value['name'];
+        $params['encoding']     = $value['encoding'];
+        $params['content_type'] = $value['c_type'];
+        $params['disposition']  = isset($value['disposition']) ? 
+                                  $value['disposition'] : 'attachment';
         if ($value['charset']) {
             $params['charset'] = $value['charset'];
         }
@@ -684,9 +675,7 @@ class Mail_mime
         if ($value['location']) {
             $params['location'] = $value['location'];
         }
-        $params['content_type'] = $value['c_type'];
-        $params['disposition']  = isset($value['disposition']) ? 
-                                  $value['disposition'] : 'attachment';
+
         $ret = $obj->addSubpart($value['body'], $params);
         return $ret;
     }
@@ -698,7 +687,7 @@ class Mail_mime
      * YOU WILL HAVE NO TO: HEADERS UNLESS YOU SET IT YOURSELF 
      * using the $xtra_headers parameter!
      * 
-     * @param string $separation   The separation etween these two parts.
+     * @param string $separation   The separation between these two parts.
      * @param array  $build_params The Build parameters passed to the
      *                             &get() function. See &get for more info.
      * @param array  $xtra_headers The extra headers that should be passed
@@ -716,14 +705,13 @@ class Mail_mime
         $overwrite    = false
     ) {
         if ($separation === null) {
-            $separation = MAIL_MIME_CRLF;
+            $separation = $this->_build_params['eol'];
         }
         $body = $this->get($build_params);
         $head = $this->txtHeaders($xtra_headers, $overwrite);
         $mail = $head . $separation . $body;
         return $mail;
     }
-
 
     /**
      * Builds the multipart message from the list ($this->_parts) and
@@ -965,15 +953,18 @@ class Mail_mime
         $headers = $this->headers($xtra_headers, $overwrite);
 
         $ret = '';
+        $eol = $this->_build_params['eol'];
+
         foreach ($headers as $key => $val) {
             if (is_array($val)) {
                 foreach ($val as $value) {
-                    $ret .= "$key: $value" . MAIL_MIME_CRLF;
+                    $ret .= "$key: $value" . $eol;
                 }
             } else {
-                $ret .= "$key: $val" . MAIL_MIME_CRLF;
+                $ret .= "$key: $val" . $eol;
             }
         }
+
         return $ret;
     }
 
@@ -1118,6 +1109,7 @@ class Mail_mime
         );
 
         $name = strtolower($name);
+        $eol = $this->_build_params['eol'];
 
         if (in_array($name, $comma_headers)) {
             $separator = ',';
@@ -1169,7 +1161,7 @@ class Mail_mime
                                 $word = substr($word, 1, -1);
                             }
                             // find length of last line
-                            if (($pos = strrpos($value, MAIL_MIME_CRLF)) !== false) {
+                            if (($pos = strrpos($value, $eol)) !== false) {
                                 $last_len = strlen($value) - $pos;
                             } else {
                                 $last_len = strlen($value);
@@ -1191,7 +1183,7 @@ class Mail_mime
                 }
 
                 // RFC2822 recommends 78 characters limit, use 76 from RFC2047
-                $value = wordwrap($value, 76, MAIL_MIME_CRLF.' ');
+                $value = wordwrap($value, 76, $eol . ' ');
             }
 
             $value = preg_replace('/^'.$name.': /', '', $value);
@@ -1213,10 +1205,10 @@ class Mail_mime
                 );
             } else if (strlen($name.': '.$value) > 78) {
                 // ASCII: check if header line isn't too long and use folding
-                $tmp = wordwrap($name.': '.$value, 78, MAIL_MIME_CRLF.' ');
+                $tmp = wordwrap($name.': '.$value, 78, $eol . ' ');
                 $value = preg_replace('/^'.$name.':\s*/', '', $tmp);
                 // hard limit 998 (RFC2822)
-                $value = wordwrap($value, 998, MAIL_MIME_CRLF.' ', true);
+                $value = wordwrap($value, 998, $eol . ' ', true);
             }
         }
 
@@ -1264,7 +1256,7 @@ class Mail_mime
                 // RFC 2047 specifies that any split header should
                 // be seperated by a CRLF SPACE. 
                 if ($output) {
-                    $output .= MAIL_MIME_CRLF . ' ';
+                    $output .= $this->_build_params['eol'] . ' ';
                 }
                 $output .= $prefix . $part . $suffix;
             }
@@ -1317,7 +1309,7 @@ class Mail_mime
                     // RFC 2047 specifies that any split header should 
                     // be seperated by a CRLF SPACE
                     if ($output) {
-                        $output .= MAIL_MIME_CRLF . ' ';
+                        $output .= $this->_build_params['eol'] . ' ';
                     }
                     $output .= $prefix . $part . $suffix;
                 }

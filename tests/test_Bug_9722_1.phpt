@@ -5,7 +5,7 @@ Bug #9722   _quotedPrintableEncode does not encode dot at start of line on Windo
 <?php
 error_reporting(E_ALL); // ignore E_STRICT
 include("Mail/mimePart.php");
-define('MAIL_MIMEPART_CRLF', "\n");
+$part = new Mail_mimePart('', array('eol'=>"\n"));
 $text = "This
 is a
 test
@@ -14,7 +14,7 @@ test
 //really fun//
 to make :(";
 
-print_r(Mail_mimePart::_quotedPrintableEncode($text));
+print_r($part->_quotedPrintableEncode($text));
 
 --EXPECT--
 This

@@ -4,15 +4,15 @@ Bug #10816  Unwanted linebreak at the end of output
 --FILE--
 <?php
 error_reporting(E_ALL); // ignore E_STRICT
-define("MAIL_MIMEPART_CRLF", "#");
+$eol = "#";
 include("Mail/mime.php");
-$encoder = new Mail_mime();
+$encoder = new Mail_mime(array('eol'=>$eol));
 $encoder->setTXTBody('test');
 $encoder->setHTMLBody('<b>test</b>');
 $encoder->addAttachment('Just a test', 'application/octet-stream', 'test.txt', false);
 $body = $encoder->get();
-$taillength = -1 * strlen(MAIL_MIMEPART_CRLF) * 2;
-if (substr($body, $taillength) == (MAIL_MIMEPART_CRLF . MAIL_MIMEPART_CRLF)){
+$taillength = -1 * strlen($eol) * 2;
+if (substr($body, $taillength) == ($eol.$eol)){
     print("FAILED\n");
     print("Body:\n");
     print("..." . substr($body, -10) . "\n");
