@@ -205,8 +205,9 @@ class Mail_mime
         );
 
         // Backward-compat.
-        if (is_string($params))
+        if (is_string($params)) {
             $params = array('eof' => $params);
+        }
 
         if (!empty($params) && is_array($params)) {
             while (list($key, $value) = each($params)) {
@@ -237,7 +238,8 @@ class Mail_mime
      * @return void
      * @access public
      */
-    function setHeadEncoding($head_encoding) {
+    function setHeadEncoding($head_encoding)
+    {
         $this->_build_params['head_encoding'] = $head_encoding;
     }
 
@@ -250,7 +252,8 @@ class Mail_mime
      * @return void
      * @access public
      */
-    function setTextEncoding($text_encoding) {
+    function setTextEncoding($text_encoding)
+    {
         $this->_build_params['text_encoding'] = $text_encoding;
     }
 
@@ -263,7 +266,8 @@ class Mail_mime
      * @return void
      * @access public
      */
-    function setHtmlEncoding($html_encoding) {
+    function setHtmlEncoding($html_encoding)
+    {
         $this->_build_params['html_encoding'] = $html_encoding;
     }
 
@@ -275,7 +279,8 @@ class Mail_mime
      * @return void
      * @access public
      */
-    function setHtmlCharset($html_charset) {
+    function setHtmlCharset($html_charset)
+    {
         $this->_build_params['html_charset'] = $html_charset;
     }
 
@@ -287,7 +292,8 @@ class Mail_mime
      * @return void
      * @access public
      */
-    function setTextCharset($text_charset) {
+    function setTextCharset($text_charset)
+    {
         $this->_build_params['text_charset'] = $text_charset;
     }
 
@@ -299,7 +305,8 @@ class Mail_mime
      * @return void
      * @access public
      */
-    function setHeadCharset($head_charset) {
+    function setHeadCharset($head_charset)
+    {
         $this->_build_params['head_charset'] = $head_charset;
     }
 
@@ -826,7 +833,7 @@ class Mail_mime
             //    * Content-Type: multipart/related;
             //       * html
             //       * image...
-           if (isset($this->_txtbody)) {
+            if (isset($this->_txtbody)) {
                 $message =& $this->_addAlternativePart($null);
                 $this->_addTextPart($message, $this->_txtbody);
 
@@ -835,17 +842,17 @@ class Mail_mime
                 for ($i = 0; $i < count($this->_html_images); $i++) {
                     $this->_addHtmlImagePart($ht, $this->_html_images[$i]);
                 }
-            // * Content-Type: multipart/related;
-            //    * html
-            //    * image...
             } else {
+                // * Content-Type: multipart/related;
+                //    * html
+                //    * image...
                 $message =& $this->_addRelatedPart($null);
                 $this->_addHtmlPart($message);
                 for ($i = 0; $i < count($this->_html_images); $i++) {
                     $this->_addHtmlImagePart($message, $this->_html_images[$i]);
                 }
             }
-/*
+            /*
             // #13444, #9725: the code below was a non-RFC compliant hack
             // * Content-Type: multipart/related;
             //    * Content-Type: multipart/alternative;
@@ -863,7 +870,7 @@ class Mail_mime
             for ($i = 0; $i < count($this->_html_images); $i++) {
                 $this->_addHtmlImagePart($message, $this->_html_images[$i]);
             }
-*/
+            */
             break;
 
         case $html AND $attachments AND !$html_images:
@@ -959,7 +966,13 @@ class Mail_mime
 
         $ret = '';
         foreach ($headers as $key => $val) {
-            $ret .= "$key: $val" . MAIL_MIME_CRLF;
+            if (is_array($val)) {
+                foreach ($val as $value) {
+                    $ret .= "$key: $value" . MAIL_MIME_CRLF;
+                }
+            } else {
+                $ret .= "$key: $val" . MAIL_MIME_CRLF;
+            }
         }
         return $ret;
     }
@@ -1063,10 +1076,19 @@ class Mail_mime
         }
 
         foreach ($input as $hdr_name => $hdr_value) {
-            $input[$hdr_name] = $this->encodeHeader(
-                $hdr_name, $hdr_value,
-                $build_params['head_charset'], $build_params['head_encoding']
-            );
+            if (is_array($hdr_value)) {
+                foreach ($hdr_value as $idx => $value) {
+                    $input[$hdr_name][$idx] = $this->encodeHeader(
+                        $hdr_name, $value,
+                        $build_params['head_charset'], $build_params['head_encoding']
+                    );
+                }
+            } else {
+                $input[$hdr_name] = $this->encodeHeader(
+                    $hdr_name, $hdr_value,
+                    $build_params['head_charset'], $build_params['head_encoding']
+                );
+            }
         }
 
         return $input;

@@ -44,6 +44,7 @@ Fixed Bugs:
 
 Implemented Features:
  * Feature #10884: Provide easy way to set build params [alec]
+ * Feature #13962: Multiple header support [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -73,6 +74,7 @@ Implemented Features:
     <file baseinstalldir="Mail" name="test_Bug_10816_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_11731.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_13444.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_13962.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_14779.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_15320.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_14529.phpt" role="test" />
