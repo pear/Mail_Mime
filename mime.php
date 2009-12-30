@@ -170,23 +170,51 @@ class Mail_mime
     /**
      * Constructor function.
      *
-     * @param string $crlf what type of linebreak to use. Defaults to "\r\n"
+     * @param mixed $params Build parameters that change the way the email
+     *                      is built. Should be associative. Can contain:
+     *          head_encoding  - What encoding to use for the headers.
+     *                           Options: quoted-printable or base64
+     *                           Default is quoted-printable
+     *          text_encoding  - What encoding to use for plain text
+     *                           Options: 7bit, 8bit, base64, or quoted-printable
+     *                           Default is 7bit
+     *          html_encoding  - What encoding to use for html
+     *                           Options: 7bit, 8bit, base64, or quoted-printable
+     *                           Default is quoted-printable
+     *          html_charset   - The character set to use for html.
+     *                           Default is iso-8859-1
+     *          text_charset   - The character set to use for text.
+     *                           Default is iso-8859-1
+     *          head_charset   - The character set to use for headers.
+     *                           Default is iso-8859-1
+     *          eof            - Type of linebreak to use. Default is "\r\n"
      *
      * @return void
-     *
      * @access public
      */
-    function Mail_mime($crlf = "\r\n")
+    function Mail_mime($params = array())
     {
-        $this->_setEOL($crlf);
         $this->_build_params = array(
-                                     'head_encoding' => 'quoted-printable',
-                                     'text_encoding' => '7bit',
-                                     'html_encoding' => 'quoted-printable',
-                                     'html_charset'  => 'ISO-8859-1',
-                                     'text_charset'  => 'ISO-8859-1',
-                                     'head_charset'  => 'ISO-8859-1'
-                                    );
+            'head_encoding' => 'quoted-printable',
+            'text_encoding' => '7bit',
+            'html_encoding' => 'quoted-printable',
+            'html_charset'  => 'ISO-8859-1',
+            'text_charset'  => 'ISO-8859-1',
+            'head_charset'  => 'ISO-8859-1',
+            'eof'           => "\r\n"
+        );
+
+        // Backward-compat.
+        if (is_string($params))
+            $params = array('eof' => $params);
+
+        if (!empty($params) && is_array($params)) {
+            while (list($key, $value) = each($params)) {
+                $this->_build_params[$key] = $value;
+            }
+        }
+
+        $this->_setEOL($this->_build_params['eof']);
     }
 
     /**
@@ -200,6 +228,96 @@ class Mail_mime
         $this->_setEOL($this->_eol);
     }
 
+    /**
+     * Set encoding to use for the headers
+     *
+     * @param string $head_encoding Encoding to use for the headers.
+     *                              Options: quoted-printable or base64
+     *
+     * @return void
+     * @access public
+     */
+    function setHeadEncoding($head_encoding) {
+        $this->_build_params['head_encoding'] = $head_encoding;
+    }
+
+    /**
+     * Set encoding to use for plain text message part
+     *
+     * @param string $text_encoding Encoding to use for plain text.
+     *                              Options: 7bit, 8bit, base64, quoted-printable
+     *
+     * @return void
+     * @access public
+     */
+    function setTextEncoding($text_encoding) {
+        $this->_build_params['text_encoding'] = $text_encoding;
+    }
+
+    /**
+     * Set encoding to use for html message part
+     *
+     * @param string $html_encoding Encoding to use for html
+     *                              Options: 7bit, 8bit, base64, quoted-printable
+     *
+     * @return void
+     * @access public
+     */
+    function setHtmlEncoding($html_encoding) {
+        $this->_build_params['html_encoding'] = $html_encoding;
+    }
+
+    /**
+     * Set the character set to use for html message part
+     *
+     * @param string $html_charset The character set to use for html
+     *
+     * @return void
+     * @access public
+     */
+    function setHtmlCharset($html_charset) {
+        $this->_build_params['html_charset'] = $html_charset;
+    }
+
+    /**
+     * Set the character set to use for plain text message part
+     *
+     * @param string $text_charset The character set to use for text
+     *
+     * @return void
+     * @access public
+     */
+    function setTextCharset($text_charset) {
+        $this->_build_params['text_charset'] = $text_charset;
+    }
+
+    /**
+     * Set the character set to use for headers
+     *
+     * @param string $head_charset The character set to use for headers
+     *
+     * @return void
+     * @access public
+     */
+    function setHeadCharset($head_charset) {
+        $this->_build_params['head_charset'] = $head_charset;
+    }
+
+    /**
+     * Set the object's end-of-line and define the constant if applicable.
+     *
+     * @param string $eol End Of Line sequence
+     *
+     * @return void
+     * @access private
+     */
+    function _setEOL($eol)
+    {
+        $this->_eol = $eol;
+        if (!defined('MAIL_MIME_CRLF')) {
+            define('MAIL_MIME_CRLF', $this->_eol, true);
+        }
+    }
 
     /**
      * Accessor function to set the body text. Body text is used if
@@ -1208,22 +1326,6 @@ class Mail_mime
 
         $result[] = substr($string, $p);
         return $result;
-    }
-
-    /**
-     * Set the object's end-of-line and define the constant if applicable.
-     *
-     * @param string $eol End Of Line sequence
-     *
-     * @return void
-     * @access private
-     */
-    function _setEOL($eol)
-    {
-        $this->_eol = $eol;
-        if (!defined('MAIL_MIME_CRLF')) {
-            define('MAIL_MIME_CRLF', $this->_eol, true);
-        }
     }
 
     /**
