@@ -121,7 +121,7 @@ class Mail_mimePart
     * @var string
     * @access private
     */
-    var $_eol;
+    var $_eol = "\r\n";
 
     /**
     * Constructor.
@@ -144,12 +144,11 @@ class Mail_mimePart
     */
     function Mail_mimePart($body = '', $params = array())
     {
-        if (!empty($params['eol']))
+        if (!empty($params['eol'])) {
             $this->_eol = $params['eol'];
-        else if (defined('MAIL_MIMEPART_CRLF')) // backward-copat.
-            $this->_eol = MAIL_MIMEPART_CRLF;     
-        else
-            $this->_eol = "\r\n";
+        } else if (defined('MAIL_MIMEPART_CRLF')) { // backward-copat.
+            $this->_eol = MAIL_MIMEPART_CRLF;
+        }
 
         $contentType = array();
         $contentDisp = array();

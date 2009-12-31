@@ -148,7 +148,15 @@ class Mail_mime
      * @var array
      * @access private
      */
-    var $_build_params = array();
+    var $_build_params = array(
+        'head_encoding' => 'quoted-printable',
+        'text_encoding' => '7bit',
+        'html_encoding' => 'quoted-printable',
+        'html_charset'  => 'ISO-8859-1',
+        'text_charset'  => 'ISO-8859-1',
+        'head_charset'  => 'ISO-8859-1',
+        'eol'           => "\r\n"
+    );
 
     /**
      * Headers for the mail
@@ -185,22 +193,14 @@ class Mail_mime
      */
     function Mail_mime($params = array())
     {
-        $this->_build_params = array(
-            'head_encoding' => 'quoted-printable',
-            'text_encoding' => '7bit',
-            'html_encoding' => 'quoted-printable',
-            'html_charset'  => 'ISO-8859-1',
-            'text_charset'  => 'ISO-8859-1',
-            'head_charset'  => 'ISO-8859-1',
-            'eol'           => "\r\n"
-        );
-
-        // Backward-compat.
+        // Backward-compatible EOL setting
         if (is_string($params)) {
-            $params = array('eol' => $params);
-        } else if (defined('MAIL_MIME_CRLF') && !isset($params['eol']))
-            $params = array('eol' => MAIL_MIME_CRLF);
+            $this->_build_params['eol'] = $params;
+        } else if (defined('MAIL_MIME_CRLF') && !isset($params['eol'])) {
+            $this->_build_params['eol'] = MAIL_MIME_CRLF;
+        }
 
+        // Parameters
         if (!empty($params) && is_array($params)) {
             while (list($key, $value) = each($params)) {
                 $this->_build_params[$key] = $value;
@@ -216,6 +216,7 @@ class Mail_mime
      *
      * @return void
      * @access public
+     * @since 1.6.0
      */
     function setHeadEncoding($head_encoding)
     {
@@ -230,6 +231,7 @@ class Mail_mime
      *
      * @return void
      * @access public
+     * @since 1.6.0
      */
     function setTextEncoding($text_encoding)
     {
@@ -244,6 +246,7 @@ class Mail_mime
      *
      * @return void
      * @access public
+     * @since 1.6.0
      */
     function setHtmlEncoding($html_encoding)
     {
@@ -257,6 +260,7 @@ class Mail_mime
      *
      * @return void
      * @access public
+     * @since 1.6.0
      */
     function setHtmlCharset($html_charset)
     {
@@ -270,6 +274,7 @@ class Mail_mime
      *
      * @return void
      * @access public
+     * @since 1.6.0
      */
     function setTextCharset($text_charset)
     {
@@ -283,6 +288,7 @@ class Mail_mime
      *
      * @return void
      * @access public
+     * @since 1.6.0
      */
     function setHeadCharset($head_charset)
     {
@@ -296,6 +302,7 @@ class Mail_mime
      *
      * @return void
      * @access public
+     * @since 1.6.0
      */
     function setEOL($eol)
     {
@@ -1095,6 +1102,7 @@ class Mail_mime
      *
      * @return string          Encoded header data (without a name)
      * @access public
+     * @since 1.5.3
      */
     function encodeHeader($name, $value, $charset, $encoding)
     {
