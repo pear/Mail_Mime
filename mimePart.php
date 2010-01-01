@@ -150,12 +150,12 @@ class Mail_mimePart
             $this->_eol = MAIL_MIMEPART_CRLF;
         }
 
-        $contentType = array();
-        $contentDisp = array();
+        $c_type = array();
+        $c_disp = array();
         foreach ($params as $key => $value) {
             switch ($key) {
             case 'content_type':
-                $contentType['type'] = $value;
+                $c_type['type'] = $value;
                 break;
 
             case 'encoding':
@@ -168,12 +168,12 @@ class Mail_mimePart
                 break;
 
             case 'disposition':
-                $contentDisp['disp'] = $value;
+                $c_disp['disp'] = $value;
                 break;
 
             case 'dfilename':
-                $contentDisp['filename'] = $value;
-                $contentType['name'] = $value;
+                $c_disp['filename'] = $value;
+                $c_type['name'] = $value;
                 break;
 
             case 'description':
@@ -181,13 +181,13 @@ class Mail_mimePart
                 break;
 
             case 'charset':
-                $contentType['charset'] = $value;
-                $contentDisp['charset'] = $value;
+                $c_type['charset'] = $value;
+                $c_disp['charset'] = $value;
                 break;
 
             case 'language':
-                $contentType['language'] = $value;
-                $contentDisp['language'] = $value;
+                $c_type['language'] = $value;
+                $c_disp['language'] = $value;
                 break;
 
             case 'location':
@@ -197,34 +197,37 @@ class Mail_mimePart
             }
         }
 
-        if (isset($contentType['type'])) {
-            $headers['Content-Type'] = $contentType['type'];
-            if (isset($contentType['name'])) {
+        // Content-Type
+        if (isset($c_type['type'])) {
+            $headers['Content-Type'] = $c_type['type'];
+            if (isset($c_type['name'])) {
                 $headers['Content-Type'] .= ';' . $this->_eol;
                 $headers['Content-Type'] .= $this->_buildHeaderParam(
-                    'name', $contentType['name'], 
-                    isset($contentType['charset']) ? $contentType['charset'] : 'US-ASCII', 
-                    isset($contentType['language']) ? $contentType['language'] : null
+                    'name', $c_type['name'], 
+                    isset($c_type['charset']) ? $c_type['charset'] : 'US-ASCII', 
+                    isset($c_type['language']) ? $c_type['language'] : null,
+                    isset($params['name-encoding']) ?  $params['name-encoding'] : null
                 );
             }
-            if (isset($contentType['charset'])) {
+            if (isset($c_type['charset'])) {
                 $headers['Content-Type']
-                    .= ';' . $this->_eol . " charset={$contentType['charset']}";
+                    .= ';' . $this->_eol . " charset={$c_type['charset']}";
             }
         }
 
-        if (isset($contentDisp['disp'])) {
-            $headers['Content-Disposition'] = $contentDisp['disp'];
-            if (isset($contentDisp['filename'])) {
+        // Content-Disposition
+        if (isset($c_disp['disp'])) {
+            $headers['Content-Disposition'] = $c_disp['disp'];
+            if (isset($c_disp['filename'])) {
                 $headers['Content-Disposition'] .= ';' . $this->_eol;
                 $headers['Content-Disposition'] .= $this->_buildHeaderParam(
-                    'filename', $contentDisp['filename'], 
-                    isset($contentDisp['charset']) ? $contentDisp['charset'] : 'US-ASCII', 
-                    isset($contentDisp['language']) ? $contentDisp['language'] : null
+                    'filename', $c_disp['filename'], 
+                    isset($c_disp['charset']) ? $c_disp['charset'] : 'US-ASCII', 
+                    isset($c_disp['language']) ? $c_disp['language'] : null,
+                    isset($params['filename-encoding']) ?  $params['filename-encoding'] : null
                 );
             }
         }
-
 
         // Default content-type
         if (!isset($headers['Content-Type'])) {
@@ -248,17 +251,19 @@ class Mail_mimePart
      * Encodes and returns the email. Also stores
      * it in the encoded member variable
      *
+     * @param string $boundary Pre-defined boundary string
+     *
      * @return An associative array containing two elements,
      *         body and headers. The headers element is itself
      *         an indexed array.
      * @access public
      */
-    function encode()
+    function encode($boundary=null)
     {
         $encoded =& $this->_encoded;
 
         if (count($this->_subparts)) {
-            $boundary = '=_' . md5(rand() . microtime());
+            $boundary = $boundary ? $boundary : '=_' . md5(rand() . microtime());
             $eol = $this->_eol;
 
             $this->_headers['Content-Type'] .= ";$eol boundary=\"$boundary\"";
@@ -417,14 +422,17 @@ class Mail_mimePart
      * @param string $value     The value of the paramter
      * @param string $charset   The characterset of $value
      * @param string $language  The language used in $value
+     * @param string $encoding  Parameter encoding. If not set, parameter value
+     *                          is encoded according to RFC2231
      * @param int    $maxLength The maximum length of a line. Defauls to 75
      *
      * @return string
      *
      * @access private
      */
-    function _buildHeaderParam($name, $value, $charset=null, $language=null, $maxLength=75)
-    {
+    function _buildHeaderParam($name, $value, $charset=null, $language=null,
+        $encoding=null, $maxLength=75
+    ) {
         // RFC 2045:
         // value needs encoding if contains non-ASCII chars or is longer than 78 chars
         if (!preg_match('#[^\x20-\x7E]#', $value) // ASCII characters
@@ -445,6 +453,11 @@ class Mail_mimePart
                     return " {$name}=\"{$quoted}\"";
                 }
             }
+        }
+
+        // RFC2047: use quoted-printable/base64 encoding
+        if ($encoding == 'quoted-printable' || $encoding == 'base64') {
+            return $this->_buildRFC2047Param($name, $value, $charset, $encoding);
         }
 
         // RFC2231:
@@ -483,6 +496,76 @@ class Mail_mimePart
     }
 
     /**
+     * Encodes header parameter as per RFC2047 if needed
+     *
+     * @param string $name      The parameter name
+     * @param string $value     The parameter value
+     * @param string $charset   The parameter charset
+     * @param string $encoding  Encoding type (quoted-printable or base64)
+     * @param int    $maxLength Encoded parameter max length. Default: 76
+     *
+     * @return string Parameter line
+     * @access private
+     */
+    function _buildRFC2047Param($name, $value, $charset,
+        $encoding='quoted-printable', $maxLength=76
+    ) {
+        // WARNING: RFC 2047 says: "An 'encoded-word' MUST NOT be used in
+        // parameter of a MIME Content-Type or Content-Disposition field",
+        // but... it's supported by many clients/servers
+        $quoted = '';
+
+        if ($encoding == 'base64') {
+            $value = base64_encode($value);
+            $prefix = '=?' . $charset . '?B?';
+            $suffix = '?=';
+
+            // 2 x SPACE, 2 x '"', '=', ';'
+            $add_len = strlen($prefix . $suffix) + strlen($name) + 6;
+            $len = $add_len + strlen($value);
+
+            while ($len > $maxLength) { 
+                // We can cut base64-encoded string every 4 characters
+                $real_len = floor(($maxLength - $add_len) / 4) * 4;
+                $_quote = substr($value, 0, $real_len);
+                $value = substr($value, $real_len);
+
+                $quoted .= $prefix . $_quote . $suffix . $this->_eol . ' ';
+                $add_len = strlen($prefix . $suffix) + 4; // 2 x SPACE, '"', ';'
+                $len = strlen($value) + $add_len;
+            }
+            $quoted .= $prefix . $value . $suffix;
+
+        } else {
+            // quoted-printable
+            $value = $this->encodeQP($value);
+            $prefix = '=?' . $charset . '?Q?';
+            $suffix = '?=';
+
+            // 2 x SPACE, 2 x '"', '=', ';'
+            $add_len = strlen($prefix . $suffix) + strlen($name) + 6;
+            $len = $add_len + strlen($value);
+
+            while ($len > $maxLength) {
+                $length = $maxLength - $add_len;
+                // don't break any encoded letters
+                if (preg_match("/^(.{0,$length}[^\=][^\=])/", $value, $matches)) {
+                    $_quote = $matches[1];
+                }
+
+                $quoted .= $prefix . $_quote . $suffix . $this->_eol . ' ';
+                $value = substr($value, strlen($_quote));
+                $add_len = strlen($prefix . $suffix) + 4; // 2 x SPACE, '"', ';'
+                $len = strlen($value) + $add_len;
+            }
+
+            $quoted .= $prefix . $value . $suffix;
+        }
+
+        return " {$name}=\"{$quoted}\"";
+    }
+
+    /**
      * Callback function to replace extended characters (\x80-xFF) with their
      * ASCII values (RFC2231)
      *
@@ -494,6 +577,43 @@ class Mail_mimePart
     function _encodeReplaceCallback($matches)
     {
         return sprintf('%%%0X', ord($matches[1]));
+    }
+
+    /**
+     * Encodes the given string using quoted-printable
+     *
+     * @param string $str String to encode
+     *
+     * @return string     Encoded string
+     * @access public
+     * @since 1.6.0
+     */
+    function encodeQP($str)
+    {
+        // Replace all special characters used by the encoder
+        $search  = array('=',   '_',   '?',   ' ');
+        $replace = array('=3D', '=5F', '=3F', '_');
+        $str = str_replace($search, $replace, $str);
+
+        // Replace all extended characters (\x80-xFF) with their
+        // ASCII values.
+        return preg_replace_callback(
+            '/([\x80-\xFF])/', array('Mail_mimePart', '_qpReplaceCallback'), $str
+        );
+    }
+
+    /**
+     * Callback function to replace extended characters (\x80-xFF) with their
+     * ASCII values (RFC2047: quoted-printable)
+     *
+     * @param array $matches Preg_replace's matches array
+     *
+     * @return string        Encoded character string
+     * @access private
+     */
+    function _qpReplaceCallback($matches)
+    {
+        return sprintf('=%0X', ord($matches[1]));
     }
 
 } // End of class
