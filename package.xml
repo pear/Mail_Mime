@@ -50,6 +50,7 @@ Implemented Features:
  * Feature #12411: Support both RFC2047 and RFC2231 for attachments filenames encoding [alec]
  * Optimized memory usage in quoted-printable encoding function [alec]
  * Feature #13969: Big attachments support [alec]
+ * Changed default value of text_encoding to quoted-printable [alec]
  </notes>
  <contents>
   <dir name="/">

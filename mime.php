@@ -162,7 +162,7 @@ class Mail_mime
         'head_encoding' => 'quoted-printable',
         // What encoding to use for plain text
         // Options: 7bit, 8bit, base64, or quoted-printable
-        'text_encoding' => '7bit',
+        'text_encoding' => 'quoted-printable',
         // What encoding to use for html
         // Options: 7bit, 8bit, base64, or quoted-printable
         'html_encoding' => 'quoted-printable',
