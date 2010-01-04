@@ -6,7 +6,6 @@ Bug #12385  Bad regex when replacing css style attachments
 error_reporting(E_ALL); // ignore E_STRICT
 $from='user@from.example.com';
 
-require_once('Mail.php');
 require_once('Mail/mime.php');
 
 $mime=new Mail_mime();

@@ -6,7 +6,6 @@ Bug #10999  Bad Content-ID(cid) format
 error_reporting(E_ALL); // ignore E_STRICT
 $from='user@from.example.com';
 
-require_once('Mail.php');
 require_once('Mail/mime.php');
 
 $mime=new Mail_mime();
