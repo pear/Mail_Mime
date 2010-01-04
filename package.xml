@@ -48,6 +48,8 @@ Implemented Features:
  * Feature #13962: Multiple header support [alec]
  * Use class (private) variables instead of MAIL_MIME_CRLF and MAIL_MIMEPART_CRLF constants [alec]
  * Feature #12411: Support both RFC2047 and RFC2231 for attachments filenames encoding [alec]
+ * Optimized memory usage in quoted-printable encoding function [alec]
+ * Feature #13969: Big attachments support [alec]
  </notes>
  <contents>
   <dir name="/">

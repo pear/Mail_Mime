@@ -143,22 +143,6 @@ class Mail_mime
     var $_parts = array();
 
     /**
-     * Build parameters
-     *
-     * @var array
-     * @access private
-     */
-    var $_build_params = array(
-        'head_encoding' => 'quoted-printable',
-        'text_encoding' => '7bit',
-        'html_encoding' => 'quoted-printable',
-        'html_charset'  => 'ISO-8859-1',
-        'text_charset'  => 'ISO-8859-1',
-        'head_charset'  => 'ISO-8859-1',
-        'eol'           => "\r\n"
-    );
-
-    /**
      * Headers for the mail
      *
      * @var array
@@ -167,26 +151,39 @@ class Mail_mime
     var $_headers = array();
 
     /**
-     * Constructor function.
+     * Build parameters
+     *
+     * @var array
+     * @access private
+     */
+    var $_build_params = array(
+        // What encoding to use for the headers
+        // Options: quoted-printable or base64
+        'head_encoding' => 'quoted-printable',
+        // What encoding to use for plain text
+        // Options: 7bit, 8bit, base64, or quoted-printable
+        'text_encoding' => '7bit',
+        // What encoding to use for html
+        // Options: 7bit, 8bit, base64, or quoted-printable
+        'html_encoding' => 'quoted-printable',
+        // The character set to use for html
+        'html_charset'  => 'ISO-8859-1',
+        // The character set to use for text
+        'text_charset'  => 'ISO-8859-1',
+        // The character set to use for headers
+        'head_charset'  => 'ISO-8859-1',
+        // End-of-line sequence
+        'eol'           => "\r\n",
+        // Delay attachment files IO until building the message
+        'delay_file_io' => false
+    );
+
+    /**
+     * Constructor function
      *
      * @param mixed $params Build parameters that change the way the email
-     *                      is built. Should be associative. Can contain:
-     *          head_encoding  - What encoding to use for the headers.
-     *                           Options: quoted-printable or base64
-     *                           Default is quoted-printable
-     *          text_encoding  - What encoding to use for plain text
-     *                           Options: 7bit, 8bit, base64, or quoted-printable
-     *                           Default is 7bit
-     *          html_encoding  - What encoding to use for html
-     *                           Options: 7bit, 8bit, base64, or quoted-printable
-     *                           Default is quoted-printable
-     *          html_charset   - The character set to use for html.
-     *                           Default is iso-8859-1
-     *          text_charset   - The character set to use for text.
-     *                           Default is iso-8859-1
-     *          head_charset   - The character set to use for headers.
-     *                           Default is iso-8859-1
-     *          eol            - End-of-line sequence. Default is "\r\n"
+     *                      is built. Should be an associative array.
+     *                      See $_build_params.
      *
      * @return void
      * @access public
@@ -200,7 +197,7 @@ class Mail_mime
             $this->_build_params['eol'] = MAIL_MIME_CRLF;
         }
 
-        // Parameters
+        // Update build parameters
         if (!empty($params) && is_array($params)) {
             while (list($key, $value) = each($params)) {
                 $this->_build_params[$key] = $value;
@@ -390,10 +387,17 @@ class Mail_mime
     function addHTMLImage($file, $c_type='application/octet-stream',
         $name = '', $isfile = true
     ) {
+        $bodyfile = null;
+
         if ($isfile) {
-            $filedata = $this->_file2str($file);
-            if (PEAR::isError($filedata)) {
-                return $filedata;
+            // Don't load file into memory
+            if ($this->_build_params['delay_file_io']) {
+                $filedata = null;
+                $bodyfile = $file;
+            } else {
+                if (PEAR::isError($filedata = $this->_file2str($file))) {
+                    return $filedata;
+                }
             }
             $filename = ($name ? $name : $file);
         } else {
@@ -402,11 +406,13 @@ class Mail_mime
         }
 
         $this->_html_images[] = array(
-            'body'   => $filedata,
-            'name'   => $filename,
-            'c_type' => $c_type,
-            'cid'    => md5(uniqid(time()))
+            'body'      => $filedata,
+            'body_file' => $bodyfile,
+            'name'      => $filename,
+            'c_type'    => $c_type,
+            'cid'       => md5(uniqid(time()))
         );
+
         return true;
     }
 
@@ -453,10 +459,17 @@ class Mail_mime
         $n_encoding  = null,
         $f_encoding  = null
     ) {
+        $bodyfile = null;
+
         if ($isfile) {
-            $filedata = $this->_file2str($file);
-            if (PEAR::isError($filedata)) {
-                return $filedata;
+            // Don't load file into memory
+            if ($this->_build_params['delay_file_io']) {
+                $filedata = null;
+                $bodyfile = $file;
+            } else {
+                if (PEAR::isError($filedata = $this->_file2str($file))) {
+                    return $filedata;
+                }
             }
             // Force the name the user supplied, otherwise use $file
             $filename = ($name ? $name : $file);
@@ -464,6 +477,7 @@ class Mail_mime
             $filedata = $file;
             $filename = $name;
         }
+
         if (!strlen($filename)) {
             $msg = "The supplied filename for the attachment can't be empty";
             $err = PEAR::raiseError($msg);
@@ -473,6 +487,7 @@ class Mail_mime
 
         $this->_parts[] = array(
             'body'        => $filedata,
+            'body_file'   => $bodyfile,
             'name'        => $filename,
             'c_type'      => $c_type,
             'encoding'    => $encoding,
@@ -480,9 +495,10 @@ class Mail_mime
             'language'    => $language,
             'location'    => $location,
             'disposition' => $disposition,
-            'name-encoding'     => $n_encoding,
-            'filename-encoding' => $f_encoding
+            'name_encoding'     => $n_encoding,
+            'filename_encoding' => $f_encoding
         );
+
         return true;
     }
 
@@ -512,11 +528,11 @@ class Mail_mime
 
         // Temporarily reset magic_quotes_runtime and read file contents
         if ($magic_quote_setting = get_magic_quotes_runtime()) {
-            set_magic_quotes_runtime(0);
+            @ini_set('magic_quotes_runtime', 0);
         }
         $cont = file_get_contents($file_name);
         if ($magic_quote_setting) {
-            set_magic_quotes_runtime($magic_quote_setting);
+            @ini_set('magic_quotes_runtime', $magic_quote_setting);
         }
 
         return $cont;
@@ -659,13 +675,14 @@ class Mail_mime
         $params['disposition']  = 'inline';
         $params['dfilename']    = $value['name'];
         $params['cid']          = $value['cid'];
+        $params['body_file']    = $value['body_file'];
         $params['eol']          = $this->_build_params['eol'];
 
-        if (!empty($value['name-encoding'])) {
-            $params['name-encoding'] = $value['name-encoding'];
+        if (!empty($value['name_encoding'])) {
+            $params['name_encoding'] = $value['name_encoding'];
         }
-        if (!empty($value['filename-encoding'])) {
-            $params['filename-encoding'] = $value['filename-encoding'];
+        if (!empty($value['filename_encoding'])) {
+            $params['filename_encoding'] = $value['filename_encoding'];
         }
 
         $ret = $obj->addSubpart($value['body'], $params);
@@ -688,6 +705,7 @@ class Mail_mime
         $params['dfilename']    = $value['name'];
         $params['encoding']     = $value['encoding'];
         $params['content_type'] = $value['c_type'];
+        $params['body_file']    = $value['body_file'];
         $params['disposition']  = isset($value['disposition']) ? 
                                   $value['disposition'] : 'attachment';
         if ($value['charset']) {
@@ -699,11 +717,11 @@ class Mail_mime
         if ($value['location']) {
             $params['location'] = $value['location'];
         }
-        if (!empty($value['name-encoding'])) {
-            $params['name-encoding'] = $value['name-encoding'];
+        if (!empty($value['name_encoding'])) {
+            $params['name_encoding'] = $value['name_encoding'];
         }
-        if (!empty($value['filename-encoding'])) {
-            $params['filename-encoding'] = $value['filename-encoding'];
+        if (!empty($value['filename_encoding'])) {
+            $params['filename_encoding'] = $value['filename_encoding'];
         }
 
         $ret = $obj->addSubpart($value['body'], $params);
@@ -715,65 +733,104 @@ class Mail_mime
      * mail delivery method. Note that only the mailpart that is made
      * with Mail_Mime is created. This means that,
      * YOU WILL HAVE NO TO: HEADERS UNLESS YOU SET IT YOURSELF 
-     * using the $xtra_headers parameter!
+     * using the $headers parameter!
      * 
-     * @param string $separation   The separation between these two parts.
-     * @param array  $build_params The Build parameters passed to the
-     *                             &get() function. See &get for more info.
-     * @param array  $xtra_headers The extra headers that should be passed
-     *                             to the &headers() function.
-     *                             See that function for more info.
-     * @param bool   $overwrite    Overwrite the existing headers with new.
+     * @param string $separation The separation between these two parts.
+     * @param array  $params     The Build parameters passed to the
+     *                           &get() function. See &get for more info.
+     * @param array  $headers    The extra headers that should be passed
+     *                           to the &headers() function.
+     *                           See that function for more info.
+     * @param bool   $overwrite  Overwrite the existing headers with new.
      *
-     * @return string              The complete e-mail.
+     * @return mixed The complete e-mail or PEAR error object
      * @access public
      */
-    function getMessage(
-        $separation   = null,
-        $build_params = null,
-        $xtra_headers = null,
-        $overwrite    = false
+    function getMessage($separation = null, $params = null, $headers = null,
+        $overwrite = false
     ) {
         if ($separation === null) {
             $separation = $this->_build_params['eol'];
         }
-        $body = $this->get($build_params);
-        $head = $this->txtHeaders($xtra_headers, $overwrite);
+
+        $body = $this->get($params);
+
+        if (PEAR::isError($body)) {
+            return $body;
+        }
+
+        $head = $this->txtHeaders($headers, $overwrite);
         $mail = $head . $separation . $body;
         return $mail;
+    }
+
+    /**
+     * Writes (appends) the complete e-mail into file.
+     * 
+     * @param string $filename  Output file location
+     * @param array  $params    The Build parameters passed to the
+     *                          &get() function. See &get for more info.
+     * @param array  $headers   The extra headers that should be passed
+     *                          to the &headers() function.
+     *                          See that function for more info.
+     * @param bool   $overwrite Overwrite the existing headers with new.
+     *
+     * @return mixed True or PEAR error object
+     * @access public
+     */
+    function saveMessage($filename, $params = null, $headers = null, $overwrite = false)
+    {
+        // Check state of file and raise an error properly
+        if (file_exists($filename) && !is_writable($filename)) {
+            $err = PEAR::raiseError('File is not writable: ' . $filename);
+            return $err;
+        }
+
+        // Temporarily reset magic_quotes_runtime and read file contents
+        if ($magic_quote_setting = get_magic_quotes_runtime()) {
+            @ini_set('magic_quotes_runtime', 0);
+        }
+
+        if (!($fh = fopen($filename, 'ab'))) {
+            $err = PEAR::raiseError('Unable to open file: ' . $filename);
+            return $err;
+        }
+
+        // Write message headers into file (skipping Content-* headers)
+        $head = $this->txtHeaders($headers, $overwrite, true);
+        if (fwrite($fh, $head) === false) {
+            $err = PEAR::raiseError('Error writing to file: ' . $filename);
+            return $err;
+        }
+
+        fclose($fh);
+
+        if ($magic_quote_setting) {
+            @ini_set('magic_quotes_runtime', $magic_quote_setting);
+        }
+
+        // Write the rest of the message into file
+        $res = $this->get($params, $filename);
+
+        return $res ? $res : true;
     }
 
     /**
      * Builds the multipart message from the list ($this->_parts) and
      * returns the mime content.
      *
-     * @param array $build_params Build parameters that change the way the email
-     *                            is built. Should be associative. Can contain:
-     *                head_encoding  -  What encoding to use for the headers. 
-     *                                  Options: quoted-printable or base64
-     *                                  Default is quoted-printable
-     *                text_encoding  -  What encoding to use for plain text
-     *                                  Options: 7bit, 8bit,
-     *                                  base64, or quoted-printable
-     *                                  Default is 7bit
-     *                html_encoding  -  What encoding to use for html
-     *                                  Options: 7bit, 8bit,
-     *                                  base64, or quoted-printable
-     *                                  Default is quoted-printable
-     *                html_charset   -  The character set to use for html.
-     *                                  Default is iso-8859-1
-     *                text_charset   -  The character set to use for text.
-     *                                  Default is iso-8859-1
-     *                head_charset   -  The character set to use for headers.
-     *                                  Default is iso-8859-1
+     * @param array    $params   Build parameters that change the way the email
+     *                           is built. Should be associative. See $_build_params.
+     * @param resource $filename Output file where to save the message instead of
+     *                           returning it
      *
-     * @return string             The mime content
+     * @return mixed The MIME message content string, null or PEAR error object
      * @access public
      */
-    function &get($build_params = null)
+    function &get($params = null, $filename = null)
     {
-        if (isset($build_params)) {
-            while (list($key, $value) = each($build_params)) {
+        if (isset($params)) {
+            while (list($key, $value) = each($params)) {
                 $this->_build_params[$key] = $value;
             }
         }
@@ -925,23 +982,34 @@ class Mail_mime
 
         }
 
-        if (isset($message)) {
-            // Use saved boundary
-            if (!empty($this->_build_params['boundary'])) {
-                $boundary = $this->_build_params['boundary'];
-            } else {
-                $boundary = null;
+        if (!isset($message)) {
+            $ret = null;
+            return $ret;
+        }
+        
+        // Use saved boundary
+        if (!empty($this->_build_params['boundary'])) {
+            $boundary = $this->_build_params['boundary'];
+        } else {
+            $boundary = null;
+        }
+
+        // Write output to file
+        if ($filename) {
+            // Append mimePart message headers and body into file
+            if (PEAR::isError($headers = $message->encodeToFile($filename, $boundary))) {
+                return $headers;
             }
-            $output = $message->encode($boundary);
-
+            $this->_headers = array_merge($this->_headers, $headers);
+            $ret = null;
+            return $ret;
+        } else {
+            if (PEAR::isError($output = $message->encode($boundary))) {
+                return $output;
+            }
             $this->_headers = array_merge($this->_headers, $output['headers']);
-
             $body = $output['body'];
             return $body;
-
-        } else {
-            $ret = false;
-            return $ret;
         }
     }
 
@@ -952,11 +1020,13 @@ class Mail_mime
      *
      * @param array $xtra_headers Assoc array with any extra headers (optional)
      * @param bool  $overwrite    Overwrite already existing headers.
+     * @param bool  $skip_content Don't return content headers: Content-Type
+     *                            Content-Disposition and Content-Transfer-Encoding
      * 
      * @return array              Assoc array with the mime headers
      * @access public
      */
-    function &headers($xtra_headers = null, $overwrite = false)
+    function &headers($xtra_headers = null, $overwrite = false, $skip_content = false)
     {
         // Add mime version header
         $headers['MIME-Version'] = '1.0';
@@ -965,18 +1035,29 @@ class Mail_mime
         // be present if get() was called, but we'll re-set them to make sure
         // we got them when called before get() or something in the message
         // has been changed after get() [#14780]
-        $headers += $this->_contentHeaders();
+        if (!$skip_content) {
+            $headers += $this->_contentHeaders();
+        }
 
-        if (isset($xtra_headers)) {
+        if (!empty($xtra_headers)) {
             $headers = array_merge($headers, $xtra_headers);
         }
+
         if ($overwrite) {
             $this->_headers = array_merge($this->_headers, $headers);
         } else {
             $this->_headers = array_merge($headers, $this->_headers);
         }
 
-        $encodedHeaders = $this->_encodeHeaders($this->_headers);
+        $headers = $this->_headers;
+
+        if ($skip_content) {
+            unset($headers['Content-Type']);
+            unset($headers['Content-Transfer-Encoding']);
+            unset($headers['Content-Disposition']);
+        }
+
+        $encodedHeaders = $this->_encodeHeaders($headers);
         return $encodedHeaders;
     }
 
@@ -986,13 +1067,15 @@ class Mail_mime
      *
      * @param array $xtra_headers Assoc array with any extra headers (optional)
      * @param bool  $overwrite    Overwrite the existing heaers with new.
+     * @param bool  $skip_content Don't return content headers: Content-Type
+     *                            and Content-Transfer-Encoding
      *
      * @return string             Plain text headers
      * @access public
      */
-    function txtHeaders($xtra_headers = null, $overwrite = false)
+    function txtHeaders($xtra_headers = null, $overwrite = false, $skip_content = false)
     {
-        $headers = $this->headers($xtra_headers, $overwrite);
+        $headers = $this->headers($xtra_headers, $overwrite, $skip_content);
 
         $ret = '';
         $eol = $this->_build_params['eol'];
