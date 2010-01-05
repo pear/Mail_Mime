@@ -6,15 +6,17 @@ http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
  <name>Mail_Mime</name>
  <channel>pear.php.net</channel>
  <summary>Mail_Mime provides classes to create mime messages.</summary>
- <description>Mail_Mime provides classes to deal with the creation and manipulation of mime messages.
-It allows people to create Email messages consisting of:
+ <description>Mail_Mime provides classes to deal with the creation and manipulation of MIME messages.
+It allows people to create e-mail messages consisting of:
 * Text Parts
 * HTML Parts
 * Inline HTML Images
 * Attachments
 * Attached messages
 
-Starting with version 1.4.0, it also allows non US-ASCII chars in filenames, subjects, recipients, etc, etc.</description>
+It supports big messages, base64 and quoted-printable encodings and
+non-ASCII characters in filenames, subjects, recipients, etc. encoded
+using RFC2047 and/or RFC2231.</description>
  <lead>
   <name>Cipriano Groenendal</name>
   <user>cipri</user>
@@ -28,7 +30,7 @@ Starting with version 1.4.0, it also allows non US-ASCII chars in filenames, sub
   <active>yes</active>
  </lead>
 
- <date>?</date>
+ <date>2010-01-05</date>
  <version>
   <release>1.6.0rc1</release>
   <api>1.4.0</api>
