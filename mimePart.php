@@ -560,25 +560,25 @@ class Mail_mimePart
         $output = '';
 
         while (list($idx, $line) = each($lines)) {
-
-            $linlen  = strlen($line);
             $newline = '';
+            $i = 0;
 
-            for ($i = 0; $i < $linlen; $i++) {
+            while (isset($line[$i])) {
                 $char = $line[$i];
                 $dec  = ord($char);
+                $i++;
 
-                if (($dec == 32) AND ($i == ($linlen - 1))) {
+                if (($dec == 32) && (!isset($line[$i]))) {
                     // convert space at eol only
                     $char = '=20';
-                } elseif (($dec == 9) AND ($i == ($linlen - 1))) {
+                } elseif (($dec == 9) && (!isset($line[$i]))) {
                     // convert tab at eol only
                     $char = '=09';
                 } elseif ($dec == 9) {
                     ; // Do nothing if a tab.
-                } elseif (($dec == 61) OR ($dec < 32 ) OR ($dec > 126)) {
+                } elseif (($dec == 61) || ($dec < 32) || ($dec > 126)) {
                     $char = $escape . sprintf('%0X', $dec);
-                } elseif (($dec == 46) AND (($newline == '')
+                } elseif (($dec == 46) && (($newline == '')
                     || ((strlen($newline) + strlen("=2E")) >= $line_max))
                 ) {
                     // Bug #9722: convert full-stop at bol,

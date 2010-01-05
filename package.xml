@@ -5,7 +5,7 @@ xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/ta
 http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
  <name>Mail_Mime</name>
  <channel>pear.php.net</channel>
- <summary>Mail_Mime provides classes to create mime messages.</summary>
+ <summary>Mail_Mime provides classes to create MIME messages.</summary>
  <description>Mail_Mime provides classes to deal with the creation and manipulation of MIME messages.
 It allows people to create e-mail messages consisting of:
 * Text Parts
@@ -30,9 +30,9 @@ using RFC2047 and/or RFC2231.</description>
   <active>yes</active>
  </lead>
 
- <date>2010-01-05</date>
+ <date></date>
  <version>
-  <release>1.6.0RC1</release>
+  <release>1.6.0RC2</release>
   <api>1.4.0</api>
  </version>
  <stability>
@@ -42,17 +42,7 @@ using RFC2047 and/or RFC2231.</description>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
 Fixed Bugs:
- * Bug #13444: Problem in multipart mail with txt, html and images. Reverted fix for #9725 [alec]
- * Bug #14780: Content-Type is not set correctly when calling headers() before get() [alec]
-
-Implemented Features:
- * Feature #10884: Provide easy way to set build params [alec]
- * Feature #13962: Multiple header support [alec]
- * Use class (private) variables instead of MAIL_MIME_CRLF and MAIL_MIMEPART_CRLF constants [alec]
- * Feature #12411: Support both RFC2047 and RFC2231 for attachments filenames encoding [alec]
- * Optimized memory usage in quoted-printable encoding function [alec]
- * Feature #13969: Big attachments support [alec]
- * Changed default value of text_encoding to quoted-printable [alec]
+ * Bug #7561: _encodeQuotedPrintable() with mbstring function overloading broken in 1.6.0RC1  [alec]
  </notes>
  <contents>
   <dir name="/">
