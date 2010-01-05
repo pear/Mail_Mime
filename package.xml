@@ -32,7 +32,7 @@ using RFC2047 and/or RFC2231.</description>
 
  <date>2010-01-05</date>
  <version>
-  <release>1.6.0rc1</release>
+  <release>1.6.0RC1</release>
   <api>1.4.0</api>
  </version>
  <stability>
