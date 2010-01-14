@@ -225,7 +225,7 @@ class Mail_mime
      *
      * @param string $name Parameter name
      *
-     * @return string Parameter value
+     * @return mixed Parameter value
      * @access public
      * @since 1.6.0
      */
