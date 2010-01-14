@@ -43,6 +43,8 @@ using RFC2047 and/or RFC2231.</description>
  <notes>
 Implemented Features:
  * Allow setting Content-ID for HTML Images
+ * Udded one setParam() in place of many set*() functions
+ * Added getParam(), getTXTBody(), getHTMLBody()
  </notes>
  <contents>
   <dir name="/">
