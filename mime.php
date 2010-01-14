@@ -374,18 +374,23 @@ class Mail_mime
     /**
      * Adds an image to the list of embedded images.
      *
-     * @param string $file   The image file name OR image data itself
-     * @param string $c_type The content type
-     * @param string $name   The filename of the image.
-     *                       Only used if $file is the image data.
-     * @param bool   $isfile Whether $file is a filename or not.
-     *                       Defaults to true
+     * @param string $file       The image file name OR image data itself
+     * @param string $c_type     The content type
+     * @param string $name       The filename of the image.
+     *                           Only used if $file is the image data.
+     * @param bool   $isfile     Whether $file is a filename or not.
+     *                           Defaults to true
+     * @param string $content_id Desired Content-ID of MIME part
+     *                           Defaults to generated unique ID
      *
      * @return bool          True on success
      * @access public
      */
-    function addHTMLImage($file, $c_type='application/octet-stream',
-        $name = '', $isfile = true
+    function addHTMLImage($file,
+        $c_type='application/octet-stream',
+        $name = '',
+        $isfile = true,
+        $content_id = null
     ) {
         $bodyfile = null;
 
@@ -405,12 +410,16 @@ class Mail_mime
             $filename = $name;
         }
 
+        if (!$content_id) {
+            $content_id = md5(uniqid(time()));
+        }
+
         $this->_html_images[] = array(
             'body'      => $filedata,
             'body_file' => $bodyfile,
             'name'      => $filename,
             'c_type'    => $c_type,
-            'cid'       => md5(uniqid(time()))
+            'cid'       => $content_id
         );
 
         return true;
