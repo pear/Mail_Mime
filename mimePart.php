@@ -633,10 +633,7 @@ class Mail_mimePart
     ) {
         // RFC 2045:
         // value needs encoding if contains non-ASCII chars or is longer than 78 chars
-        if (!preg_match('#[^\x20-\x7E]#', $value) // ASCII characters
-            && (!$charset || strtolower($charset) == 'us-ascii') // charset
-            && (!$language || preg_match('/^(en|en-us)$/i', $language)) // language
-        ) {
+        if (!preg_match('#[^\x20-\x7E]#', $value)) {
             $token_regexp = '#([^\x21,\x23-\x27,\x2A,\x2B,\x2D'
                 . ',\x2E,\x30-\x39,\x41-\x5A,\x5E-\x7E])#';
             if (!preg_match($token_regexp, $value)) {

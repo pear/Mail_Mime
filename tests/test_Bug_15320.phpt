@@ -13,5 +13,5 @@ print_r($enc->_headers['Content-Type']);
 ?>
 --EXPECT--
 text/plain;
- name*=ISO-8859-1''file.txt;
+ name=file.txt;
  charset=ISO-8859-1

@@ -45,6 +45,7 @@ Implemented Features:
  * Allow setting Content-ID for HTML Images
  * Udded one setParam() in place of many set*() functions
  * Added getParam(), getTXTBody(), getHTMLBody()
+ * Skip RFC2231's charset if filename contains only ASCII characters
  </notes>
  <contents>
   <dir name="/">
