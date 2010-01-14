@@ -30,7 +30,7 @@ using RFC2047 and/or RFC2231.</description>
   <active>yes</active>
  </lead>
 
- <date></date>
+ <date>2010-01-14</date>
  <version>
   <release>1.6.0RC2</release>
   <api>1.4.0</api>
@@ -43,6 +43,7 @@ using RFC2047 and/or RFC2231.</description>
  <notes>
 Fixed Bugs:
  * Bug #7561: _encodeQuotedPrintable() with mbstring function overloading broken in 1.6.0RC1  [alec]
+ * Fixed quoted-printable encoding of characters with ord(char) &lt; 10 [alec]
  </notes>
  <contents>
   <dir name="/">

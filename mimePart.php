@@ -553,9 +553,19 @@ class Mail_mimePart
      */
     function _quotedPrintableEncode($input , $line_max = 76)
     {
-        // @TODO: PHP-5.3 quoted_printable_encode()
+        $eol = $this->_eol;
+        /*
+        // imap_8bit() is extremely fast, but doesn't handle properly some characters
+        if (function_exists('imap_8bit') && $line_max == 76) {
+            $input = preg_replace('/\r?\n/', "\r\n", $input);
+            $input = imap_8bit($input);
+            if ($eol != "\r\n") {
+                $input = str_replace("\r\n", $eol, $input);
+            }
+            return $input;
+        }
+        */
         $lines  = preg_split("/\r?\n/", $input);
-        $eol    = $this->_eol;
         $escape = '=';
         $output = '';
 
@@ -571,13 +581,10 @@ class Mail_mimePart
                 if (($dec == 32) && (!isset($line[$i]))) {
                     // convert space at eol only
                     $char = '=20';
-                } elseif (($dec == 9) && (!isset($line[$i]))) {
-                    // convert tab at eol only
-                    $char = '=09';
-                } elseif ($dec == 9) {
-                    ; // Do nothing if a tab.
+                } elseif ($dec == 9 && isset($line[$i])) {
+                    ; // Do nothing if a TAB is not on eol
                 } elseif (($dec == 61) || ($dec < 32) || ($dec > 126)) {
-                    $char = $escape . sprintf('%0X', $dec);
+                    $char = $escape . sprintf('%02X', $dec);
                 } elseif (($dec == 46) && (($newline == '')
                     || ((strlen($newline) + strlen("=2E")) >= $line_max))
                 ) {
@@ -767,7 +774,7 @@ class Mail_mimePart
      */
     function _encodeReplaceCallback($matches)
     {
-        return sprintf('%%%0X', ord($matches[1]));
+        return sprintf('%%%02X', ord($matches[1]));
     }
 
     /**
@@ -804,7 +811,7 @@ class Mail_mimePart
      */
     function _qpReplaceCallback($matches)
     {
-        return sprintf('=%0X', ord($matches[1]));
+        return sprintf('=%02X', ord($matches[1]));
     }
 
 } // End of class
