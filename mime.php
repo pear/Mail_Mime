@@ -1222,7 +1222,9 @@ class Mail_mime
             $value = '';
 
             foreach ($parts as $part) {
+                $part = preg_replace('/\r?\n[\s\t]*/', $eol . ' ', $part);
                 $part = trim($part);
+
                 if (!$part) {
                     continue;
                 }
@@ -1300,6 +1302,7 @@ class Mail_mime
                 );
             } else if (strlen($name.': '.$value) > 78) {
                 // ASCII: check if header line isn't too long and use folding
+                $value = preg_replace('/\r?\n[\s\t]*/', $eol . ' ', $value);
                 $tmp = wordwrap($name.': '.$value, 78, $eol . ' ');
                 $value = preg_replace('/^'.$name.':\s*/', '', $tmp);
                 // hard limit 998 (RFC2822)
