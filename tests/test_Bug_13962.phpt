@@ -14,7 +14,7 @@ $r = $mime->txtHeaders(array('Received' => array('Received 1', 'Received 2')));
 print_r($r); 
 ?>
 --EXPECT--
-MIME-Version: 1.0
 Received: Received 1
 Received: Received 2
+MIME-Version: 1.0
 From: user@from.example.com

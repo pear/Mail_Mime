@@ -46,6 +46,7 @@ Implemented Features:
  * Udded one setParam() in place of many set*() functions
  * Added getParam(), getTXTBody(), getHTMLBody()
  * Skip RFC2231's charset if filename contains only ASCII characters
+ * Make sure that Received: headers are returned on the top
  </notes>
  <contents>
   <dir name="/">

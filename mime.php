@@ -1038,6 +1038,14 @@ class Mail_mime
     {
         $headers = $this->headers($xtra_headers, $overwrite, $skip_content);
 
+        // Place Received: headers at the beginning of the message
+        // Spam detectors often flag messages with it after the Subject: as spam
+        if (isset($headers['Received'])) {
+            $received = $headers['Received'];
+            unset($headers['Received']);
+            $headers = array('Received' => $received) + $headers;
+        }
+
         $ret = '';
         $eol = $this->_build_params['eol'];
 
