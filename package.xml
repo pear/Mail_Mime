@@ -42,14 +42,15 @@ using RFC2047 and/or RFC2231.</description>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
 Bugs Fixed:
- * Don't break specified headers folding
+ * Don't break specified headers folding [alec]
+ * Bug #17025: Wrong headers() result for long unwrapable header value [alec]
 
 Implemented Features:
- * Allow setting Content-ID for HTML Images
- * Udded one setParam() in place of many set*() functions
- * Added getParam(), getTXTBody(), getHTMLBody()
- * Skip RFC2231's charset if filename contains only ASCII characters
- * Make sure that Received: headers are returned on the top
+ * Allow setting Content-ID for HTML Images [alec]
+ * Added one setParam() in place of many set*() functions [alec]
+ * Added getParam(), getTXTBody(), getHTMLBody() [alec]
+ * Skip RFC2231's charset if filename contains only ASCII characters [alec]
+ * Make sure that Received: headers are returned on the top [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -85,6 +86,7 @@ Implemented Features:
     <file baseinstalldir="Mail" name="test_Bug_14780.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_15320.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_14529.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_17025.phpt" role="test" />
    </dir> <!-- /tests -->
    <file baseinstalldir="Mail" name="mime.php" role="php" />
    <file baseinstalldir="Mail" name="mimePart.php" role="php" />

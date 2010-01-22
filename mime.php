@@ -1283,7 +1283,10 @@ class Mail_mime
                 $value = wordwrap($value, 76, $eol . ' ');
             }
 
-            $value = preg_replace('/^'.$name.': /', '', $value);
+            // remove header name prefix (there could be EOL too)
+            $value = preg_replace(
+                '/^'.$name.':('.preg_quote($eol, '/').')* /', '', $value
+            );
 
         } else {
             // Unstructured header
