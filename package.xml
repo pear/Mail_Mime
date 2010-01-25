@@ -51,6 +51,7 @@ Implemented Features:
  * Added getParam(), getTXTBody(), getHTMLBody() [alec]
  * Skip RFC2231's charset if filename contains only ASCII characters [alec]
  * Make sure that Received: headers are returned on the top [alec]
+ * Added saveMessageBody() and getMessageBody() functions [alec]
  </notes>
  <contents>
   <dir name="/">
