@@ -1037,7 +1037,7 @@ class Mail_mime
      *
      * @param array $xtra_headers Assoc array with any extra headers (optional)
      * @param bool  $overwrite    Overwrite already existing headers.
-     * @param bool  $skip_content Don't return content headers: Content-Type
+     * @param bool  $skip_content Don't return content headers: Content-Type,
      *                            Content-Disposition and Content-Transfer-Encoding
      * 
      * @return array              Assoc array with the mime headers
@@ -1083,9 +1083,9 @@ class Mail_mime
      * (usefull if you want to use the PHP mail() function)
      *
      * @param array $xtra_headers Assoc array with any extra headers (optional)
-     * @param bool  $overwrite    Overwrite the existing heaers with new.
-     * @param bool  $skip_content Don't return content headers: Content-Type
-     *                            and Content-Transfer-Encoding
+     * @param bool  $overwrite    Overwrite the existing headers with new.
+     * @param bool  $skip_content Don't return content headers: Content-Type,
+     *                            Content-Disposition and Content-Transfer-Encoding
      *
      * @return string             Plain text headers
      * @access public
