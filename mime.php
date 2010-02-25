@@ -111,22 +111,6 @@ class Mail_mime
     var $_htmlbody;
 
     /**
-     * contains the mime encoded text
-     *
-     * @var string
-     * @access private
-     */
-    var $_mime;
-
-    /**
-     * contains the multipart content
-     *
-     * @var string
-     * @access private
-     */
-    var $_multipart;
-
-    /**
      * list of the attached images
      *
      * @var array
