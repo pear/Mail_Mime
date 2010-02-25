@@ -30,9 +30,9 @@ using RFC2047 and/or RFC2231.</description>
   <active>yes</active>
  </lead>
 
- <date>2010-01-27</date>
+ <date>?</date>
  <version>
-  <release>1.6.0</release>
+  <release>1.6.1</release>
   <api>1.4.0</api>
  </version>
  <stability>
@@ -42,16 +42,7 @@ using RFC2047 and/or RFC2231.</description>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
 Bugs Fixed:
- * Don't break specified headers folding [alec]
- * Bug #17025: Wrong headers() result for long unwrapable header value [alec]
-
-Implemented Features:
- * Allow setting Content-ID for HTML Images [alec]
- * Added one setParam() in place of many set*() functions [alec]
- * Added getParam(), getTXTBody(), getHTMLBody() [alec]
- * Skip RFC2231's charset if filename contains only ASCII characters [alec]
- * Make sure that Received: headers are returned on the top [alec]
- * Added saveMessageBody() and getMessageBody() functions [alec]
+ * Fix encoding of Return-Receipt-To and Disposition-Notification-To headers [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -496,6 +487,31 @@ Fixed bugs:
  * Fix Bug #14232: RFC2231: tspecials encoding in _buildHeaderParam() [alec]
 Implemented Features:
  * Implement Feature #10438: Function (encodeHeader) for encoding of given header [alec]
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>1.6.0</release>
+    <api>1.4.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2010-01-27</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+   <notes>
+Bugs Fixed:
+ * Don't break specified headers folding [alec]
+ * Bug #17025: Wrong headers() result for long unwrapable header value [alec]
+
+Implemented Features:
+ * Allow setting Content-ID for HTML Images [alec]
+ * Added one setParam() in place of many set*() functions [alec]
+ * Added getParam(), getTXTBody(), getHTMLBody() [alec]
+ * Skip RFC2231's charset if filename contains only ASCII characters [alec]
+ * Make sure that Received: headers are returned on the top [alec]
+ * Added saveMessageBody() and getMessageBody() functions [alec]
    </notes>
   </release>
  </changelog>
