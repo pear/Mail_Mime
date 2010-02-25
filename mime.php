@@ -1238,7 +1238,7 @@ class Mail_mime
             'from', 'to', 'cc', 'bcc', 'sender', 'reply-to',
             'resent-from', 'resent-to', 'resent-cc', 'resent-bcc',
             'resent-sender', 'resent-reply-to',
-	    'return-receipt-to', 'disposition-notification-to',
+            'return-receipt-to', 'disposition-notification-to',
         );
         $other_headers = array(
             'references', 'in-reply-to', 'message-id', 'resent-message-id',
