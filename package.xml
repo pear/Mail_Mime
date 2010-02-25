@@ -43,6 +43,9 @@ using RFC2047 and/or RFC2231.</description>
  <notes>
 Bugs Fixed:
  * Fix encoding of Return-Receipt-To and Disposition-Notification-To headers [alec]
+
+Implemented Features:
+ * Implement Feature #12466: Build parameters validation [alec]
  </notes>
  <contents>
   <dir name="/">

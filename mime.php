@@ -865,11 +865,13 @@ class Mail_mime
             }
         }
 
+        $this->_checkParams();
+
         $null        = null;
         $attachments = count($this->_parts)                 ? true : false;
         $html_images = count($this->_html_images)           ? true : false;
         $html        = strlen($this->_htmlbody)             ? true : false;
-        $text        = (!$html && strlen($this->_txtbody)) ? true : false;
+        $text        = (!$html && strlen($this->_txtbody))  ? true : false;
 
         switch (true) {
         case $text && !$attachments:
@@ -1556,6 +1558,8 @@ class Mail_mime
             return $headers;
         }
 
+        $this->_checkParams();
+
         $eol = !empty($this->_build_params['eol'])
             ? $this->_build_params['eol'] : "\r\n";
 
@@ -1588,6 +1592,44 @@ class Mail_mime
         }
 
         return $headers;
+    }
+
+    /**
+     * Validate and set build parameters
+     *
+     * @return void
+     * @access private
+     */
+    function _checkParams()
+    {
+        $encodings = array('7bit', '8bit', 'base64', 'quoted-printable');
+
+        $this->_build_params['text_encoding']
+            = strtolower($this->_build_params['text_encoding']);
+        $this->_build_params['html_encoding']
+            = strtolower($this->_build_params['html_encoding']);
+
+        if (!in_array($this->_build_params['text_encoding'], $encodings)) {
+            $this->_build_params['text_encoding'] = '7bit';
+        }
+        if (!in_array($this->_build_params['html_encoding'], $encodings)) {
+            $this->_build_params['html_encoding'] = '7bit';
+        }
+
+        // text body
+        if ($this->_build_params['text_encoding'] == '7bit'
+            && !preg_match('/ascii/i', $this->_build_params['text_charset'])
+            && preg_match('/[^\x00-\x7F]/', $this->_txtbody)
+        ) {
+            $this->_build_params['text_encoding'] = 'quoted-printable';
+        }
+        // html body
+        if ($this->_build_params['html_encoding'] == '7bit'
+            && !preg_match('/ascii/i', $this->_build_params['html_charset'])
+            && preg_match('/[^\x00-\x7F]/', $this->_htmlbody)
+        ) {
+            $this->_build_params['html_encoding'] = 'quoted-printable';
+        }
     }
 
 } // End of class
