@@ -46,6 +46,7 @@ Bugs Fixed:
 
 Implemented Features:
  * Implement Feature #12466: Build parameters validation [alec]
+ * Implement Feature #17175: Content-Description support for attachments [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -82,6 +83,7 @@ Implemented Features:
     <file baseinstalldir="Mail" name="test_Bug_15320.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_14529.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_17025.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_17175.phpt" role="test" />
    </dir> <!-- /tests -->
    <file baseinstalldir="Mail" name="mime.php" role="php" />
    <file baseinstalldir="Mail" name="mimePart.php" role="php" />
