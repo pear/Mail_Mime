@@ -30,7 +30,7 @@ using RFC2047 and/or RFC2231.</description>
   <active>yes</active>
  </lead>
 
- <date>?</date>
+ <date>2010-02-08</date>
  <version>
   <release>1.6.1</release>
   <api>1.4.0</api>
