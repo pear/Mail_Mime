@@ -64,7 +64,7 @@ foreach ($headers as $header) {
 [10] From: =?UTF-8?B?R2VybWFuIFVtbGF1dHMg9uT8?= <adresse@adresse.de>
 [10] From: =?UTF-8?Q?German_Umlauts_=F6=E4=FC?= <adresse@adresse.de>
 [11] Subject: =?UTF-8?B?R2VybWFuIFVtbGF1dHMg9uT8IDxhZHJlc3NlQGFkcmVzc2UuZGU+?=
-[11] Subject: =?UTF-8?Q?German_Umlauts_=F6=E4=FC_<adresse@adresse.de>?=
+[11] Subject: =?UTF-8?Q?German_Umlauts_=F6=E4=FC_=3Cadresse=40adresse=2Ede=3E?=
 [12] Subject: Short ASCII subject
 [12] Subject: Short ASCII subject
 [13] Subject: Long ASCII subject - multiline space separated words - too long for

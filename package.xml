@@ -30,9 +30,9 @@ using RFC2047 and/or RFC2231.</description>
   <active>yes</active>
  </lead>
 
- <date>2010-03-08</date>
+ <date></date>
  <version>
-  <release>1.6.1</release>
+  <release>1.6.2</release>
   <api>1.4.0</api>
  </version>
  <stability>
@@ -42,11 +42,7 @@ using RFC2047 and/or RFC2231.</description>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
 Bugs Fixed:
- * Fix encoding of Return-Receipt-To and Disposition-Notification-To headers [alec]
-
-Implemented Features:
- * Implement Feature #12466: Build parameters validation [alec]
- * Implement Feature #17175: Content-Description support for attachments [alec]
+ * Fix Bug #17226: Non RFC-compliant quoted-printable encoding of structured headers [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -517,6 +513,26 @@ Implemented Features:
  * Skip RFC2231's charset if filename contains only ASCII characters [alec]
  * Make sure that Received: headers are returned on the top [alec]
  * Added saveMessageBody() and getMessageBody() functions [alec]
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>1.6.1</release>
+    <api>1.4.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2010-03-08</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+   <notes>
+Bugs Fixed:
+ * Fix encoding of Return-Receipt-To and Disposition-Notification-To headers [alec]
+
+Implemented Features:
+ * Implement Feature #12466: Build parameters validation [alec]
+ * Implement Feature #17175: Content-Description support for attachments [alec]
    </notes>
   </release>
  </changelog>

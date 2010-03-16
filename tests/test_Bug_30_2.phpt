@@ -25,8 +25,9 @@ print_r($encoded);
 Array
 (
     [0] => Just a simple test
-    [1] => =?utf-8?Q?UTF-8_test_for_bug_#30._#2_so_Helgi_=C3=9Eormar_=C3=9Eorbj?=
- =?utf-8?Q?=C3=B6rnsson_<dufuz@php.net>_doesn't_complain?=
+    [1] => =?utf-8?Q?UTF-8_test_for_bug_=2330=2E_=232_so_Helgi_=C3=9Eormar_=C3?=
+ =?utf-8?Q?=9Eorbj=C3=B6rnsson_=3Cdufuz=40php=2Enet=3E_doesn=27t_complai?=
+ =?utf-8?Q?n?=
     [2] => Just a simple test
     [3] => _this=?Q?U:I:T:E_a_test?=
     [4] => =?utf-8?Q?=5F=3D=3FS=C3=BCper=3F=3D=5F?=
