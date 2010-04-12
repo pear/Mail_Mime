@@ -30,9 +30,9 @@ using RFC2047 and/or RFC2231.</description>
   <active>yes</active>
  </lead>
 
- <date></date>
+ <date>2010-04-12</date>
  <version>
-  <release>1.6.2</release>
+  <release>1.7.0</release>
   <api>1.4.0</api>
  </version>
  <stability>
@@ -41,8 +41,10 @@ using RFC2047 and/or RFC2231.</description>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
-Bugs Fixed:
- * Fix Bug #17226: Non RFC-compliant quoted-printable encoding of structured headers [alec]
+Implemented Features:
+ * Added Mail_mime::setContentType() function with possibility to set various
+   types in Content-Type header (also fixes problem with boundary parameter when Content-Type
+   header was specified by user) [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -533,6 +535,22 @@ Bugs Fixed:
 Implemented Features:
  * Implement Feature #12466: Build parameters validation [alec]
  * Implement Feature #17175: Content-Description support for attachments [alec]
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>1.6.2</release>
+    <api>1.4.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2010-03-23</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+   <notes>
+Bugs Fixed:
+ * Fix Bug #17226: Non RFC-compliant quoted-printable encoding of structured headers [alec]
    </notes>
   </release>
  </changelog>
