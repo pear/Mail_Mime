@@ -417,6 +417,11 @@ class Mail_mimeDecode extends PEAR
         if (preg_match("/^(.*?)\r?\n\r?\n(.*)/s", $input, $match)) {
             return array($match[1], $match[2]);
         }
+        // bug #17325 - empty bodies are allowed. - we just check that at least one line 
+        // of headers exist..
+        if (count(explode("\n",$input))) {
+            return array($input, '');
+        }
         $this->_error = 'Could not split header and body';
         return false;
     }
