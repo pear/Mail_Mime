@@ -994,7 +994,7 @@ class Mail_mime
             $ret = null;
             return $ret;
         }
-        
+
         // Use saved boundary
         if (!empty($this->_build_params['boundary'])) {
             $boundary = $this->_build_params['boundary'];
