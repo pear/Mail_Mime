@@ -32,8 +32,8 @@ using RFC2047 and/or RFC2231.</description>
 
  <date></date>
  <version>
-  <release>1.7.1</release>
-  <api>1.4.0</api>
+  <release>1.8.0</release>
+  <api>1.4.1</api>
  </version>
  <stability>
   <release>stable</release>
@@ -43,6 +43,8 @@ using RFC2047 and/or RFC2231.</description>
  <notes>
 Bugs Fixed:
  * Fix double-addition of e-mail domain to content ID in HTML images
+Implemented Features:
+ * #17518: Added addTo() method [alec]
  </notes>
  <contents>
   <dir name="/">

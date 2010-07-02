@@ -1154,7 +1154,7 @@ class Mail_mime
         // add required boundary parameter if not defined
         if (preg_match('/^multipart\//i', $type)) {
             if (empty($this->_build_params['boundary'])) {
-                $this->_build_params['boundary'] = '=_' . md5(rand() . microtime());              
+                $this->_build_params['boundary'] = '=_' . md5(rand() . microtime());
             }
 
             $header .= ";$eol boundary=\"".$this->_build_params['boundary']."\"";
@@ -1187,6 +1187,24 @@ class Mail_mime
     function setFrom($email)
     {
         $this->_headers['From'] = $email;
+    }
+
+    /**
+     * Add an email to the To header
+     * (multiple calls to this method are allowed)
+     *
+     * @param string $email The email direction to add
+     *
+     * @return void
+     * @access public
+     */
+    function addTo($email)
+    {
+        if (isset($this->_headers['To'])) {
+            $this->_headers['To'] .= ", $email";
+        } else {
+            $this->_headers['To'] = $email;
+        }
     }
 
     /**
