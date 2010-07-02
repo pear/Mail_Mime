@@ -851,6 +851,7 @@ class Mail_mime
                 $cid = $this->_html_images[$i]['cid']; 
                 if (!preg_match('#'.preg_quote($domainID).'$#', $cid)) {
                     $this->_html_images[$i]['cid'] = $cid . $domainID;
+                }
             }
         }
 
