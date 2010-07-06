@@ -55,13 +55,10 @@ Implemented Features:
    <dir name="tests">
     <file baseinstalldir="Mail" name="class-filename.phpt" role="test" />
     <file baseinstalldir="Mail" name="encoding_case.phpt" role="test" />
-    <file baseinstalldir="Mail" name="headers_encoding.phpt" role="test" />
+    <file baseinstalldir="Mail" name="headers_with_mbstring.phpt" role="test" />
+    <file baseinstalldir="Mail" name="headers_without_mbstring.phpt" role="test" />
     <file baseinstalldir="Mail" name="sleep_wakeup_EOL-bug3488-part1.phpt" role="test" />
     <file baseinstalldir="Mail" name="sleep_wakeup_EOL-bug3488-part2.phpt" role="test" />
-    <file baseinstalldir="Mail" name="test_Bug_30_1.phpt" role="test" />
-    <file baseinstalldir="Mail" name="test_Bug_30_2.phpt" role="test" />
-    <file baseinstalldir="Mail" name="test_Bug_30_3.phpt" role="test" />
-    <file baseinstalldir="Mail" name="test_Bug_30_4.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_3513_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_3513_2.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_3513_3.phpt" role="test" />
@@ -70,7 +67,6 @@ Implemented Features:
     <file baseinstalldir="Mail" name="test_Bug_8541_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_9558_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_9722_1.phpt" role="test" />
-    <file baseinstalldir="Mail" name="test_Bug_9976_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_10596_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_10816_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_11731.phpt" role="test" />

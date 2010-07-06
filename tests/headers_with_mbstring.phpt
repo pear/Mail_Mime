@@ -1,6 +1,11 @@
 --TEST--
 Multi-test for headers encoding using base64 and quoted-printable
 --SKIPIF--
+<?php
+if (!function_exists('mb_substr') || !function_exists('mb_strlen')) {
+    die "skip mbstring functions not found!";
+}
+?>
 --FILE--
 <?php
 error_reporting(E_ALL); // ignore E_STRICT
@@ -17,8 +22,8 @@ array('Cc', '"Frank Do" <adresse@adresse.de>, "James Clark" <james@domain.com>')
 array('Cc', ' <adresse@adresse.de>, "KuÅ›miderski Jan Krzysztof Janusz DÅ‚uga nazwa" <cris@domain.com>'),
 array('From', '"adresse@adresse.de" <addresse@adresse>'),
 array('From', 'adresse@adresse.de <addresse@adresse>'),
-array('From', '"German Umlauts öäü" <adresse@adresse.de>'),
-array('Subject', 'German Umlauts öäü <adresse@adresse.de>'),
+array('From', '"German Umlauts Ã¶Ã¤Ã¼" <adresse@adresse.de>'),
+array('Subject', 'German Umlauts Ã¶Ã¤Ã¼ <adresse@adresse.de>'),
 array('Subject', 'Short ASCII subject'),
 array('Subject', 'Long ASCII subject - multiline space separated words - too long for one line'),
 array('Subject', 'Short Unicode Å¼ subject'),
@@ -28,7 +33,9 @@ array('To', '"Frank Do" <adresse@adresse.de>,, "James Clark" <james@domain.com>'
 array('To', '"Frank \\" \\\\Do" <adresse@adresse.de>'),
 array('To', 'Frank " \\Do <adresse@adresse.de>'),
 array('Subject', "A REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY /REALLY/ LONG test"),
-array('Subject', "TEST Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir!!!?"),
+array('Subject', "TEST SÃ¼per grÃ¶se tolle grÃ¼ÃŸe von mir SÃ¼per grÃ¶se tolle grÃ¼ÃŸe von mir SÃ¼per grÃ¶se tolle grÃ¼ÃŸe von mir SÃ¼per grÃ¶se tolle grÃ¼ÃŸe von mir SÃ¼per grÃ¶se tolle grÃ¼ÃŸe von mir SÃ¼per grÃ¶se tolle grÃ¼ÃŸe von mir SÃ¼per grÃ¶se tolle grÃ¼ÃŸe von mir SÃ¼per grÃ¶se tolle grÃ¼ÃŸe von mir SÃ¼per grÃ¶se tolle grÃ¼ÃŸe von mir!!!?"),
+array('Subject', "Update: Microsoft Windows-Tool zum Entfernen bÃ¶sartiger Software 3.6"),
+array('From', "test@nÃ me <user@domain.com>"),
 );
 
 $i = 1;
@@ -53,18 +60,20 @@ foreach ($headers as $header) {
 [05] From: "Frank Do" <adresse@adresse.de>
 [06] Cc: "Frank Do" <adresse@adresse.de>, "James Clark" <james@domain.com>
 [06] Cc: "Frank Do" <adresse@adresse.de>, "James Clark" <james@domain.com>
-[07] Cc: <adresse@adresse.de>, =?UTF-8?B?S3XFm21pZGVyc2tpIEphbiBLcnp5c3p0?=
- =?UTF-8?B?b2YgSmFudXN6IETFgnVnYSBuYXp3YQ==?= <cris@domain.com>
-[07] Cc: <adresse@adresse.de>, =?UTF-8?Q?Ku=C5=9Bmiderski_Jan_Krzysztof_Janus?=
- =?UTF-8?Q?z_D=C5=82uga_nazwa?= <cris@domain.com>
+[07] Cc: <adresse@adresse.de>, =?UTF-8?B?S3XFm21pZGVyc2tpIEphbiBLcnp5c3p0b2Yg?=
+ =?UTF-8?B?SmFudXN6IETFgnVnYSBuYXp3YQ==?= <cris@domain.com>
+[07] Cc: <adresse@adresse.de>, =?UTF-8?Q?Ku=C5=9Bmiderski_Jan_Krzysztof_Janusz?=
+ =?UTF-8?Q?_D=C5=82uga_nazwa?= <cris@domain.com>
 [08] From: "adresse@adresse.de" <addresse@adresse>
 [08] From: "adresse@adresse.de" <addresse@adresse>
 [09] From: "adresse@adresse.de" <addresse@adresse>
 [09] From: "adresse@adresse.de" <addresse@adresse>
-[10] From: =?UTF-8?B?R2VybWFuIFVtbGF1dHMg9uT8?= <adresse@adresse.de>
-[10] From: =?UTF-8?Q?German_Umlauts_=F6=E4=FC?= <adresse@adresse.de>
-[11] Subject: =?UTF-8?B?R2VybWFuIFVtbGF1dHMg9uT8IDxhZHJlc3NlQGFkcmVzc2UuZGU+?=
-[11] Subject: =?UTF-8?Q?German_Umlauts_=F6=E4=FC_=3Cadresse=40adresse=2Ede=3E?=
+[10] From: =?UTF-8?B?R2VybWFuIFVtbGF1dHMgw7bDpMO8?= <adresse@adresse.de>
+[10] From: =?UTF-8?Q?German_Umlauts_=C3=B6=C3=A4=C3=BC?= <adresse@adresse.de>
+[11] Subject: =?UTF-8?B?R2VybWFuIFVtbGF1dHMgw7bDpMO8IDxhZHJlc3NlQGFkcmVzc2Uu?=
+ =?UTF-8?B?ZGU+?=
+[11] Subject: =?UTF-8?Q?German_Umlauts_=C3=B6=C3=A4=C3=BC_=3Cadresse=40adresse?=
+ =?UTF-8?Q?=2Ede=3E?=
 [12] Subject: Short ASCII subject
 [12] Subject: Short ASCII subject
 [13] Subject: Long ASCII subject - multiline space separated words - too long for
@@ -95,17 +104,25 @@ foreach ($headers as $header) {
  REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY
  REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY
  REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY /REALLY/ LONG test
-[21] Subject: =?UTF-8?B?VEVTVCBT/HBlciBncvZzZSB0b2xsZSBncvzfZSB2b24gbWlyIFP8?=
- =?UTF-8?B?cGVyIGdy9nNlIHRvbGxlIGdy/N9lIHZvbiBtaXIgU/xwZXIgZ3L2c2UgdG9s?=
- =?UTF-8?B?bGUgZ3L832Ugdm9uIG1pciBT/HBlciBncvZzZSB0b2xsZSBncvzfZSB2b24g?=
- =?UTF-8?B?bWlyIFP8cGVyIGdy9nNlIHRvbGxlIGdy/N9lIHZvbiBtaXIgU/xwZXIgZ3L2?=
- =?UTF-8?B?c2UgdG9sbGUgZ3L832Ugdm9uIG1pciBT/HBlciBncvZzZSB0b2xsZSBncvzf?=
- =?UTF-8?B?ZSB2b24gbWlyIFP8cGVyIGdy9nNlIHRvbGxlIGdy/N9lIHZvbiBtaXIgU/xw?=
- =?UTF-8?B?ZXIgZ3L2c2UgdG9sbGUgZ3L832Ugdm9uIG1pciEhIT8=?=
-[21] Subject: =?UTF-8?Q?TEST_S=FCper_gr=F6se_tolle_gr=FC=DFe_von_mir_S=FCper_?=
- =?UTF-8?Q?gr=F6se_tolle_gr=FC=DFe_von_mir_S=FCper_gr=F6se_tolle_gr=FC?=
- =?UTF-8?Q?=DFe_von_mir_S=FCper_gr=F6se_tolle_gr=FC=DFe_von_mir_S=FCper_?=
- =?UTF-8?Q?gr=F6se_tolle_gr=FC=DFe_von_mir_S=FCper_gr=F6se_tolle_gr=FC?=
- =?UTF-8?Q?=DFe_von_mir_S=FCper_gr=F6se_tolle_gr=FC=DFe_von_mir_S=FCper_?=
- =?UTF-8?Q?gr=F6se_tolle_gr=FC=DFe_von_mir_S=FCper_gr=F6se_tolle_gr=FC?=
- =?UTF-8?Q?=DFe_von_mir!!!=3F?=
+[21] Subject: =?UTF-8?B?VEVTVCBTw7xwZXIgZ3LDtnNlIHRvbGxlIGdyw7zDn2Ugdm9uIG1p?=
+ =?UTF-8?B?ciBTw7xwZXIgZ3LDtnNlIHRvbGxlIGdyw7zDn2Ugdm9uIG1pciBTw7xwZXIg?=
+ =?UTF-8?B?Z3LDtnNlIHRvbGxlIGdyw7zDn2Ugdm9uIG1pciBTw7xwZXIgZ3LDtnNlIHRv?=
+ =?UTF-8?B?bGxlIGdyw7zDn2Ugdm9uIG1pciBTw7xwZXIgZ3LDtnNlIHRvbGxlIGdyw7w=?=
+ =?UTF-8?B?w59lIHZvbiBtaXIgU8O8cGVyIGdyw7ZzZSB0b2xsZSBncsO8w59lIHZvbiBt?=
+ =?UTF-8?B?aXIgU8O8cGVyIGdyw7ZzZSB0b2xsZSBncsO8w59lIHZvbiBtaXIgU8O8cGVy?=
+ =?UTF-8?B?IGdyw7ZzZSB0b2xsZSBncsO8w59lIHZvbiBtaXIgU8O8cGVyIGdyw7ZzZSB0?=
+ =?UTF-8?B?b2xsZSBncsO8w59lIHZvbiBtaXIhISE/?=
+[21] Subject: =?UTF-8?Q?TEST_S=C3=BCper_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe_von_m?=
+ =?UTF-8?Q?ir_S=C3=BCper_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe_von_mir_S=C3=BCp?=
+ =?UTF-8?Q?er_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe_von_mir_S=C3=BCper_gr=C3=B6?=
+ =?UTF-8?Q?se_tolle_gr=C3=BC=C3=9Fe_von_mir_S=C3=BCper_gr=C3=B6se_tolle_gr?=
+ =?UTF-8?Q?=C3=BC=C3=9Fe_von_mir_S=C3=BCper_gr=C3=B6se_tolle_gr=C3=BC?=
+ =?UTF-8?Q?=C3=9Fe_von_mir_S=C3=BCper_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe_von?=
+ =?UTF-8?Q?_mir_S=C3=BCper_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe_von_mir_S?=
+ =?UTF-8?Q?=C3=BCper_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe_von_mir!!!=3F?=
+[22] Subject: =?UTF-8?B?VXBkYXRlOiBNaWNyb3NvZnQgV2luZG93cy1Ub29sIHp1bSBFbnRm?=
+ =?UTF-8?B?ZXJuZW4gYsO2c2FydGlnZXIgU29mdHdhcmUgMy42?=
+[22] Subject: =?UTF-8?Q?Update=3A_Microsoft_Windows-Tool_zum_Entfernen_b=C3=B6?=
+ =?UTF-8?Q?sartiger_Software_3=2E6?=
+[23] From: =?UTF-8?B?dGVzdEBuw6BtZQ==?= <user@domain.com>
+[23] From: =?UTF-8?Q?test=40n=C3=A0me?= <user@domain.com>
