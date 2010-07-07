@@ -12,6 +12,6 @@ $enc = $m->_addAttachmentPart($root, $m->_parts[0]);
 print_r($enc->_headers['Content-Type']);
 ?>
 --EXPECT--
-text/plain;
- name=file.txt;
- charset=ISO-8859-1
+text/plain; charset=ISO-8859-1;
+ name=file.txt
+

@@ -215,32 +215,43 @@ class Mail_mimePart
             }
         }
 
+        // Default content-type
+        if (empty($c_type['type'])) {
+            $c_type['type'] = 'text/plain';
+        }
+
         // Content-Type
-        if (isset($c_type['type'])) {
+        if (!empty($c_type['type'])) {
             $headers['Content-Type'] = $c_type['type'];
-            if (isset($c_type['name'])) {
+            if (!empty($c_type['charset'])) {
+                $charset = "charset={$c_type['charset']}";
+                // place charset parameter in the same line, if possible
+                if ((strlen($headers['Content-Type']) + strlen($charset) + 16) <= 76) {
+                    $headers['Content-Type'] .= '; ';
+                } else {
+                    $headers['Content-Type'] .= ';' . $this->_eol . ' ';
+                }
+                $headers['Content-Type'] .= $charset;
+            }
+            if (!empty($c_type['name'])) {
                 $headers['Content-Type'] .= ';' . $this->_eol;
                 $headers['Content-Type'] .= $this->_buildHeaderParam(
-                    'name', $c_type['name'], 
-                    isset($c_type['charset']) ? $c_type['charset'] : 'US-ASCII', 
+                    'name', $c_type['name'],
+                    isset($c_type['charset']) ? $c_type['charset'] : 'US-ASCII',
                     isset($c_type['language']) ? $c_type['language'] : null,
                     isset($params['name_encoding']) ?  $params['name_encoding'] : null
                 );
             }
-            if (isset($c_type['charset'])) {
-                $headers['Content-Type']
-                    .= ';' . $this->_eol . " charset={$c_type['charset']}";
-            }
         }
 
         // Content-Disposition
-        if (isset($c_disp['disp'])) {
+        if (!empty($c_disp['disp'])) {
             $headers['Content-Disposition'] = $c_disp['disp'];
-            if (isset($c_disp['filename'])) {
+            if (!empty($c_disp['filename'])) {
                 $headers['Content-Disposition'] .= ';' . $this->_eol;
                 $headers['Content-Disposition'] .= $this->_buildHeaderParam(
-                    'filename', $c_disp['filename'], 
-                    isset($c_disp['charset']) ? $c_disp['charset'] : 'US-ASCII', 
+                    'filename', $c_disp['filename'],
+                    isset($c_disp['charset']) ? $c_disp['charset'] : 'US-ASCII',
                     isset($c_disp['language']) ? $c_disp['language'] : null,
                     isset($params['filename_encoding']) ?  $params['filename_encoding'] : null
                 );
@@ -254,11 +265,6 @@ class Mail_mimePart
                 isset($params['name_encoding']) ?  $params['name_encoding'] : 'quoted-printable',
                 $this->_eol
             );
-        }
-
-        // Default content-type
-        if (!isset($headers['Content-Type'])) {
-            $headers['Content-Type'] = 'text/plain';
         }
 
         // Default encoding

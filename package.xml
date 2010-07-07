@@ -44,6 +44,7 @@ using RFC2047 and/or RFC2231.</description>
 Bugs Fixed:
  * Fix double-addition of e-mail domain to content ID in HTML images [alec]
  * #17311: Fix multi-octet characters are split across adjacent 'encoded-word's [alec]
+ * #17573: Place charset parameter in first line of Content-Type header (if possible) [alec]
 Implemented Features:
  * #17518: Added addTo() method [alec]
  </notes>

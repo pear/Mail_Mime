@@ -16,7 +16,7 @@ $headCT = $head['Content-Type'];
 $headCT = explode(";", $headCT);
 $headCT = $headCT[0];
 
-$ct = preg_match_all('|Content-Type: (.*);|', $body, $matches);
+$ct = preg_match_all('|Content-Type: ([^;\r\n]+)|', $body, $matches);
 print($headCT);
 print("\n");
 foreach ($matches[1] as $match){
