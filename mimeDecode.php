@@ -485,7 +485,22 @@ class Mail_mimeDecode extends PEAR
                 // This splits on a semi-colon, if there's no preceeding backslash
                 // Now works with quoted values; had to glue the \; breaks in PHP
                 // the regex is already bordering on incomprehensible
-                $splitRegex = '/([^;\'"]*[\'"]([^\'"]*([^\'"]*)*)[\'"][^;\'"]*|([^;]+))(;|$)/';
+		        // there is now two blocks of matches - one for single quoted values, and one for double.
+		        // regex may not be the most efficient method for this.......
+                $splitRegex = '/' .
+			        '(' . 
+                        // first do the "....";				
+				        '([^;"]*["]'.
+					        '([^"]*([^"]*)*)' .
+					        '["][^;"]*|([^;]+)'.
+				        ')|'.
+                        // or '....';
+				        '([^;\']*[\']'.
+					        '([^\']*([^\']*)*)' .
+					        '[\'][^;\']*|([^;]+)'.
+				        ')'.
+			        ')' .
+			        '(;|$)/';
                 preg_match_all($splitRegex, $input, $matches);
                 $parameters = array();
                 for ($i=0; $i<count($matches[0]); $i++) {
@@ -499,6 +514,7 @@ class Mail_mimeDecode extends PEAR
                 for ($i = 0; $i < count($parameters); $i++) {
                     $param_name  = trim(substr($parameters[$i], 0, $pos = strpos($parameters[$i], '=')), "'\";\t\\ ");
                     $param_value = trim(str_replace('\;', ';', substr($parameters[$i], $pos + 1)), "'\";\t\\ ");
+                    // this looks like a bogus check.. - the above line removed the quote... via trim
                     if (!empty($param_value[0]) && $param_value[0] == '"') {
                         $param_value = substr($param_value, 1, -1);
                     }
