@@ -530,6 +530,7 @@ class Mail_mimeDecode extends PEAR
                 }
             }
         } else {
+            $input = $this->_decode_headers ? $this->_decodeHeader($input) : $input;
             $return['value'] = trim($input);
         }
 
@@ -558,7 +559,9 @@ class Mail_mimeDecode extends PEAR
         $tmp = explode('--' . $boundary, $input);
 
         for ($i = 1; $i < count($tmp) - 1; $i++) {
-            $parts[] = $tmp[$i];
+            if (strlen(trim($tmp[$i]))) {
+                $parts[] = $tmp[$i];
+            }
         }
 
         return $parts;
