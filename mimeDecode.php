@@ -316,6 +316,7 @@ class Mail_mimeDecode extends PEAR
                 case 'multipart/alternative':
                 case 'multipart/related':
                 case 'multipart/mixed':
+                case 'application/vnd.wap.multipart.related':
                     if(!isset($content_type['other']['boundary'])){
                         $this->_error = 'No boundary found for ' . $content_type['value'] . ' part';
                         return false;
