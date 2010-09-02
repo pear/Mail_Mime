@@ -284,7 +284,7 @@ class Mail_mimeDecode extends PEAR
                     $content_disposition = $this->_parseHeaderValue($headers[$key]['value']);
                     $return->disposition   = $content_disposition['value'];
                     if (isset($content_disposition['other'])) {
-                        while (list($p_name, $p_value) = each($content_disposition['other'])) {
+                        foreach($content_disposition['other'] as $p_name => $p_value) {
                             $return->d_parameters[$p_name] = $p_value;
                         }
                     }
@@ -515,7 +515,6 @@ class Mail_mimeDecode extends PEAR
                     }
                     $parameters[] = $param;
                 }
-
                 for ($i = 0; $i < count($parameters); $i++) {
                     $param_name  = trim(substr($parameters[$i], 0, $pos = strpos($parameters[$i], '=')), "'\";\t\\ ");
                     $param_value = trim(str_replace('\;', ';', substr($parameters[$i], $pos + 1)), "'\";\t\\ ");
@@ -527,6 +526,22 @@ class Mail_mimeDecode extends PEAR
                         $param_value = $this->_decodeHeader($param_value);
                     }
                     $param_value = trim($param_value);
+                    
+                    // special case.. this is a bit kludgy but let's hope it does not break anything
+                    // long strings are split with xxxx*0="....";xxxx*1="....."
+                    // this makes a nasty assumption that they get delivered in order..
+                    if (preg_match('/\*[0-9]+$/', $param_name)) {
+                        // no dupes due to our crazy regexp.
+                        $param_name = preg_replace('/\*[0-9]+$/', '', $param_name);
+                        if (isset($return['other'][$param_name])) {
+                            $return['other'][$param_name] .= $param_value;
+                            if (strtolower($param_name) != $param_name) {
+                                $return['other'][strtolower($param_name)] .= $param_value;
+                            }
+                            continue;
+                        }
+                        // continue and use standard setters..
+                    }
 
                     $return['other'][$param_name] = $param_value;
                     $return['other'][strtolower($param_name)] = $param_value;
