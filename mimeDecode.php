@@ -559,7 +559,7 @@ class Mail_mimeDecode extends PEAR
             $boundary = $bs_possible;
         }
 
-        $tmp = explode('--' . $boundary, $input);
+        $tmp = preg_split("/--$boundary(\b|--)/", $input);
         $len = count($tmp) -1;
         for ($i = 1; $i < $len; $i++) {
             if (strlen(trim($tmp[$i]))) {
