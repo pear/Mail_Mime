@@ -247,6 +247,7 @@ class Mail_mimeDecode extends PEAR
         $headers = $this->_parseHeaders($headers);
 
         foreach ($headers as $value) {
+            $value['value'] = $this->_decode_headers ? $this->_decodeHeader($value['value']) : $value['value'];
             if (isset($return->headers[strtolower($value['name'])]) AND !is_array($return->headers[strtolower($value['name'])])) {
                 $return->headers[strtolower($value['name'])]   = array($return->headers[strtolower($value['name'])]);
                 $return->headers[strtolower($value['name'])][] = $value['value'];
@@ -451,7 +452,7 @@ class Mail_mimeDecode extends PEAR
 
                 $return[] = array(
                                   'name'  => $hdr_name,
-                                  'value' => $this->_decode_headers ? $this->_decodeHeader($hdr_value) : $hdr_value
+                                  'value' =>  $hdr_value
                                  );
             }
         } else {
@@ -476,8 +477,9 @@ class Mail_mimeDecode extends PEAR
     {
 
         if (($pos = strpos($input, ';')) !== false) {
-
-            $return['value'] = trim(substr($input, 0, $pos));
+            $value = substr($input, 0, $pos);
+            $value = $this->_decode_headers ? $this->_decodeHeader($value) : $value;
+            $return['value'] = trim($value);
             $input = trim(substr($input, $pos+1));
 
             if (strlen($input) > 0) {
@@ -518,6 +520,11 @@ class Mail_mimeDecode extends PEAR
                     if (!empty($param_value[0]) && $param_value[0] == '"') {
                         $param_value = substr($param_value, 1, -1);
                     }
+                    if (!empty($param_value) && $this->_decode_headers){
+                        $param_value = $this->_decodeHeader($param_value);
+                    }
+                    $param_value = trim($param_value);
+
                     $return['other'][$param_name] = $param_value;
                     $return['other'][strtolower($param_name)] = $param_value;
                 }
