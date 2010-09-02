@@ -443,9 +443,10 @@ class Mail_mimeDecode extends PEAR
             // Unfold the input
             $input   = preg_replace("/\r?\n/", "\r\n", $input);
             //#7065 - wrapping.. with encoded stuff.. - probably not needed,
-            // the space should be removed.. but this may cause more issues..
-            $input   = preg_replace("/=\r\n(\t| )+=/", '==', $input);
-            $input   = preg_replace("/\r\n(\t| )+/", ' ', $input);
+            // wrapping just get's removed now.. this looks like it should be the correct solution.
+            //$input   = preg_replace("/=\r\n(\t| )+=/", '==', $input);
+            //$input   = preg_replace("/\r\n(\t| )+/", ' ', $input);
+            $input   = preg_replace("/\r\n(\t| )+/", '', $input);
             $headers = explode("\r\n", trim($input));
 
             foreach ($headers as $value) {
@@ -480,79 +481,154 @@ class Mail_mimeDecode extends PEAR
     function _parseHeaderValue($input)
     {
 
-        if (($pos = strpos($input, ';')) !== false) {
-            $value = substr($input, 0, $pos);
-            $value = $this->_decode_headers ? $this->_decodeHeader($value) : $value;
-            $return['value'] = trim($value);
-            $input = trim(substr($input, $pos+1));
+        if (($pos = strpos($input, ';')) === false) {
+            $input = $this->_decode_headers ? $this->_decodeHeader($input) : $input;
+            $return['value'] = trim($input);
+            return $return;
+        }
 
-            if (strlen($input) > 0) {
 
-                // This splits on a semi-colon, if there's no preceeding backslash
-                // Now works with quoted values; had to glue the \; breaks in PHP
-                // the regex is already bordering on incomprehensible
-		        // there is now two blocks of matches - one for single quoted values, and one for double.
-		        // regex may not be the most efficient method for this.......
-                $splitRegex = '/' .
-			        '(' . 
-                        // first do the "....";				
-				        '([^;"]*["]'.
-					        '([^"]*([^"]*)*)' .
-					        '["][^;"]*|([^;]+)'.
-				        ')|'.
-                        // or '....';
-				        '([^;\']*[\']'.
-					        '([^\']*([^\']*)*)' .
-					        '[\'][^;\']*|([^;]+)'.
-				        ')'.
-			        ')' .
-			        '(;|$)/';
-                preg_match_all($splitRegex, $input, $matches);
-                $parameters = array();
-                for ($i=0; $i<count($matches[0]); $i++) {
-                    $param = $matches[0][$i];
-                    while (substr($param, -2) == '\;') {
-                        $param .= $matches[0][++$i];
-                    }
-                    $parameters[] = $param;
+
+        $value = substr($input, 0, $pos);
+        $value = $this->_decode_headers ? $this->_decodeHeader($value) : $value;
+        $return['value'] = trim($value);
+        $input = trim(substr($input, $pos+1));
+
+        if (!strlen($input) > 0) {
+            return $return;
+        }
+        // at this point input contains xxxx=".....";zzzz="...."
+        // since we are dealing with quoted strings, we need to handle this properly..
+        $i = 0;
+        $l = strlen($input);
+        $key = '';
+        $val = false; // our string - including quotes..
+        $q = false; // in quote..
+        $lq = ''; // last quote..
+        while ($i < $l) {
+           // echo "READ:". $c ."\n";
+            $c = $input[$i];
+            
+            // state - in key..
+            if ($val === false) {
+                if ($c == '=') {
+                    $val = '';
+                    $key = trim($key);
+                    $i++;
+                    continue;
                 }
-                for ($i = 0; $i < count($parameters); $i++) {
-                    $param_name  = trim(substr($parameters[$i], 0, $pos = strpos($parameters[$i], '=')), "'\";\t\\ ");
-                    $param_value = trim(str_replace('\;', ';', substr($parameters[$i], $pos + 1)), "'\";\t\\ ");
-                    // this looks like a bogus check.. - the above line removed the quote... via trim
-                    if (!empty($param_value[0]) && $param_value[0] == '"') {
-                        $param_value = substr($param_value, 1, -1);
+                if ($c == ';') {
+                    if ($key) { // a key without a value..
+                        $key= trim($key);
+                        $return['other'][$key] = '';
+                        $return['other'][strtolower($key)] = '';
                     }
-                    if (!empty($param_value) && $this->_decode_headers){
-                        $param_value = $this->_decodeHeader($param_value);
+                    $key = '';
+                }
+                $key .= $c;
+                $i++;
+                continue;
+            }
+                     
+            // state - in value.. (as $val is set..)
+
+            if ($q === false) {
+                // not in quote yet.
+                if ((!strlen($val) || $lq) && $c == ' ' ||  $c == "\t") {
+                   $i++;
+                    continue; // skip leading spaces after '=' or after '"'
+                }
+                if ($c == '"' || $c == "'") {
+                    // start quoted area..
+                    $q = $c;
+                    // in theory should not happen raw text in value part..
+                    // but we will handle it as a merged part of the string..
+                    $val = !strlen(trim($val)) ? '' : trim($val);
+                    $i++;
+                    continue;
+                }
+                // got end....
+                if ($c == ';') {
+                    if ($lq) {
+                        $val = str_replace('\\'.$lq, $lq, $val); // replace out quoted values..
                     }
-                    $param_value = trim($param_value);
-                    
-                    // special case.. this is a bit kludgy but let's hope it does not break anything
-                    // long strings are split with xxxx*0="....";xxxx*1="....."
-                    // this makes a nasty assumption that they get delivered in order..
-                    if (preg_match('/\*[0-9]+$/', $param_name)) {
+                    $val = trim($val);
+                    $added = false;
+                    if (preg_match('/\*[0-9]+$/', $key)) {
                         // no dupes due to our crazy regexp.
-                        $param_name = preg_replace('/\*[0-9]+$/', '', $param_name);
-                        if (isset($return['other'][$param_name])) {
-                            $return['other'][$param_name] .= $param_value;
-                            if (strtolower($param_name) != $param_name) {
-                                $return['other'][strtolower($param_name)] .= $param_value;
+                        $key = preg_replace('/\*[0-9]+$/', '', $key);
+                        if (isset($return['other'][$key])) {
+                            $return['other'][$key] .= $val;
+                            if (strtolower($key) != $key) {
+                                $return['other'][strtolower($key)] .= $val;
                             }
-                            continue;
+                            $added = true;
                         }
                         // continue and use standard setters..
                     }
-
-                    $return['other'][$param_name] = $param_value;
-                    $return['other'][strtolower($param_name)] = $param_value;
+                    if (!$added) {
+                        $return['other'][$key] = $val;
+                        $return['other'][strtolower($key)] = $val;
+                    }
+                    $val = false;
+                    $key = '';
+                    $lq = false;
+                    $i++;
+                    continue;
                 }
+ 
+                $val .= $c;
+                $i++;
+                continue;
             }
-        } else {
-            $input = $this->_decode_headers ? $this->_decodeHeader($input) : $input;
-            $return['value'] = trim($input);
-        }
+            
+            // state - in quote..
+            if ($c == $q) {  // potential exit state..
 
+                if ($input[$i-1] == '\\') { // nope, it's escaped.
+                    $val .= $c;
+                    $i++;
+                    continue;
+                }
+                // end of quoted string..
+                $lq = $q;
+                $q = false;
+                $i++;
+                continue;
+            }
+            // normal char inside of quoted string..
+            $val.= $c;
+            $i++;
+        }
+        
+        // do we have anything left..
+        if (strlen(trim($key)) || $val !== false) {
+            if ($lq) {
+                $val = str_replace('\\'.$lq, $lq, $val); // replace out quoted values..
+            }
+            $val = trim($val);
+            $added = false;
+            if ($val !== false && preg_match('/\*[0-9]+$/', $key)) {
+                // no dupes due to our crazy regexp.
+                $key = preg_replace('/\*[0-9]+$/', '', $key);
+                if (isset($return['other'][$key])) {
+                    $return['other'][$key] .= $val;
+                    if (strtolower($key) != $key) {
+                        $return['other'][strtolower($key)] .= $val;
+                    }
+                    $added = true;
+                }
+                // continue and use standard setters..
+            }
+            if (!$added) {
+                $return['other'][$key] = $val;
+                $return['other'][strtolower($key)] = $val;
+            }
+        }
+        foreach($return['other'] as $key =>$val) {
+            $return['other'][$key] = $this->_decode_headers ? $this->_decodeHeader($val) : $val;
+        }
+  
         return $return;
     }
 
