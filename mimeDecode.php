@@ -197,7 +197,7 @@ class Mail_mimeDecode extends PEAR
     function decode($params = null)
     {
         // determine if this method has been called statically
-        $isStatic = !(isset($this) && get_class($this) == __CLASS__);
+        $isStatic = empty($this) || !is_a($this, __CLASS__);
 
         // Have we been called statically?
 	// If so, create an object and pass details to that.
@@ -560,13 +560,16 @@ class Mail_mimeDecode extends PEAR
         }
 
         $tmp = explode('--' . $boundary, $input);
-
-        for ($i = 1; $i < count($tmp) - 1; $i++) {
+        $len = count($tmp) -1;
+        for ($i = 1; $i < $len; $i++) {
             if (strlen(trim($tmp[$i]))) {
                 $parts[] = $tmp[$i];
             }
         }
-
+        // add the last part on if it does not end with the 'closing indicator'
+        if (!empty($tmp[$len]) && $tmp[$len][0] != '-') {
+            $parts[] = $tmp[$len];
+        }
         return $parts;
     }
 
