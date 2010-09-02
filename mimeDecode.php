@@ -441,6 +441,9 @@ class Mail_mimeDecode extends PEAR
         if ($input !== '') {
             // Unfold the input
             $input   = preg_replace("/\r?\n/", "\r\n", $input);
+            //#7065 - wrapping.. with encoded stuff.. - probably not needed,
+            // the space should be removed.. but this may cause more issues..
+            $input   = preg_replace("/=\r\n(\t| )+=/", '==', $input);
             $input   = preg_replace("/\r\n(\t| )+/", ' ', $input);
             $headers = explode("\r\n", trim($input));
 
