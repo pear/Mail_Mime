@@ -508,16 +508,23 @@ class Mail_mimeDecode extends PEAR
         while ($i < $l) {
            // echo "READ:". $c ."\n";
             $c = $input[$i];
-            
+            $escaped = false;
+            if ($c == '\\') {
+                $i++;
+                $escaped = true;
+                $c = $input[$i];
+            }            
+
+
             // state - in key..
             if ($val === false) {
-                if ($c == '=') {
+                if (!$escaped && $c == '=') {
                     $val = '';
                     $key = trim($key);
                     $i++;
                     continue;
                 }
-                if ($c == ';') {
+                if (!$escaped && $c == ';') {
                     if ($key) { // a key without a value..
                         $key= trim($key);
                         $return['other'][$key] = '';
@@ -535,10 +542,10 @@ class Mail_mimeDecode extends PEAR
             if ($q === false) {
                 // not in quote yet.
                 if ((!strlen($val) || $lq) && $c == ' ' ||  $c == "\t") {
-                   $i++;
+                    $i++;
                     continue; // skip leading spaces after '=' or after '"'
                 }
-                if ($c == '"' || $c == "'") {
+                if (!$escaped && ($c == '"' || $c == "'")) {
                     // start quoted area..
                     $q = $c;
                     // in theory should not happen raw text in value part..
@@ -548,10 +555,8 @@ class Mail_mimeDecode extends PEAR
                     continue;
                 }
                 // got end....
-                if ($c == ';') {
-                    if ($lq) {
-                        $val = str_replace('\\'.$lq, $lq, $val); // replace out quoted values..
-                    }
+                if (!$escaped && $c == ';') {
+
                     $val = trim($val);
                     $added = false;
                     if (preg_match('/\*[0-9]+$/', $key)) {
@@ -576,26 +581,22 @@ class Mail_mimeDecode extends PEAR
                     $i++;
                     continue;
                 }
- 
+
                 $val .= $c;
                 $i++;
                 continue;
             }
             
             // state - in quote..
-            if ($c == $q) {  // potential exit state..
+            if (!$escaped && $c == $q) {  // potential exit state..
 
-                if ($input[$i-1] == '\\') { // nope, it's escaped.
-                    $val .= $c;
-                    $i++;
-                    continue;
-                }
                 // end of quoted string..
                 $lq = $q;
                 $q = false;
                 $i++;
                 continue;
             }
+                
             // normal char inside of quoted string..
             $val.= $c;
             $i++;
