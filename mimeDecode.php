@@ -260,8 +260,8 @@ class Mail_mimeDecode extends PEAR
             }
         }
 
-        reset($headers);
-        while (list($key, $value) = each($headers)) {
+
+        foreach ($headers as $key => $value) {
             $headers[$key]['name'] = strtolower($headers[$key]['name']);
             switch ($headers[$key]['name']) {
 
@@ -274,7 +274,7 @@ class Mail_mimeDecode extends PEAR
                     }
 
                     if (isset($content_type['other'])) {
-                        while (list($p_name, $p_value) = each($content_type['other'])) {
+                        foreach($content_type['other'] as $p_name => $p_value) {
                             $return->ctype_parameters[$p_name] = $p_value;
                         }
                     }
@@ -505,12 +505,18 @@ class Mail_mimeDecode extends PEAR
         $val = false; // our string - including quotes..
         $q = false; // in quote..
         $lq = ''; // last quote..
+
         while ($i < $l) {
-           // echo "READ:". $c ."\n";
+            
             $c = $input[$i];
+            //var_dump(array('i'=>$i,'c'=>$c,'q'=>$q, 'lq'=>$lq, 'key'=>$key, 'val' =>$val));
+
             $escaped = false;
             if ($c == '\\') {
                 $i++;
+                if ($i == $l-1) { // end of string.
+                    break;
+                }
                 $escaped = true;
                 $c = $input[$i];
             }            
@@ -541,7 +547,7 @@ class Mail_mimeDecode extends PEAR
 
             if ($q === false) {
                 // not in quote yet.
-                if ((!strlen($val) || $lq) && $c == ' ' ||  $c == "\t") {
+                if ((!strlen($val) || $lq !== false) && $c == ' ' ||  $c == "\t") {
                     $i++;
                     continue; // skip leading spaces after '=' or after '"'
                 }
@@ -560,7 +566,8 @@ class Mail_mimeDecode extends PEAR
                     $val = trim($val);
                     $added = false;
                     if (preg_match('/\*[0-9]+$/', $key)) {
-                        // no dupes due to our crazy regexp.
+                        // this is the extended aaa*0=...;aaa*1=.... code
+                        // it assumes the pieces arrive in order, and are valid...
                         $key = preg_replace('/\*[0-9]+$/', '', $key);
                         if (isset($return['other'][$key])) {
                             $return['other'][$key] .= $val;
@@ -604,9 +611,7 @@ class Mail_mimeDecode extends PEAR
         
         // do we have anything left..
         if (strlen(trim($key)) || $val !== false) {
-            if ($lq) {
-                $val = str_replace('\\'.$lq, $lq, $val); // replace out quoted values..
-            }
+           
             $val = trim($val);
             $added = false;
             if ($val !== false && preg_match('/\*[0-9]+$/', $key)) {
@@ -626,10 +631,11 @@ class Mail_mimeDecode extends PEAR
                 $return['other'][strtolower($key)] = $val;
             }
         }
+        // decode values.
         foreach($return['other'] as $key =>$val) {
             $return['other'][$key] = $this->_decode_headers ? $this->_decodeHeader($val) : $val;
         }
-  
+       //print_r($return);
         return $return;
     }
 

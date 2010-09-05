@@ -5,7 +5,7 @@ Tests for _parseHeaderValue
 <?php
 error_reporting(E_ALL); // suppress E_STRICT errors
 
-require_once('Mail/mime.php');
+require_once 'Mail/mime.php';
 
 $Mime = new Mail_Mime();
 $Mime->setTXTBody('Test message.');
@@ -24,7 +24,7 @@ $hdrs .= "To: Receiver <receiver@example.com>\n";
 $hdrs .= "From: Sender <sender@example.com>\n";
 $hdrs .= "Subject: PEAR::Mail_Mime test mail\n";
 
-require_once('Mail/mimeDecode.php');
+require_once 'Mail/mimeDecode.php';
 
 $mime_message = "$hdrs\n$body";
 $Decoder = new Mail_mimeDecode($mime_message);
