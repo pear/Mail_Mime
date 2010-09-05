@@ -36,7 +36,7 @@ http://pear.php.net/dtd/package-2.0     http://pear.php.net/dtd/package-2.0.xsd"
 
  <date>2010-09-02</date>
  <version>
-  <release>1.5.2</release>
+  <release>1.5.3</release>
   <api>1.3.1</api>
  </version>
  <stability>
@@ -45,16 +45,26 @@ http://pear.php.net/dtd/package-2.0     http://pear.php.net/dtd/package-2.0.xsd"
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes><![CDATA[
-	Minor Bugfix release.
+	Major Bugfix release.
+
+    Apart from a major cleanout of the bug tracker for this package, this release includes a revamped
+    parseHeaderValue which removes the rather flakey regex, with a real parser, which should be considerably more
+    robust.
 	 
     Bug Fixes
-    #4739 - regexp parsing of header values does not balance quoting correctly
-           - Fix sponsored by http://webyog.com
-    #17325 - empty body messages are valid messages
-    #17276 - remove &new usage which throws errors now
+        #17844 - all regression tests fixed - remove the last of the while list each() .. this is 2010 ;)...
+        #11410 - support wap multipart
+        #9616  - long strings as filename etc.. aaa*0=.... aaa*1=.... aaa*2=.... (merged into aaa=.....)
+        #9100  - change to preg_split for mime boundary detection , in theory should catch boundaries in nested situations better...
+        #7709  - check for last element on boundary split to see if its usable
+        #7065  - wrapped header lines with encoding should be concated without spaces
+        #6495  - missing body in decoded object
+        #11537 - better decode and multi-line support
+
 
 
 ]]></notes>
+
 
 
 
@@ -86,6 +96,40 @@ http://pear.php.net/dtd/package-2.0     http://pear.php.net/dtd/package-2.0.xsd"
  </dependencies>
  <phprelease />
  <changelog>
+
+
+
+
+
+
+  <release>
+
+ <date>2010-09-02</date>
+ <version>
+  <release>1.5.2</release>
+  <api>1.3.1</api>
+ </version>
+ <stability>
+  <release>stable</release>
+  <api>stable</api>
+ </stability>
+ <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+ <notes><![CDATA[
+	Minor Bugfix release.
+	 
+    Bug Fixes
+    #4739 - regexp parsing of header values does not balance quoting correctly
+           - Fix sponsored by http://webyog.com
+    #17325 - empty body messages are valid messages
+    #17276 - remove &new usage which throws errors now
+
+
+]]></notes>
+
+
+  </release>
+
+
 
 
 
