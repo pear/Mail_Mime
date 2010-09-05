@@ -10,8 +10,13 @@ require_once 'Mail/mime.php';
 $Mime = new Mail_Mime();
 $Mime->setTXTBody('Test message.');
 $contentAppend = 'testparam1="test1;semicolon";testparam2=two; testparam3="three"; '
-                .'testparam4="four\;4\;four"; testparam5=five\;5\;five; testparam6=\'six\'; '
-                .'testparam7=\'seven;7\';testparam8=\'eight\;8\'';
+                .'testparam4="four\;4\;four"; testparam5=five\;5\;five; '
+                ."testparam6='six'; testparam7='seven;7';testparam8='eight\;8'; "
+                .'testparam9="nine;9";testparam10="ten\;10"; '
+                .'testparam11=\'a "double" quote\'; testparam12="a \'simple\' quote"; '
+                .'testparam13=\'another " quote\'; testparam14="another \' quote";'
+                .'testparam15=last';
+
 $Mime->addAttachment('test file contents', "text/plain; $contentAppend", 'test.txt', FALSE);
 
 $body = $Mime->get();
@@ -50,4 +55,11 @@ Array
     [testparam6] => six
     [testparam7] => seven;7
     [testparam8] => eight;8
+    [testparam9] => nine;9
+    [testparam10] => ten;10
+    [testparam11] => a "double" quote
+    [testparam12] => a 'simple' quote
+    [testparam13] => another " quote
+    [testparam14] => another ' quote
+    [testparam15] => last
 )
