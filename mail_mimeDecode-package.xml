@@ -34,9 +34,9 @@ http://pear.php.net/dtd/package-2.0     http://pear.php.net/dtd/package-2.0.xsd"
 
 
 
- <date>2010-09-05</date>
+ <date>2010-09-14</date>
  <version>
-  <release>1.5.3</release>
+  <release>1.5.4</release>
   <api>1.3.1</api>
  </version>
  <stability>
@@ -45,22 +45,14 @@ http://pear.php.net/dtd/package-2.0     http://pear.php.net/dtd/package-2.0.xsd"
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes><![CDATA[
-	Major Bugfix release.
-
-    Apart from a major cleanout of the bug tracker for this package, this release includes a revamped
-    parseHeaderValue which removes the rather flakey regex, with a real parser, which should be considerably more
-    robust.
+	Critical Security release.
+    
+    It is highly recommended that users of 1.5.3 upgrade to this release, a change in the boundary detection
+    code introduced a potential denial of service attack.
+     
 	 
     Bug Fixes
-        #17844 - all regression tests fixed - remove the last of the while list each() .. this is 2010 ;)...
-        #11410 - support wap multipart
-        #9616  - long strings as filename etc.. aaa*0=.... aaa*1=.... aaa*2=.... (merged into aaa=.....)
-        #9100  - change to preg_split for mime boundary detection , in theory should catch boundaries in nested situations better...
-        #7709  - check for last element on boundary split to see if its usable
-        #7065  - wrapped header lines with encoding should be concated without spaces
-        #6495  - missing body in decoded object
-        #11537 - better decode and multi-line support
-
+        #17862 - quote boundary preg_split code
 
 
 ]]></notes>
@@ -99,7 +91,41 @@ http://pear.php.net/dtd/package-2.0     http://pear.php.net/dtd/package-2.0.xsd"
 
 
 
+  <release>
 
+
+
+ <date>2010-09-05</date>
+ <version>
+  <release>1.5.3</release>
+  <api>1.3.1</api>
+ </version>
+ <stability>
+  <release>stable</release>
+  <api>stable</api>
+ </stability>
+ <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+ <notes><![CDATA[
+	Major Bugfix release.
+
+    Apart from a major cleanout of the bug tracker for this package, this release includes a revamped
+    parseHeaderValue which removes the rather flakey regex, with a real parser, which should be considerably more
+    robust.
+	 
+    Bug Fixes
+        #17844 - all regression tests fixed - remove the last of the while list each() .. this is 2010 ;)...
+        #11410 - support wap multipart
+        #9616  - long strings as filename etc.. aaa*0=.... aaa*1=.... aaa*2=.... (merged into aaa=.....)
+        #9100  - change to preg_split for mime boundary detection , in theory should catch boundaries in nested situations better...
+        #7709  - check for last element on boundary split to see if its usable
+        #7065  - wrapped header lines with encoding should be concated without spaces
+        #6495  - missing body in decoded object
+        #11537 - better decode and multi-line support
+
+
+
+]]></notes>
+  </release>
 
 
   <release>
