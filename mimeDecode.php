@@ -443,10 +443,11 @@ class Mail_mimeDecode extends PEAR
             // Unfold the input
             $input   = preg_replace("/\r?\n/", "\r\n", $input);
             //#7065 - wrapping.. with encoded stuff.. - probably not needed,
-            // wrapping just get's removed now.. this looks like it should be the correct solution.
-            //$input   = preg_replace("/=\r\n(\t| )+=/", '==', $input);
-            //$input   = preg_replace("/\r\n(\t| )+/", ' ', $input);
-            $input   = preg_replace("/\r\n(\t| )+/", '', $input);
+            // wrapping space should only get removed if the trailing item on previous line is a 
+            // encoded character
+            $input   = preg_replace("/=\r\n(\t| )+/", '=', $input);
+            $input   = preg_replace("/\r\n(\t| )+/", ' ', $input);
+            
             $headers = explode("\r\n", trim($input));
 
             foreach ($headers as $value) {
