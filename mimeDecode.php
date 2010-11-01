@@ -658,8 +658,8 @@ class Mail_mimeDecode extends PEAR
         if ($boundary == $bs_check) {
             $boundary = $bs_possible;
         }
+        $tmp = preg_split("/--".preg_quote($boundary, '/')."((?=\s)|--)/", $input);
 
-        $tmp = preg_split("/--".preg_quote($boundary, '/')."(\b|--)/", $input);
         $len = count($tmp) -1;
         for ($i = 1; $i < $len; $i++) {
             if (strlen(trim($tmp[$i]))) {
