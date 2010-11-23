@@ -30,9 +30,9 @@ using RFC2047 and/or RFC2231.</description>
   <active>yes</active>
  </lead>
 
- <date>2010-07-29</date>
+ <date></date>
  <version>
-  <release>1.8.0</release>
+  <release>1.8.1</release>
   <api>1.4.1</api>
  </version>
  <stability>
@@ -42,11 +42,7 @@ using RFC2047 and/or RFC2231.</description>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
 Bugs Fixed:
- * Double-addition of e-mail domain to content ID in HTML images [alec]
- * #17311: Multi-octet characters are split across adjacent 'encoded-word's [alec]
- * #17573: Place charset parameter in first line of Content-Type header (if possible) [alec]
-Implemented Features:
- * #17518: addTo() method [alec]
+ * #18083: Not possible to set separate charset for attachment content and headers [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -80,6 +76,7 @@ Implemented Features:
     <file baseinstalldir="Mail" name="test_Bug_14529.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_17025.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_17175.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_18083.phpt" role="test" />
    </dir> <!-- /tests -->
    <file baseinstalldir="Mail" name="mime.php" role="php" />
    <file baseinstalldir="Mail" name="mimePart.php" role="php" />
@@ -567,6 +564,26 @@ Implemented Features:
  * Added Mail_mime::setContentType() function with possibility to set various
    types in Content-Type header (also fixes problem with boundary parameter when Content-Type
    header was specified by user) [alec]
+   </notes>
+  </release>
+  <release>
+   <date>2010-07-29</date>
+   <version>
+    <release>1.8.0</release>
+    <api>1.4.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+   <notes>
+Bugs Fixed:
+ * Double-addition of e-mail domain to content ID in HTML images [alec]
+ * #17311: Multi-octet characters are split across adjacent 'encoded-word's [alec]
+ * #17573: Place charset parameter in first line of Content-Type header (if possible) [alec]
+Implemented Features:
+ * #17518: addTo() method [alec]
    </notes>
   </release>
  </changelog>
