@@ -666,8 +666,9 @@ class Mail_mimeDecode extends PEAR
                 $parts[] = $tmp[$i];
             }
         }
+        
         // add the last part on if it does not end with the 'closing indicator'
-        if (!empty($tmp[$len]) && $tmp[$len][0] != '-') {
+        if (!empty($tmp[$len]) && strlen(trim($tmp[$len])) && $tmp[$len][0] != '-') {
             $parts[] = $tmp[$len];
         }
         return $parts;
