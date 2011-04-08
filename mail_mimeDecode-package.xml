@@ -47,18 +47,10 @@ http://pear.php.net/dtd/package-2.0     http://pear.php.net/dtd/package-2.0.xsd"
  <notes><![CDATA[
 	Minor Bug fix release.
 
-         #17959 - Boundaries ending with non-word characters - patch by Alex Adriaanese
-	 ------ - ignore whitespace and trailing cr/lf in last section of split
-         ------ - correct spacing on multi-line headers. now only striped for encoded data. (on previous line)
-
-
-
+    #17959 - Boundaries ending with non-word characters - patch by Alex Adriaanese
+    ------ - ignore whitespace and trailing cr/lf in last section of split
+    ------ - correct spacing on multi-line headers. now only striped for encoded data. (on previous line)
 ]]></notes>
-
-
-
-
-
  <contents>
   <dir name="/">
    <dir name="tests">
@@ -66,6 +58,8 @@ http://pear.php.net/dtd/package-2.0     http://pear.php.net/dtd/package-2.0.xsd"
     <file baseinstalldir="Mail" name="semicolon_content_type_bug1724.phpt" role="test" />
    </dir> <!-- /tests -->
    <file baseinstalldir="Mail" md5sum="4d281676833bf650f720a8ffeba9cbe9" name="mimeDecode.php" role="php" />
+   <file baseinstalldir="Mail" name="xmail.dtd" role="data" />
+   <file baseinstalldir="Mail" name="xmail.xsl" role="data" />
   </dir> <!-- / -->
  </contents>
  <dependencies>

@@ -43,6 +43,7 @@ using RFC2047 and/or RFC2231.</description>
  <notes>
 Bugs Fixed:
  * #18426: Fixed backward compatibility for "dfilename" parameter [alec]
+ Removed xmail.dtd, xmail.xsl from the package [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -80,8 +81,6 @@ Bugs Fixed:
    </dir> <!-- /tests -->
    <file baseinstalldir="Mail" name="mime.php" role="php" />
    <file baseinstalldir="Mail" name="mimePart.php" role="php" />
-   <file baseinstalldir="Mail" name="xmail.dtd" role="data" />
-   <file baseinstalldir="Mail" name="xmail.xsl" role="data" />
   </dir> <!-- / -->
  </contents>
  <dependencies>
