@@ -144,7 +144,7 @@ class Mail_mimePart
     *     charset           - Content character set
     *     cid               - Content ID to apply
     *     disposition       - Content disposition, inline or attachment
-    *     dfilename         - Filename parameter for content disposition
+    *     filename          - Filename parameter for content disposition
     *     description       - Content description
     *     name_encoding     - Encoding of the attachment name (Content-Type)
     *                         By default filenames are encoded using RFC2231
@@ -184,6 +184,11 @@ class Mail_mimePart
 
             case 'body_file':
                 $this->_body_file = $value;
+                break;
+
+            // for backward compatibility
+            case 'dfilename':
+                $params['filename'] = $value;
                 break;
             }
         }
