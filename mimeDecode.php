@@ -335,6 +335,7 @@ class Mail_mimeDecode extends PEAR
                     break;
 
                 case 'message/rfc822':
+                case 'message/delivery-status': // #bug #18693
 					if ($this->_rfc822_bodies) {
 						$encoding = isset($content_transfer_encoding) ? $content_transfer_encoding['value'] : '7bit';
 						$return->body = ($this->_decode_bodies ? $this->_decodeBody($body, $encoding) : $body);
