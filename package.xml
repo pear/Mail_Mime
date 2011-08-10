@@ -43,7 +43,8 @@ using RFC2047 and/or RFC2231.</description>
  <notes>
 Bugs Fixed:
  * #18426: Fixed backward compatibility for "dfilename" parameter [alec]
- Removed xmail.dtd, xmail.xsl from the package [alec]
+ * Removed xmail.dtd, xmail.xsl from the package [alec]
+ * Fixed handling of email addresses with quoted local part [alec]
  </notes>
  <contents>
   <dir name="/">
