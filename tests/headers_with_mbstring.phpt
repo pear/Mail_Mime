@@ -36,6 +36,9 @@ array('Subject', "A REALLY REALLY REALLY REALLY REALLY REALLY REALLY REALLY REAL
 array('Subject', "TEST Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir Süper gröse tolle grüße von mir!!!?"),
 array('Subject', "Update: Microsoft Windows-Tool zum Entfernen bösartiger Software 3.6"),
 array('From', "test@nàme <user@domain.com>"),
+array('From', "Test <\"test test\"@domain.com>"),
+array('From', "\"test test\"@domain.com"),
+array('From', "<\"test test\"@domain.com>"),
 );
 
 $i = 1;
@@ -126,3 +129,9 @@ foreach ($headers as $header) {
  =?UTF-8?Q?sartiger_Software_3=2E6?=
 [23] From: =?UTF-8?B?dGVzdEBuw6BtZQ==?= <user@domain.com>
 [23] From: =?UTF-8?Q?test=40n=C3=A0me?= <user@domain.com>
+[24] From: Test <"test test"@domain.com>
+[24] From: Test <"test test"@domain.com>
+[25] From: "test test"@domain.com
+[25] From: "test test"@domain.com
+[26] From: <"test test"@domain.com>
+[26] From: <"test test"@domain.com>
