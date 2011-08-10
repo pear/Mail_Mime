@@ -586,7 +586,6 @@ Implemented Features:
  * #17518: addTo() method [alec]
    </notes>
   </release>
- </changelog>
   <release>
    <date>2010-12-01</date>
    <version>
@@ -603,4 +602,5 @@ Bugs Fixed:
  * #18083: Not possible to set separate charset for attachment content and headers [alec]
    </notes>
   </release>
+ </changelog>
 </package>
