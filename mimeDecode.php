@@ -758,7 +758,8 @@ class Mail_mimeDecode extends PEAR
                     break;
             }
             if (is_string($this->_decode_headers)) {
-                $text = @iconv($charset, $this->_decode_headers, $text);
+                $conv = @iconv($charset, $this->_decode_headers, $text);
+                $text = ($conv === false) ? $text : $conv;
             }
             $input = str_replace($encoded, $text, $input);
         }
