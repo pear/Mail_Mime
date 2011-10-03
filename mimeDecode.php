@@ -729,7 +729,7 @@ class Mail_mimeDecode extends PEAR
      * @return string Decoded header value
      * @access private
      */
-    function _decodeHeader($input, $defaut_charset=false)
+    function _decodeHeader($input, $default_charset=false)
     {
         if (!$this->_decode_headers) {
             return $input;
@@ -762,9 +762,12 @@ class Mail_mimeDecode extends PEAR
             }
             $input = str_replace($encoded, $text, $input);
         }
-        if ($defaut_charset  && is_string($this->_decode_headers)) {
-                $input = @iconv($charset, $this->_decode_headers, $input);
+        
+        if ($default_charset  && is_string($this->_decode_headers)) {
+            $conv = @iconv($charset, $this->_decode_headers, $input);
+            $input = ($conv === false) ? $input : $conv;
         }
+        
         return $input;
     }
 
