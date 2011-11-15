@@ -10,7 +10,6 @@ if (!extension_loaded('mbstring')){
 }
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 ini_set('mbstring.language',            'Neutral');
 // this isn't working because this option has PHP_INI_SYSTEM mode
 ini_set('mbstring.func_overload',       6);

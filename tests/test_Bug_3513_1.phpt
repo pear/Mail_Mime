@@ -3,7 +3,6 @@ Bug #3513   Support of RFC2231 in header fields. (ISO-8859-1)
 --SKIPIF--
 --FILE--
 <?php
-error_reporting(E_ALL);
 $test = "Fóóbær.txt";
 require_once('Mail/mime.php');
 $Mime=new Mail_Mime();

@@ -3,7 +3,6 @@ Bug #18083  Separate charset for attachment's content and headers
 --SKIPIF--
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 include "Mail/mime.php";
 $m = new Mail_mime();
 

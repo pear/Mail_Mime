@@ -3,8 +3,6 @@ Bug #1724   Quoted Semicolons in Content-Type
 --SKIPIF--
 --FILE--
 <?php
-error_reporting(E_ALL); // suppress E_STRICT errors
-
 require_once('Mail/mime.php');
 
 $Mime = new Mail_Mime();

@@ -3,7 +3,6 @@ Bug #3513   Support of RFC2231 in header fields. (ISO-2022-JP)
 --SKIPIF--
 --FILE--
 <?php
-error_reporting(E_ALL);
 mb_internal_encoding('ISO-2022-JP');
 $testEncoded="GyRCRnxLXDhsGyhCLnR4dA==";
 $test = base64_decode($testEncoded); // Japanese filename in ISO-2022-JP charset.

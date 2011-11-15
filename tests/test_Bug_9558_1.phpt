@@ -3,7 +3,6 @@ Bug #9558   Broken multiline headers
 --SKIPIF--
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 include("Mail/mime.php");
 
 $encoder = new Mail_mime();

@@ -3,7 +3,6 @@ Bug #10816  Unwanted linebreak at the end of output
 --SKIPIF--
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 $eol = "#";
 include("Mail/mime.php");
 $encoder = new Mail_mime(array('eol'=>$eol));

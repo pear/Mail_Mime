@@ -3,7 +3,6 @@ Bug #9725   multipart/related & alternative wrong order
 --SKIPIF--
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 include("Mail/mime.php");
 
 $mime = new Mail_mime();

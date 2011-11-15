@@ -3,7 +3,6 @@ Bug #10999  Bad Content-ID(cid) format
 --SKIPIF--
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 $from='user@from.example.com';
 
 require_once('Mail/mime.php');

@@ -3,7 +3,6 @@ Bug #14779  Proper header-body separator for empty attachment
 --SKIPIF--
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 include "Mail/mime.php";
 
 $m = new Mail_mime();

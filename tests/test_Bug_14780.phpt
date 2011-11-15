@@ -3,7 +3,6 @@ Bug #14780  Invalid Content-Type when headers() is called before get()
 --SKIPIF--
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 include("Mail/mime.php");
 
 $mime = new Mail_mime();

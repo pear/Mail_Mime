@@ -3,8 +3,6 @@ Tests for _parseHeaderValue
 --SKIPIF--
 --FILE--
 <?php
-error_reporting(E_ALL); // suppress E_STRICT errors
-
 require_once 'Mail/mime.php';
 
 $Mime = new Mail_Mime();

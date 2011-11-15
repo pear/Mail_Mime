@@ -3,7 +3,6 @@ Bug #12411  RFC2047 encoded attachment filenames
 --SKIPIF--
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 include "Mail/mime.php";
 $m = new Mail_mime();
 

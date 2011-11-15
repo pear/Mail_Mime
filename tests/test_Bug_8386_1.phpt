@@ -3,7 +3,6 @@ Bug #8386   HTML body not correctly encoded if attachments present
 --SKIPIF--
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 $eol = "\n#";
 include("Mail/mime.php");
 $encoder = new Mail_mime(array('eol'=>$eol));

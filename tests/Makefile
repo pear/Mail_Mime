@@ -5,4 +5,4 @@ clean:
 
 
 test:
-	cd .. && pear run-tests tests/*.phpt && cd tests;
+	cd .. && pear run-tests -i "-d error_reporting=22527" tests/*.phpt && cd tests;

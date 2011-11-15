@@ -3,7 +3,6 @@ Bug #13032  Proper (different) boundary for nested parts
 --SKIPIF--
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 include "Mail/mime.php";
 $mime = new Mail_mime("\r\n");
 $mime->setHTMLBody('html');

@@ -3,7 +3,6 @@ Bug #12385  Bad regex when replacing css style attachments
 --SKIPIF--
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 $from='user@from.example.com';
 
 require_once('Mail/mime.php');

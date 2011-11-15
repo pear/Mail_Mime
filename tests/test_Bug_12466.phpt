@@ -3,7 +3,6 @@ Bug #12466  Content-Transfer-Encoding checking
 --SKIPIF--
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 include("Mail/mime.php");
 
 $params = array(

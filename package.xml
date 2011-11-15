@@ -29,10 +29,9 @@ using RFC2047 and/or RFC2231.</description>
   <email>alec@php.net</email>
   <active>yes</active>
  </lead>
-
- <date>2011-08-10</date>
+ <date></date>
  <version>
-  <release>1.8.2</release>
+  <release></release>
   <api>1.4.1</api>
  </version>
  <stability>
@@ -41,10 +40,7 @@ using RFC2047 and/or RFC2231.</description>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
-Bugs Fixed:
- * #18426: Fixed backward compatibility for "dfilename" parameter [alec]
- * Removed xmail.dtd, xmail.xsl from the package [alec]
- * Fixed handling of email addresses with quoted local part [alec]
+ * Request #19009: Remove error_reporting from tests [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -600,6 +596,24 @@ Implemented Features:
    <notes>
 Bugs Fixed:
  * #18083: Not possible to set separate charset for attachment content and headers [alec]
+   </notes>
+  </release>
+  <release>
+   <date>2011-08-10</date>
+   <version>
+    <release>1.8.2</release>
+    <api>1.4.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+   <notes>
+Bugs Fixed:
+ * #18426: Fixed backward compatibility for "dfilename" parameter [alec]
+ * Removed xmail.dtd, xmail.xsl from the package [alec]
+ * Fixed handling of email addresses with quoted local part [alec]
    </notes>
   </release>
  </changelog>

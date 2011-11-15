@@ -3,7 +3,6 @@ Bug #13962  Multiple header support
 --SKIPIF--
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 require_once('Mail/mime.php');
 
 $mime = new Mail_mime();

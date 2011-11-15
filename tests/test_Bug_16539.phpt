@@ -3,7 +3,6 @@ Bug #16539  Headers longer than 998 characters
 --SKIPIF--
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 include("Mail/mime.php");
 $mime = new Mail_mime();
 
