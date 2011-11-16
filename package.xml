@@ -76,8 +76,10 @@ using RFC2047 and/or RFC2231.</description>
     <file baseinstalldir="Mail" name="test_Bug_17175.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_18083.phpt" role="test" />
    </dir> <!-- /tests -->
-   <file baseinstalldir="Mail" name="mime.php" role="php" />
-   <file baseinstalldir="Mail" name="mimePart.php" role="php" />
+   <dir name="Mail">
+     <file baseinstalldir="/" name="mime.php" role="php" />
+     <file baseinstalldir="/" name="mimePart.php" role="php" />
+   </dir>
   </dir> <!-- / -->
  </contents>
  <dependencies>
