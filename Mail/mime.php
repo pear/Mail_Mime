@@ -1319,7 +1319,8 @@ class Mail_mime
      */
     function encodeHeader($name, $value, $charset, $encoding)
     {
-        return Mail_mimePart::encodeHeader(
+        $mime_part = new Mail_mimePart;
+        return $mime_part->encodeHeader(
             $name, $value, $charset, $encoding, $this->_build_params['eol']
         );
     }
