@@ -38,6 +38,8 @@ array('From', "test@nàme <user@domain.com>"),
 array('From', "Test <\"test test\"@domain.com>"),
 array('From', "\"test test\"@domain.com"),
 array('From', "<\"test test\"@domain.com>"),
+array('From', "Doe<test@domain.com>"),
+array('From', "\"John Doe\"<test@domain.com>"),
 );
 
 $i = 1;
@@ -134,3 +136,7 @@ foreach ($headers as $header) {
 [25] From: "test test"@domain.com
 [26] From: <"test test"@domain.com>
 [26] From: <"test test"@domain.com>
+[27] From: Doe <test@domain.com>
+[27] From: Doe <test@domain.com>
+[28] From: "John Doe" <test@domain.com>
+[28] From: "John Doe" <test@domain.com>

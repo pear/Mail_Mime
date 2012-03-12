@@ -31,7 +31,7 @@ using RFC2047 and/or RFC2231.</description>
  </lead>
  <date>2012-01-01</date>
  <version>
-  <release>1.8.3</release>
+  <release>1.8.4</release>
   <api>1.4.1</api>
  </version>
  <stability>
@@ -40,7 +40,7 @@ using RFC2047 and/or RFC2231.</description>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
- * Request #19009: Remove error_reporting from tests [alec]
+ * Fixed Bug #19094: Email addresses do not have to contain a space between the name and <> part [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -616,6 +616,21 @@ Bugs Fixed:
  * #18426: Fixed backward compatibility for "dfilename" parameter [alec]
  * Removed xmail.dtd, xmail.xsl from the package [alec]
  * Fixed handling of email addresses with quoted local part [alec]
+   </notes>
+  </release>
+  <release>
+   <date>2012-01-01</date>
+   <version>
+    <release>1.8.3</release>
+    <api>1.4.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+   <notes>
+ * Request #19009: Remove error_reporting from tests [alec]
    </notes>
   </release>
  </changelog>
