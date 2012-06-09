@@ -24,4 +24,5 @@ echo $enc->_headers['Content-Disposition'];
 text/plain; charset=ISO-8859-1;
  name="=?ISO-8859-1?Q?=C5=9Bciema?="
 attachment;
- filename="=?ISO-8859-1?B?xZtjaWVtYQ==?="
+ filename="=?ISO-8859-1?B?xZtjaWVtYQ==?=";
+ size=8

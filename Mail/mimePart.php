@@ -247,6 +247,12 @@ class Mail_mimePart
                     !empty($params['filename_encoding']) ? $params['filename_encoding'] : null
                 );
             }
+
+            // add attachment size
+            $size = $this->_body_file ? filesize($this->_body_file) : strlen($body);
+            if ($size) {
+                $headers['Content-Disposition'] .= ';' . $this->_eol . ' size=' . $size;
+            }
         }
 
         if (!empty($params['description'])) {

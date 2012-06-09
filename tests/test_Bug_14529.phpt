@@ -15,4 +15,5 @@ print_r($enc->_headers['Content-Disposition']);
 ?>
 --EXPECT--
 attachment;
- filename*=ISO-8859-1''%C5%9Bciema
+ filename*=ISO-8859-1''%C5%9Bciema;
+ size=8
