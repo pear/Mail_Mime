@@ -41,6 +41,7 @@ using RFC2047 and/or RFC2231.</description>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
 * Bug #19473: PEAR::isError() compatibility problem with PHP 5.4 [alec]
+* Bug #19497: Attachment filename is cut on slash character [alec]
  </notes>
  <contents>
   <dir name="/">
