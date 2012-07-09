@@ -387,7 +387,8 @@ class Mail_mime
      * @param string $description Content-Description header
      * @param string $h_charset   The character set of the headers e.g. filename
      *                            If not specified, $charset will be used
-     * @param array  $add_headers Additional part headers
+     * @param array  $add_headers Additional part headers. Array keys can be in form
+     *                            of <header_name>:<parameter_name>
      *
      * @return mixed              True on success or PEAR_Error object
      * @access public
