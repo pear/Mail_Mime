@@ -29,9 +29,9 @@ using RFC2047 and/or RFC2231.</description>
   <email>alec@php.net</email>
   <active>yes</active>
  </lead>
- <date>2012-06-09</date>
+ <date>2012-07-09</date>
  <version>
-  <release>1.8.5</release>
+  <release>1.8.6</release>
   <api>1.4.3</api>
  </version>
  <stability>
@@ -40,8 +40,7 @@ using RFC2047 and/or RFC2231.</description>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
- * Added possibility to set additional parameters of message part header, e.g. attachment size [alec]
- * Added automatic setting of attachment size via Content-Disposition header size parameter [alec]
+* Bug #19473: PEAR::isError() compatibility problem with PHP 5.4 [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -652,5 +651,21 @@ Bugs Fixed:
  * Fixed Bug #18982: Non-static method Mail_mimePart::encodeHeader() should not be called statically [alec]
  </notes>
   </release>
+  <release>
+ <date>2012-06-09</date>
+ <version>
+  <release>1.8.5</release>
+  <api>1.4.3</api>
+ </version>
+ <stability>
+  <release>stable</release>
+  <api>stable</api>
+ </stability>
+ <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+ <notes>
+ * Added possibility to set additional parameters of message part header, e.g. attachment size [alec]
+ * Added automatic setting of attachment size via Content-Disposition header size parameter [alec]
+ </notes>
+   </release>
  </changelog>
 </package>
