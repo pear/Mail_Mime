@@ -40,6 +40,8 @@ array('From', "\"test test\"@domain.com"),
 array('From', "<\"test test\"@domain.com>"),
 array('From', "Doe<test@domain.com>"),
 array('From', "\"John Doe\"<test@domain.com>"),
+array('Mail-Reply-To', 'adresse@adresse.de <addresse@adresse>'),
+array('Mail-Reply-To', '"öäü" <adresse@adresse.de>'),
 );
 
 $i = 1;
@@ -141,3 +143,7 @@ foreach ($headers as $header) {
 [27] From: Doe <test@domain.com>
 [28] From: "John Doe" <test@domain.com>
 [28] From: "John Doe" <test@domain.com>
+[29] Mail-Reply-To: "adresse@adresse.de" <addresse@adresse>
+[29] Mail-Reply-To: "adresse@adresse.de" <addresse@adresse>
+[30] Mail-Reply-To: =?UTF-8?B?w7bDpMO8?= <adresse@adresse.de>
+[30] Mail-Reply-To: =?UTF-8?Q?=C3=B6=C3=A4=C3=BC?= <adresse@adresse.de>
