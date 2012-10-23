@@ -29,7 +29,7 @@ using RFC2047 and/or RFC2231.</description>
   <email>alec@php.net</email>
   <active>yes</active>
  </lead>
- <date>2012-07-09</date>
+ <date>2012-10-23</date>
  <version>
   <release>1.8.6</release>
   <api>1.4.3</api>
@@ -42,6 +42,7 @@ using RFC2047 and/or RFC2231.</description>
  <notes>
 * Bug #19473: PEAR::isError() compatibility problem with PHP 5.4 [alec]
 * Bug #19497: Attachment filename is cut on slash character [alec]
+* Bug #19665: Add Mail-Reply-To and Mail-Followup-To to structured recipient headers list [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -637,36 +638,36 @@ Bugs Fixed:
    </notes>
   </release>
   <release>
- <date>2012-05-17</date>
- <version>
-  <release>1.8.4</release>
-  <api>1.4.2</api>
- </version>
- <stability>
-  <release>stable</release>
-  <api>stable</api>
- </stability>
- <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
- <notes>
+   <date>2012-05-17</date>
+   <version>
+    <release>1.8.4</release>
+    <api>1.4.2</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+   <notes>
  * Request #19406: Allow to set individual attachment part headers [alec]
  * Fixed Bug #18982: Non-static method Mail_mimePart::encodeHeader() should not be called statically [alec]
- </notes>
+   </notes>
   </release>
   <release>
- <date>2012-06-09</date>
- <version>
-  <release>1.8.5</release>
-  <api>1.4.3</api>
- </version>
- <stability>
-  <release>stable</release>
-  <api>stable</api>
- </stability>
- <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
- <notes>
+   <date>2012-06-09</date>
+   <version>
+    <release>1.8.5</release>
+    <api>1.4.3</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+   <notes>
  * Added possibility to set additional parameters of message part header, e.g. attachment size [alec]
  * Added automatic setting of attachment size via Content-Disposition header size parameter [alec]
- </notes>
-   </release>
+   </notes>
+  </release>
  </changelog>
 </package>
