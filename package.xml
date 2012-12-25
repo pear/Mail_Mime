@@ -29,9 +29,9 @@ using RFC2047 and/or RFC2231.</description>
   <email>alec@php.net</email>
   <active>yes</active>
  </lead>
- <date>2012-10-23</date>
+ <date>2012-12-25</date>
  <version>
-  <release>1.8.6</release>
+  <release>1.8.7</release>
   <api>1.4.3</api>
  </version>
  <stability>
@@ -40,9 +40,8 @@ using RFC2047 and/or RFC2231.</description>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
-* Bug #19473: PEAR::isError() compatibility problem with PHP 5.4 [alec]
-* Bug #19497: Attachment filename is cut on slash character [alec]
-* Bug #19665: Add Mail-Reply-To and Mail-Followup-To to structured recipient headers list [alec]
+* Bug #5333: Fix more return by reference errors [alec]
+* Bug #19754: Fix compatibility with PHP4 [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -667,6 +666,23 @@ Bugs Fixed:
    <notes>
  * Added possibility to set additional parameters of message part header, e.g. attachment size [alec]
  * Added automatic setting of attachment size via Content-Disposition header size parameter [alec]
+   </notes>
+  </release>
+  <release>
+   <date>2012-10-23</date>
+   <version>
+    <release>1.8.6</release>
+    <api>1.4.3</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+   <notes>
+* Bug #19473: PEAR::isError() compatibility problem with PHP 5.4 [alec]
+* Bug #19497: Attachment filename is cut on slash character [alec]
+* Bug #19665: Add Mail-Reply-To and Mail-Followup-To to structured recipient headers list [alec]
    </notes>
   </release>
  </changelog>
