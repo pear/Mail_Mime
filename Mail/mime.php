@@ -461,7 +461,7 @@ class Mail_mime
      * @return string           Contents of $file_name
      * @access private
      */
-    function &_file2str($file_name)
+    function _file2str($file_name)
     {
         // Check state of file and raise an error properly
         if (!file_exists($file_name)) {
@@ -500,7 +500,7 @@ class Mail_mime
      * @return object      The text mimePart object
      * @access private
      */
-    function &_addTextPart(&$obj, $text)
+    function _addTextPart(&$obj, $text)
     {
         $params['content_type'] = 'text/plain';
         $params['encoding']     = $this->_build_params['text_encoding'];
@@ -526,7 +526,7 @@ class Mail_mime
      * @return object     The html mimePart object
      * @access private
      */
-    function &_addHtmlPart(&$obj)
+    function _addHtmlPart(&$obj)
     {
         $params['content_type'] = 'text/html';
         $params['encoding']     = $this->_build_params['html_encoding'];
@@ -550,7 +550,7 @@ class Mail_mime
      * @return object The multipart/mixed mimePart object
      * @access private
      */
-    function &_addMixedPart()
+    function _addMixedPart()
     {
         $params                 = array();
         $params['content_type'] = 'multipart/mixed';
@@ -572,7 +572,7 @@ class Mail_mime
      * @return object     The multipart/mixed mimePart object
      * @access private
      */
-    function &_addAlternativePart(&$obj)
+    function _addAlternativePart(&$obj)
     {
         $params['content_type'] = 'multipart/alternative';
         $params['eol']          = $this->_build_params['eol'];
@@ -596,7 +596,7 @@ class Mail_mime
      * @return object     The multipart/mixed mimePart object
      * @access private
      */
-    function &_addRelatedPart(&$obj)
+    function _addRelatedPart(&$obj)
     {
         $params['content_type'] = 'multipart/related';
         $params['eol']          = $this->_build_params['eol'];
@@ -619,7 +619,7 @@ class Mail_mime
      * @return object       The image mimePart object
      * @access private
      */
-    function &_addHtmlImagePart(&$obj, $value)
+    function _addHtmlImagePart(&$obj, $value)
     {
         $params['content_type'] = $value['c_type'];
         $params['encoding']     = 'base64';
@@ -650,7 +650,7 @@ class Mail_mime
      * @return object       The image mimePart object
      * @access private
      */
-    function &_addAttachmentPart(&$obj, $value)
+    function _addAttachmentPart(&$obj, $value)
     {
         $params['eol']          = $this->_build_params['eol'];
         $params['filename']     = $value['name'];
