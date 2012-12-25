@@ -245,7 +245,7 @@ class Mail_mime
             }
         } else {
             $cont = $this->_file2str($data);
-            if ($this->isError($cont)) {
+            if ($this->_isError($cont)) {
                 return $cont;
             }
             if (!$append) {
@@ -286,7 +286,7 @@ class Mail_mime
             $this->_htmlbody = $data;
         } else {
             $cont = $this->_file2str($data);
-            if ($this->isError($cont)) {
+            if ($this->_isError($cont)) {
                 return $cont;
             }
             $this->_htmlbody = $cont;
@@ -336,7 +336,7 @@ class Mail_mime
                 $filedata = null;
                 $bodyfile = $file;
             } else {
-                if ($this->isError($filedata = $this->_file2str($file))) {
+                if ($this->_isError($filedata = $this->_file2str($file))) {
                     return $filedata;
                 }
             }
@@ -416,7 +416,7 @@ class Mail_mime
                 $filedata = null;
                 $bodyfile = $file;
             } else {
-                if ($this->isError($filedata = $this->_file2str($file))) {
+                if ($this->_isError($filedata = $this->_file2str($file))) {
                     return $filedata;
                 }
             }
@@ -718,7 +718,7 @@ class Mail_mime
 
         $body = $this->get($params);
 
-        if ($this->isError($body)) {
+        if ($this->_isError($body)) {
             return $body;
         }
 
@@ -1019,7 +1019,7 @@ class Mail_mime
         if ($filename) {
             // Append mimePart message headers and body into file
             $headers = $message->encodeToFile($filename, $boundary, $skip_head);
-            if ($this->isError($headers)) {
+            if ($this->_isError($headers)) {
                 return $headers;
             }
             $this->_headers = array_merge($this->_headers, $headers);
@@ -1027,7 +1027,7 @@ class Mail_mime
             return $ret;
         } else {
             $output = $message->encode($boundary, $skip_head);
-            if ($this->isError($output)) {
+            if ($this->_isError($output)) {
                 return $output;
             }
             $this->_headers = array_merge($this->_headers, $output['headers']);
@@ -1478,8 +1478,9 @@ class Mail_mime
      * @param mixed $data Object
      *
      * @return bool True if object is an instance of PEAR_Error
+     * @access private
      */
-    private function isError($data)
+    function _isError($data)
     {
         // PEAR::isError() is not PHP 5.4 compatible (see Bug #19473)
         if (is_object($data) && is_a($data, 'PEAR_Error')) {

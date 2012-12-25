@@ -315,7 +315,7 @@ class Mail_mimePart
             for ($i = 0; $i < count($this->_subparts); $i++) {
                 $encoded['body'] .= '--' . $boundary . $eol;
                 $tmp = $this->_subparts[$i]->encode();
-                if ($this->isError($tmp)) {
+                if ($this->_isError($tmp)) {
                     return $tmp;
                 }
                 foreach ($tmp['headers'] as $key => $value) {
@@ -338,7 +338,7 @@ class Mail_mimePart
                 @ini_set('magic_quotes_runtime', $magic_quote_setting);
             }
 
-            if ($this->isError($body)) {
+            if ($this->_isError($body)) {
                 return $body;
             }
             $encoded['body'] = $body;
@@ -390,7 +390,7 @@ class Mail_mimePart
             @ini_set('magic_quotes_runtime', $magic_quote_setting);
         }
 
-        return $this->isError($res) ? $res : $this->_headers;
+        return $this->_isError($res) ? $res : $this->_headers;
     }
 
     /**
@@ -425,7 +425,7 @@ class Mail_mimePart
             for ($i = 0; $i < count($this->_subparts); $i++) {
                 fwrite($fh, $f_eol . '--' . $boundary . $eol);
                 $res = $this->_subparts[$i]->_encodePartToFile($fh);
-                if ($this->isError($res)) {
+                if ($this->_isError($res)) {
                     return $res;
                 }
                 $f_eol = $eol;
@@ -440,7 +440,7 @@ class Mail_mimePart
             $res = $this->_getEncodedDataFromFile(
                 $this->_body_file, $this->_encoding, $fh
             );
-            if ($this->isError($res)) {
+            if ($this->_isError($res)) {
                 return $res;
             }
         }
@@ -1232,8 +1232,9 @@ class Mail_mimePart
      * @param mixed $data Object
      *
      * @return bool True if object is an instance of PEAR_Error
+     * @access private
      */
-    private function isError($data)
+    function _isError($data)
     {
         // PEAR::isError() is not PHP 5.4 compatible (see Bug #19473)
         if (is_object($data) && is_a($data, 'PEAR_Error')) {
