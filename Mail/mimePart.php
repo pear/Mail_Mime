@@ -648,7 +648,7 @@ class Mail_mimePart
     }
 
     /**
-     * Encodes the paramater of a header.
+     * Encodes the parameter of a header.
      *
      * @param string $name      The name of the header-parameter
      * @param string $value     The value of the paramter
@@ -1013,7 +1013,7 @@ class Mail_mimePart
                 $value = substr($value, $cutpoint);
                 $cutpoint = $maxLength;
                 // RFC 2047 specifies that any split header should
-                // be seperated by a CRLF SPACE.
+                // be separated by a CRLF SPACE.
                 if ($output) {
                     $output .= $eol . ' ';
                 }
@@ -1055,7 +1055,7 @@ class Mail_mimePart
                     }
 
                     // RFC 2047 specifies that any split header should
-                    // be seperated by a CRLF SPACE
+                    // be separated by a CRLF SPACE
                     if ($output) {
                         $output .= $eol . ' ';
                     }
