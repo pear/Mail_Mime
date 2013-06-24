@@ -254,6 +254,7 @@ class Mail_mime
                 $this->_txtbody .= $cont;
             }
         }
+
         return true;
     }
 
@@ -500,7 +501,7 @@ class Mail_mime
      * @return object      The text mimePart object
      * @access private
      */
-    function _addTextPart(&$obj = null, $text = '')
+    function &_addTextPart(&$obj = null, $text = '')
     {
         $params['content_type'] = 'text/plain';
         $params['encoding']     = $this->_build_params['text_encoding'];
@@ -509,11 +510,11 @@ class Mail_mime
 
         if (is_object($obj)) {
             $ret = $obj->addSubpart($text, $params);
-            return $ret;
         } else {
             $ret = new Mail_mimePart($text, $params);
-            return $ret;
         }
+
+        return $ret;
     }
 
     /**
@@ -526,7 +527,7 @@ class Mail_mime
      * @return object     The html mimePart object
      * @access private
      */
-    function _addHtmlPart(&$obj = null)
+    function &_addHtmlPart(&$obj = null)
     {
         $params['content_type'] = 'text/html';
         $params['encoding']     = $this->_build_params['html_encoding'];
@@ -535,11 +536,11 @@ class Mail_mime
 
         if (is_object($obj)) {
             $ret = $obj->addSubpart($this->_htmlbody, $params);
-            return $ret;
         } else {
             $ret = new Mail_mimePart($this->_htmlbody, $params);
-            return $ret;
         }
+
+        return $ret;
     }
 
     /**
@@ -550,9 +551,8 @@ class Mail_mime
      * @return object The multipart/mixed mimePart object
      * @access private
      */
-    function _addMixedPart()
+    function &_addMixedPart()
     {
-        $params                 = array();
         $params['content_type'] = 'multipart/mixed';
         $params['eol']          = $this->_build_params['eol'];
 
@@ -572,17 +572,18 @@ class Mail_mime
      * @return object     The multipart/mixed mimePart object
      * @access private
      */
-    function _addAlternativePart(&$obj = null)
+    function &_addAlternativePart(&$obj = null)
     {
         $params['content_type'] = 'multipart/alternative';
         $params['eol']          = $this->_build_params['eol'];
 
         if (is_object($obj)) {
-            return $obj->addSubpart('', $params);
+            $ret = $obj->addSubpart('', $params);
         } else {
             $ret = new Mail_mimePart('', $params);
-            return $ret;
         }
+
+        return $ret;
     }
 
     /**
@@ -596,17 +597,18 @@ class Mail_mime
      * @return object     The multipart/mixed mimePart object
      * @access private
      */
-    function _addRelatedPart(&$obj = null)
+    function &_addRelatedPart(&$obj = null)
     {
         $params['content_type'] = 'multipart/related';
         $params['eol']          = $this->_build_params['eol'];
 
         if (is_object($obj)) {
-            return $obj->addSubpart('', $params);
+            $ret = $obj->addSubpart('', $params);
         } else {
             $ret = new Mail_mimePart('', $params);
-            return $ret;
         }
+
+        return $ret;
     }
 
     /**
@@ -619,7 +621,7 @@ class Mail_mime
      * @return object       The image mimePart object
      * @access private
      */
-    function _addHtmlImagePart(&$obj, $value)
+    function &_addHtmlImagePart(&$obj, $value)
     {
         $params['content_type'] = $value['c_type'];
         $params['encoding']     = 'base64';
@@ -650,7 +652,7 @@ class Mail_mime
      * @return object       The image mimePart object
      * @access private
      */
-    function _addAttachmentPart(&$obj, $value)
+    function &_addAttachmentPart(&$obj, $value)
     {
         $params['eol']          = $this->_build_params['eol'];
         $params['filename']     = $value['name'];
@@ -700,9 +702,9 @@ class Mail_mime
      * 
      * @param string $separation The separation between these two parts.
      * @param array  $params     The Build parameters passed to the
-     *                           &get() function. See &get for more info.
+     *                           get() function. See get() for more info.
      * @param array  $headers    The extra headers that should be passed
-     *                           to the &headers() function.
+     *                           to the headers() method.
      *                           See that function for more info.
      * @param bool   $overwrite  Overwrite the existing headers with new.
      *
@@ -722,9 +724,7 @@ class Mail_mime
             return $body;
         }
 
-        $head = $this->txtHeaders($headers, $overwrite);
-        $mail = $head . $separation . $body;
-        return $mail;
+        return $this->txtHeaders($headers, $overwrite) . $separation . $body;
     }
 
     /**
@@ -732,7 +732,7 @@ class Mail_mime
      * mail delivery method.
      * 
      * @param array $params The Build parameters passed to the
-     *                      &get() function. See &get for more info.
+     *                      get() method. See get() for more info.
      *
      * @return mixed The e-mail body or PEAR error object
      * @access public
@@ -748,9 +748,9 @@ class Mail_mime
      * 
      * @param string $filename  Output file location
      * @param array  $params    The Build parameters passed to the
-     *                          &get() function. See &get for more info.
+     *                          get() method. See get() for more info.
      * @param array  $headers   The extra headers that should be passed
-     *                          to the &headers() function.
+     *                          to the headers() function.
      *                          See that function for more info.
      * @param bool   $overwrite Overwrite the existing headers with new.
      *
@@ -762,8 +762,7 @@ class Mail_mime
     {
         // Check state of file and raise an error properly
         if (file_exists($filename) && !is_writable($filename)) {
-            $err = PEAR::raiseError('File is not writable: ' . $filename);
-            return $err;
+            return PEAR::raiseError('File is not writable: ' . $filename);
         }
 
         // Temporarily reset magic_quotes_runtime and read file contents
@@ -772,15 +771,13 @@ class Mail_mime
         }
 
         if (!($fh = fopen($filename, 'ab'))) {
-            $err = PEAR::raiseError('Unable to open file: ' . $filename);
-            return $err;
+            return PEAR::raiseError('Unable to open file: ' . $filename);
         }
 
         // Write message headers into file (skipping Content-* headers)
         $head = $this->txtHeaders($headers, $overwrite, true);
         if (fwrite($fh, $head) === false) {
-            $err = PEAR::raiseError('Error writing to file: ' . $filename);
-            return $err;
+            return PEAR::raiseError('Error writing to file: ' . $filename);
         }
 
         fclose($fh);
@@ -797,10 +794,10 @@ class Mail_mime
 
     /**
      * Writes (appends) the complete e-mail body into file.
-     * 
+     *
      * @param string $filename Output file location
      * @param array  $params   The Build parameters passed to the
-     *                         &get() function. See &get for more info.
+     *                         get() method. See get() for more info.
      *
      * @return mixed True or PEAR error object
      * @access public
@@ -810,8 +807,7 @@ class Mail_mime
     {
         // Check state of file and raise an error properly
         if (file_exists($filename) && !is_writable($filename)) {
-            $err = PEAR::raiseError('File is not writable: ' . $filename);
-            return $err;
+            return PEAR::raiseError('File is not writable: ' . $filename);
         }
 
         // Temporarily reset magic_quotes_runtime and read file contents
@@ -820,8 +816,7 @@ class Mail_mime
         }
 
         if (!($fh = fopen($filename, 'ab'))) {
-            $err = PEAR::raiseError('Unable to open file: ' . $filename);
-            return $err;
+            return PEAR::raiseError('Unable to open file: ' . $filename);
         }
 
         // Write the rest of the message into file
@@ -844,7 +839,7 @@ class Mail_mime
      * @return mixed The MIME message content string, null or PEAR error object
      * @access public
      */
-    function &get($params = null, $filename = null, $skip_head = false)
+    function get($params = null, $filename = null, $skip_head = false)
     {
         if (isset($params)) {
             while (list($key, $value) = each($params)) {
@@ -1004,8 +999,7 @@ class Mail_mime
         }
 
         if (!isset($message)) {
-            $ret = null;
-            return $ret;
+            return null;
         }
 
         // Use saved boundary
@@ -1023,16 +1017,14 @@ class Mail_mime
                 return $headers;
             }
             $this->_headers = array_merge($this->_headers, $headers);
-            $ret = null;
-            return $ret;
+            return null;
         } else {
             $output = $message->encode($boundary, $skip_head);
             if ($this->_isError($output)) {
                 return $output;
             }
             $this->_headers = array_merge($this->_headers, $output['headers']);
-            $body = $output['body'];
-            return $body;
+            return $output['body'];
         }
     }
 
@@ -1050,7 +1042,7 @@ class Mail_mime
      * @return array              Assoc array with the mime headers
      * @access public
      */
-    function &headers($xtra_headers = null, $overwrite = false, $skip_content = false)
+    function headers($xtra_headers = null, $overwrite = false, $skip_content = false)
     {
         // Add mime version header
         $headers['MIME-Version'] = '1.0';

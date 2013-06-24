@@ -456,7 +456,7 @@ class Mail_mimePart
      * @param array  $params The parameters for the subpart, same
      *                       as the $params argument for constructor.
      *
-     * @return Mail_mimePart A reference to the part you just added. It is
+     * @return Mail_mimePart A reference to the part you just added. In PHP4, it is
      *                       crucial if using multipart/* in your subparts that
      *                       you use =& in your script when calling this function,
      *                       otherwise you will not be able to add further subparts.
@@ -464,8 +464,8 @@ class Mail_mimePart
      */
     function &addSubpart($body, $params)
     {
-        $this->_subparts[] = new Mail_mimePart($body, $params);
-        return $this->_subparts[count($this->_subparts) - 1];
+        $this->_subparts[] = $part = new Mail_mimePart($body, $params);
+        return $part;
     }
 
     /**
