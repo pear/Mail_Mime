@@ -368,12 +368,12 @@ class Mail_mimePart
     function encodeToFile($filename, $boundary=null, $skip_head=false)
     {
         if (file_exists($filename) && !is_writable($filename)) {
-            $err = PEAR::raiseError('File is not writeable: ' . $filename);
+            $err = $this->_raiseError('File is not writeable: ' . $filename);
             return $err;
         }
 
         if (!($fh = fopen($filename, 'ab'))) {
-            $err = PEAR::raiseError('Unable to open file: ' . $filename);
+            $err = $this->_raiseError('Unable to open file: ' . $filename);
             return $err;
         }
 
@@ -511,12 +511,12 @@ class Mail_mimePart
     function _getEncodedDataFromFile($filename, $encoding, $fh=null)
     {
         if (!is_readable($filename)) {
-            $err = PEAR::raiseError('Unable to read file: ' . $filename);
+            $err = $this->_raiseError('Unable to read file: ' . $filename);
             return $err;
         }
 
         if (!($fd = fopen($filename, 'rb'))) {
-            $err = PEAR::raiseError('Could not open file: ' . $filename);
+            $err = $this->_raiseError('Could not open file: ' . $filename);
             return $err;
         }
 
@@ -1227,7 +1227,7 @@ class Mail_mimePart
     }
 
     /**
-     * PEAR::isError wrapper
+     * PEAR::isError implementation
      *
      * @param mixed $data Object
      *
@@ -1242,6 +1242,20 @@ class Mail_mimePart
         }
 
         return false;
+    }
+
+    /**
+     * PEAR::raiseError implementation
+     *
+     * @param $message A text error message
+     *
+     * @return PEAR_Error Instance of PEAR_Error
+     * @access private
+     */
+    function _raiseError($message)
+    {
+        // PEAR::raiseError() is not PHP 5.4 compatible
+        return new PEAR_Error($message);
     }
 
 } // End of class

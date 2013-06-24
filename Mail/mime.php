@@ -430,8 +430,7 @@ class Mail_mime
 
         if (!strlen($filename)) {
             $msg = "The supplied filename for the attachment can't be empty";
-            $err = PEAR::raiseError($msg);
-            return $err;
+            return $this->_raiseError($msg);
         }
 
         $this->_parts[] = array(
@@ -466,16 +465,13 @@ class Mail_mime
     {
         // Check state of file and raise an error properly
         if (!file_exists($file_name)) {
-            $err = PEAR::raiseError('File not found: ' . $file_name);
-            return $err;
+            return $this->_raiseError('File not found: ' . $file_name);
         }
         if (!is_file($file_name)) {
-            $err = PEAR::raiseError('Not a regular file: ' . $file_name);
-            return $err;
+            return $this->_raiseError('Not a regular file: ' . $file_name);
         }
         if (!is_readable($file_name)) {
-            $err = PEAR::raiseError('File is not readable: ' . $file_name);
-            return $err;
+            return $this->_raiseError('File is not readable: ' . $file_name);
         }
 
         // Temporarily reset magic_quotes_runtime and read file contents
@@ -762,7 +758,7 @@ class Mail_mime
     {
         // Check state of file and raise an error properly
         if (file_exists($filename) && !is_writable($filename)) {
-            return PEAR::raiseError('File is not writable: ' . $filename);
+            return $this->_raiseError('File is not writable: ' . $filename);
         }
 
         // Temporarily reset magic_quotes_runtime and read file contents
@@ -771,13 +767,13 @@ class Mail_mime
         }
 
         if (!($fh = fopen($filename, 'ab'))) {
-            return PEAR::raiseError('Unable to open file: ' . $filename);
+            return $this->_raiseError('Unable to open file: ' . $filename);
         }
 
         // Write message headers into file (skipping Content-* headers)
         $head = $this->txtHeaders($headers, $overwrite, true);
         if (fwrite($fh, $head) === false) {
-            return PEAR::raiseError('Error writing to file: ' . $filename);
+            return $this->_raiseError('Error writing to file: ' . $filename);
         }
 
         fclose($fh);
@@ -807,7 +803,7 @@ class Mail_mime
     {
         // Check state of file and raise an error properly
         if (file_exists($filename) && !is_writable($filename)) {
-            return PEAR::raiseError('File is not writable: ' . $filename);
+            return $this->_raiseError('File is not writable: ' . $filename);
         }
 
         // Temporarily reset magic_quotes_runtime and read file contents
@@ -816,7 +812,7 @@ class Mail_mime
         }
 
         if (!($fh = fopen($filename, 'ab'))) {
-            return PEAR::raiseError('Unable to open file: ' . $filename);
+            return $this->_raiseError('Unable to open file: ' . $filename);
         }
 
         // Write the rest of the message into file
@@ -1465,7 +1461,7 @@ class Mail_mime
     }
 
     /**
-     * PEAR::isError wrapper
+     * PEAR::isError implementation
      *
      * @param mixed $data Object
      *
@@ -1480,6 +1476,20 @@ class Mail_mime
         }
 
         return false;
+    }
+
+    /**
+     * PEAR::raiseError implementation
+     *
+     * @param $message A text error message
+     *
+     * @return PEAR_Error Instance of PEAR_Error
+     * @access private
+     */
+    function _raiseError($message)
+    {
+        // PEAR::raiseError() is not PHP 5.4 compatible
+        return new PEAR_Error($message);
     }
 
 } // End of class
