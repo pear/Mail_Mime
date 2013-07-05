@@ -29,9 +29,9 @@ using RFC2047 and/or RFC2231.</description>
   <email>alec@php.net</email>
   <active>yes</active>
  </lead>
- <date>2012-12-25</date>
+ <date>2013-07-05</date>
  <version>
-  <release>1.8.7</release>
+  <release>1.8.8</release>
   <api>1.4.3</api>
  </version>
  <stability>
@@ -40,8 +40,10 @@ using RFC2047 and/or RFC2231.</description>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
-* Bug #5333: Fix more return by reference errors [alec]
-* Bug #19754: Fix compatibility with PHP4 [alec]
+* Fixed warning/notice on (static vs. non-static) PEAR::raiseError() usage [alec]
+* Fixed Bug #19761: PHP5 warnings about return by reference [alec]
+* Fixed Bug #19770: Make cid generator more unique on Windows [alec]
+* Fixed Bug #19987: E_STRICT warning when null is passed by reference [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -683,6 +685,22 @@ Bugs Fixed:
 * Bug #19473: PEAR::isError() compatibility problem with PHP 5.4 [alec]
 * Bug #19497: Attachment filename is cut on slash character [alec]
 * Bug #19665: Add Mail-Reply-To and Mail-Followup-To to structured recipient headers list [alec]
+   </notes>
+  </release>
+  <release>
+   <date>2012-12-25</date>
+   <version>
+    <release>1.8.7</release>
+    <api>1.4.3</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+   <notes>
+* Bug #5333: Fix more return by reference errors [alec]
+* Bug #19754: Fix compatibility with PHP4 [alec]
    </notes>
   </release>
  </changelog>
