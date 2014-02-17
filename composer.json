@@ -13,7 +13,7 @@
     ],
     "autoload": {
         "psr-0": {
-            "Mail_Mime": "./"
+            "Mail": "./"
         }
     },
     "description": "More info available on: http://pear.php.net/package/Mail_Mime",
