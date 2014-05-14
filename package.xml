@@ -42,6 +42,7 @@ using RFC2047 and/or RFC2231.</description>
  <notes>
 * Fixed Bug #20273: Incorrect handling of HTAB in encodeHeader() [alec]
 * Fixed Bug #20226: Mail_mimePart::encodeHeader does not encode ISO-2022-JP string [alec]
+* Fixed Bug #20222: Broken Compatybility with PHP4 [alec]
  </notes>
  <contents>
   <dir name="/">

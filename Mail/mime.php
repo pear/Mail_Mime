@@ -491,13 +491,13 @@ class Mail_mime
      * returns it during the build process.
      *
      * @param mixed  &$obj The object to add the part to, or
-     *                     null if a new object is to be created.
+     *                     anything else if a new object is to be created.
      * @param string $text The text to add.
      *
      * @return object      The text mimePart object
      * @access private
      */
-    function &_addTextPart(&$obj = null, $text = '')
+    function &_addTextPart(&$obj, $text = '')
     {
         $params['content_type'] = 'text/plain';
         $params['encoding']     = $this->_build_params['text_encoding'];
@@ -518,12 +518,12 @@ class Mail_mime
      * returns it during the build process.
      *
      * @param mixed &$obj The object to add the part to, or
-     *                    null if a new object is to be created.
+     *                    anything else if a new object is to be created.
      *
      * @return object     The html mimePart object
      * @access private
      */
-    function &_addHtmlPart(&$obj = null)
+    function &_addHtmlPart(&$obj)
     {
         $params['content_type'] = 'text/html';
         $params['encoding']     = $this->_build_params['html_encoding'];
@@ -563,12 +563,12 @@ class Mail_mime
      * the build process.
      *
      * @param mixed &$obj The object to add the part to, or
-     *                    null if a new object is to be created.
+     *                    anything else if a new object is to be created.
      *
      * @return object     The multipart/mixed mimePart object
      * @access private
      */
-    function &_addAlternativePart(&$obj = null)
+    function &_addAlternativePart(&$obj)
     {
         $params['content_type'] = 'multipart/alternative';
         $params['eol']          = $this->_build_params['eol'];
@@ -588,12 +588,12 @@ class Mail_mime
      * the build process.
      *
      * @param mixed &$obj The object to add the part to, or
-     *                    null if a new object is to be created
+     *                    anything else if a new object is to be created
      *
      * @return object     The multipart/mixed mimePart object
      * @access private
      */
-    function &_addRelatedPart(&$obj = null)
+    function &_addRelatedPart(&$obj)
     {
         $params['content_type'] = 'multipart/related';
         $params['eol']          = $this->_build_params['eol'];
@@ -878,7 +878,7 @@ class Mail_mime
 
         $this->_checkParams();
 
-        $null        = null;
+        $null        = -1;
         $attachments = count($this->_parts)                 ? true : false;
         $html_images = count($this->_html_images)           ? true : false;
         $html        = strlen($this->_htmlbody)             ? true : false;
