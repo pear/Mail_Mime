@@ -29,9 +29,9 @@ using RFC2047 and/or RFC2231.</description>
   <email>alec@php.net</email>
   <active>yes</active>
  </lead>
- <date>2013-07-05</date>
+ <date>2014-05-14</date>
  <version>
-  <release>1.8.8</release>
+  <release>1.8.9</release>
   <api>1.4.3</api>
  </version>
  <stability>
@@ -40,10 +40,8 @@ using RFC2047 and/or RFC2231.</description>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
-* Fixed warning/notice on (static vs. non-static) PEAR::raiseError() usage [alec]
-* Fixed Bug #19761: PHP5 warnings about return by reference [alec]
-* Fixed Bug #19770: Make cid generator more unique on Windows [alec]
-* Fixed Bug #19987: E_STRICT warning when null is passed by reference [alec]
+* Fixed Bug #20273: Incorrect handling of HTAB in encodeHeader() [alec]
+* Fixed Bug #20226: Mail_mimePart::encodeHeader does not encode ISO-2022-JP string [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -67,17 +65,27 @@ using RFC2047 and/or RFC2231.</description>
     <file baseinstalldir="Mail" name="test_Bug_9722_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_10596_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_10816_1.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_10999_1.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_11381.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_11731.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_12165.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_12385_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_12411.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_12466.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_13032.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_13444.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_13962.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_14529.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_14779.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_14780.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_15320.phpt" role="test" />
-    <file baseinstalldir="Mail" name="test_Bug_14529.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_16539.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_17025.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_17175.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_18083.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_19497.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_20226.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_20273.phpt" role="test" />
    </dir> <!-- /tests -->
    <dir name="Mail">
      <file baseinstalldir="/" name="mime.php" role="php" />
@@ -701,6 +709,24 @@ Bugs Fixed:
    <notes>
 * Bug #5333: Fix more return by reference errors [alec]
 * Bug #19754: Fix compatibility with PHP4 [alec]
+   </notes>
+  </release>
+  <release>
+   <date>2013-07-05</date>
+   <version>
+    <release>1.8.8</release>
+    <api>1.4.3</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+   <notes>
+* Fixed warning/notice on (static vs. non-static) PEAR::raiseError() usage [alec]
+* Fixed Bug #19761: PHP5 warnings about return by reference [alec]
+* Fixed Bug #19770: Make cid generator more unique on Windows [alec]
+* Fixed Bug #19987: E_STRICT warning when null is passed by reference [alec]
    </notes>
   </release>
  </changelog>
