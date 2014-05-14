@@ -879,10 +879,10 @@ class Mail_mime
         $this->_checkParams();
 
         $null        = -1;
-        $attachments = count($this->_parts)                 ? true : false;
-        $html_images = count($this->_html_images)           ? true : false;
-        $html        = strlen($this->_htmlbody)             ? true : false;
-        $text        = (!$html && strlen($this->_txtbody))  ? true : false;
+        $attachments = count($this->_parts) > 0;
+        $html_images = count($this->_html_images) > 0;
+        $html        = strlen($this->_htmlbody) > 0;
+        $text        = !$html && strlen($this->_txtbody);
 
         switch (true) {
         case $text && !$attachments:
@@ -991,7 +991,6 @@ class Mail_mime
                 $this->_addAttachmentPart($message, $this->_parts[$i]);
             }
             break;
-
         }
 
         if (!isset($message)) {
