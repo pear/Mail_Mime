@@ -839,7 +839,7 @@ class Mail_mimePart
             // Simple e-mail address regexp
             $email_regexp = '([^\s<]+|("[^\r\n"]+"))@\S+';
 
-            $parts = Mail_mimePart::_explodeQuotedString($separator, $value);
+            $parts = Mail_mimePart::_explodeQuotedString("[\t$separator]", $value);
             $value = '';
 
             foreach ($parts as $part) {
@@ -850,7 +850,7 @@ class Mail_mimePart
                     continue;
                 }
                 if ($value) {
-                    $value .= $separator==',' ? $separator.' ' : ' ';
+                    $value .= $separator == ',' ? $separator . ' ' : ' ';
                 } else {
                     $value = $name . ': ';
                 }
@@ -908,7 +908,6 @@ class Mail_mimePart
             $value = preg_replace(
                 '/^'.$name.':('.preg_quote($eol, '/').')* /', '', $value
             );
-
         } else {
             // Unstructured header
             // non-ASCII: require encoding
