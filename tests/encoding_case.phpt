@@ -1,12 +1,11 @@
 --TEST--
-Bug #2364   Tabs in _quotedPrintableEncode()
+Bug #2364   Tabs in Mail_mimePart::quotedPrintableEncode()
 --SKIPIF--
 --FILE--
 <?php
 $test = "Here's\t\na tab\n";
 require_once('Mail/mimePart.php');
-$part = new Mail_mimePart();
-print $part->_quotedPrintableEncode($test, 7);
+print Mail_mimePart::quotedPrintableEncode($test, 7);
 ?>
 --EXPECT--
 Here's=

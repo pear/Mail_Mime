@@ -4,23 +4,20 @@ Bug #18083  Separate charset for attachment's content and headers
 --FILE--
 <?php
 include "Mail/mime.php";
-$m = new Mail_mime();
+$Mime = new Mail_mime();
 
-$m->addAttachment('testfile', "text/plain",
+$Mime->addAttachment('testfile', "text/plain",
     base64_decode("xZtjaWVtYQ=="), FALSE,
     'base64', 'attachment', 'ISO-8859-1', 'pl', '',
     'quoted-printable', 'base64', '', 'UTF-8');
 
-$root = $m->_addMixedPart();
-$enc = $m->_addAttachmentPart($root, $m->_parts[0]);
+$content = $Mime->get();
+$content = str_replace("\n", '', $content);
 
-echo $enc->_headers['Content-Type'];
-echo "\n";
-echo $enc->_headers['Content-Disposition'];
+if (preg_match_all('/(name|filename)=([^\s]+)/i', $content, $matches)) {
+    echo implode("\n", $matches[2]);
+}
 ?>
 --EXPECT--
-text/plain; charset=ISO-8859-1;
- name="=?UTF-8?Q?=C5=9Bciema?="
-attachment;
- filename="=?UTF-8?B?xZtjaWVtYQ==?=";
- size=8
+"=?UTF-8?Q?=C5=9Bciema?="
+"=?UTF-8?B?xZtjaWVtYQ==?=";

@@ -1,10 +1,9 @@
 --TEST--
-Bug #9722   _quotedPrintableEncode does not encode dot at start of line on Windows platform
+Bug #9722   quotedPrintableEncode does not encode dot at start of line on Windows platform
 --SKIPIF--
 --FILE--
 <?php
 include("Mail/mimePart.php");
-$part = new Mail_mimePart('', array('eol'=>"\n"));
 $text = "This
 is a
 test
@@ -13,7 +12,7 @@ test
 //really fun//
 to make :(";
 
-print_r($part->_quotedPrintableEncode($text));
+print_r(Mail_mimePart::quotedPrintableEncode($text, 76, "\n"));
 
 --EXPECT--
 This
