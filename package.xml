@@ -39,6 +39,7 @@ using RFC2047 and/or RFC2231.</description>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
 Drop PHP4 support entirely
+Fix warnings on PHP7
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
@@ -88,7 +89,7 @@ Drop PHP4 support entirely
  <dependencies>
   <required>
    <php>
-    <min>4.3.0</min>
+    <min>5.0.0</min>
    </php>
    <pearinstaller>
     <min>1.6.0</min>
@@ -740,21 +741,6 @@ Bugs Fixed:
    <notes>
 * Bug #5333: Fix more return by reference errors [alec]
 * Bug #19754: Fix compatibility with PHP4 [alec]
-   </notes>
-  </release>
-  <release>
-   <version>
-    <release>2.0.0</release>
-    <api>2.0.0</api>
-   </version>
-   <stability>
-    <release>stable</release>
-    <api>stable</api>
-   </stability>
-   <date>2014-03-22</date>
-   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
-   <notes>
-Drop PHP4 support entirely
    </notes>
   </release>
  </changelog>
