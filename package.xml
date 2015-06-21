@@ -58,7 +58,6 @@ Drop PHP4 support, Fix warnings on PHP7
     <file baseinstalldir="Mail" name="test_Bug_7561_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_8386_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_8541_1.phpt" role="test" />
-    <file baseinstalldir="Mail" name="test_Bug_9558_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_9722_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_10596_1.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_10816_1.phpt" role="test" />

@@ -1006,7 +1006,7 @@ class Mail_mime
      * @param bool  $skip_content Don't return content headers: Content-Type,
      *                            Content-Disposition and Content-Transfer-Encoding
      *
-     * @return array              Assoc array with the mime headers
+     * @return array Assoc array with the mime headers
      */
     public function headers($xtra_headers = null, $overwrite = false, $skip_content = false)
     {
@@ -1055,7 +1055,7 @@ class Mail_mime
      * @param bool  $skip_content Don't return content headers: Content-Type,
      *                            Content-Disposition and Content-Transfer-Encoding
      *
-     * @return string             Plain text headers
+     * @return string Plain text headers
      */
     public function txtHeaders($xtra_headers = null, $overwrite = false, $skip_content = false)
     {
@@ -1211,18 +1211,18 @@ class Mail_mime
      * Since the PHP send function requires you to specify
      * recipients (To: header) separately from the other
      * headers, the To: header is not properly encoded.
-     * To fix this, you can use this public method to 
-     * encode your recipients before sending to the send
-     * function
+     * To fix this, you can use this public method to encode
+     * your recipients before sending to the send function.
      *
      * @param string $recipients A comma-delimited list of recipients
      *
-     * @return string            Encoded data
+     * @return string Encoded data
      */
     public function encodeRecipients($recipients)
     {
-        $input = array("To" => $recipients);
+        $input  = array("To" => $recipients);
         $retval = $this->_encodeHeaders($input);
+
         return $retval["To"] ;
     }
 
@@ -1232,9 +1232,9 @@ class Mail_mime
      * @param array $input  The header data to encode
      * @param array $params Extra build parameters
      *
-     * @return array        Encoded data
+     * @return array Encoded data
      */
-    public function _encodeHeaders($input, $params = array())
+    protected function _encodeHeaders($input, $params = array())
     {
         $build_params = $this->_build_params;
         while (list($key, $value) = each($params)) {
@@ -1284,7 +1284,7 @@ class Mail_mime
      *
      * @param string $filename Filename
      *
-     * @return string          Basename
+     * @return string Basename
      */
     protected function _basename($filename)
     {
