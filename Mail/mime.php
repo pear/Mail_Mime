@@ -441,6 +441,17 @@ class Mail_mime
     }
 
     /**
+     * Checks if the current message has many parts
+     *
+     * @return bool True if the message has many parts, False otherwise.
+     */
+    public function isMultipart()
+    {
+        return count($this->parts) > 0 || count($this->html_images) > 0
+            || (strlen($this->htmlbody) > 0 && strlen($this->txtbody) > 0);
+    }
+
+    /**
      * Get the contents of the given file name as string
      *
      * @param string $file_name Path of file to process
