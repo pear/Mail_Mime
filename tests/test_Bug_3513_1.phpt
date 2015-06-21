@@ -3,14 +3,18 @@ Bug #3513   Support of RFC2231 in header fields. (ISO-8859-1)
 --SKIPIF--
 --FILE--
 <?php
-$test = "Fóóbær.txt";
 require_once('Mail/mime.php');
-$Mime=new Mail_Mime();
+
+$test = "Fóóbær.txt";
+$Mime = new Mail_Mime();
 $Mime->addAttachment('testfile',"text/plain", $test, FALSE, 'base64', 'attachment', 'ISO-8859-1');
-$root = $Mime->_addMixedPart();
-$enc = $Mime->_addAttachmentPart($root, $Mime->_parts[0]);
-print($enc->_headers['Content-Disposition']);
+
+$content = $Mime->get();
+$content = str_replace("\n", '', $content);
+
+if (preg_match('/filename([^\s]+)/i', $content, $matches)) {
+    echo $matches[1];
+}
+
 --EXPECT--
-attachment;
- filename*=ISO-8859-1''F%F3%F3b%E6r.txt;
- size=8
+*=ISO-8859-1''F%F3%F3b%E6r.txt;

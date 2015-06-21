@@ -4,22 +4,19 @@ Bug #19497  Attachment filenames with a slash character
 --FILE--
 <?php
 include "Mail/mime.php";
-$m = new Mail_mime();
+$Mime = new Mail_mime();
 
 $filename = "test/file.txt";
-$m->addAttachment('testfile', "text/plain", $filename, FALSE,
+$Mime->addAttachment('testfile', "text/plain", $filename, FALSE,
     'base64', 'attachment', 'ISO-8859-1', '', '', 'quoted-printable', 'base64');
 
-$root = $m->_addMixedPart();
-$enc = $m->_addAttachmentPart($root, $m->_parts[0]);
+$content = $Mime->get();
+$content = str_replace("\n", '', $content);
 
-echo $enc->_headers['Content-Type'];
-echo "\n";
-echo $enc->_headers['Content-Disposition'];
+if (preg_match_all('/(name|filename)=([^\s]+)/i', $content, $matches)) {
+    echo implode("\n", $matches[2]);
+}
 ?>
 --EXPECT--
-text/plain; charset=ISO-8859-1;
- name="test/file.txt"
-attachment;
- filename="test/file.txt";
- size=8
+"test/file.txt"
+"test/file.txt";
