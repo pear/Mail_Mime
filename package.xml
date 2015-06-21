@@ -38,7 +38,8 @@ using RFC2047 and/or RFC2231.</description>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
-Drop PHP4 support, Fix warnings on PHP7
+* Drop PHP4 support, Fix warnings on PHP7 [alec]
+* Request #20564: Possibility to unset headers [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -82,6 +83,7 @@ Drop PHP4 support, Fix warnings on PHP7
     <file baseinstalldir="Mail" name="test_Bug_19497.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_20226.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_20273.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_20564.phpt" role="test" />
    </dir> <!-- /tests -->
    <dir name="Mail">
      <file baseinstalldir="/" name="mime.php" role="php" />

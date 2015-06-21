@@ -1237,8 +1237,9 @@ class Mail_mime
     protected function encodeHeaders($input, $params = array())
     {
         $build_params = $this->build_params;
-        while (list($key, $value) = each($params)) {
-            $build_params[$key] = $value;
+
+        if (!empty($params)) {
+            $build_params = array_merge($build_params, $params);
         }
 
         foreach ($input as $hdr_name => $hdr_value) {
@@ -1249,7 +1250,7 @@ class Mail_mime
                         $build_params['head_charset'], $build_params['head_encoding']
                     );
                 }
-            } else {
+            } else if ($hdr_value !== null) {
                 $input[$hdr_name] = $this->encodeHeader(
                     $hdr_name, $hdr_value,
                     $build_params['head_charset'], $build_params['head_encoding']
