@@ -1285,14 +1285,13 @@ class Mail_mime
      */
     public function encodeHeader($name, $value, $charset, $encoding)
     {
-        $mime_part = new Mail_mimePart;
-        return $mime_part->encodeHeader(
+        return Mail_mimePart::encodeHeader(
             $name, $value, $charset, $encoding, $this->build_params['eol']
         );
     }
 
     /**
-     * Get file's basename (locale independent) 
+     * Get file's basename (locale independent)
      *
      * @param string $filename Filename
      *

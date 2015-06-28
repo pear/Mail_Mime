@@ -792,7 +792,7 @@ class Mail_mimePart
      * @return string Encoded header data (without a name)
      * @since 1.6.1
      */
-    public function encodeHeader($name, $value, $charset = 'ISO-8859-1',
+    public static function encodeHeader($name, $value, $charset = 'ISO-8859-1',
         $encoding = 'quoted-printable', $eol = "\r\n"
     ) {
         // Structured headers
