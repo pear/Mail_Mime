@@ -41,7 +41,8 @@ using RFC2047 and/or RFC2231.</description>
 * Drop PHP4 support, Fix warnings on PHP7 [alec]
 * Request #20564: Added possibility to unset headers [alec]
 * Request #20563: Added isMultipart() method [alec]
-* Request #20565: Accept also a file pointer in Mail_mimePart::encodeToFile() [alec]
+* Request #20565: Accept also a file pointer in Mail_mimePart::encodeToFile(),
+                  Mail_mime::get() and Mail_mime::saveMessageBody() [alec]
  </notes>
  <contents>
   <dir name="/">

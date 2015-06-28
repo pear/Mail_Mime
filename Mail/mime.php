@@ -683,7 +683,7 @@ class Mail_mime
      * with Mail_Mime is created. This means that,
      * YOU WILL HAVE NO TO: HEADERS UNLESS YOU SET IT YOURSELF 
      * using the $headers parameter!
-     * 
+     *
      * @param string $separation The separation between these two parts.
      * @param array  $params     The Build parameters passed to the
      *                           get() function. See get() for more info.
@@ -713,7 +713,7 @@ class Mail_mime
     /**
      * Returns the complete e-mail body, ready to send using an alternative
      * mail delivery method.
-     * 
+     *
      * @param array $params The Build parameters passed to the
      *                      get() method. See get() for more info.
      *
@@ -727,7 +727,7 @@ class Mail_mime
 
     /**
      * Writes (appends) the complete e-mail into file.
-     * 
+     *
      * @param string $filename  Output file location
      * @param array  $params    The Build parameters passed to the
      *                          get() method. See get() for more info.
@@ -774,20 +774,30 @@ class Mail_mime
     }
 
     /**
-     * Writes (appends) the complete e-mail body into file.
+     * Writes (appends) the complete e-mail body into file or stream.
      *
-     * @param string $filename Output file location
-     * @param array  $params   The Build parameters passed to the
-     *                         get() method. See get() for more info.
+     * @param mixed $filename Output filename or file pointer where to save
+     *                        the message instead of returning it
+     * @param array $params   The Build parameters passed to the
+     *                        get() method. See get() for more info.
      *
      * @return mixed True or PEAR error object
      * @since 1.6.0
      */
     public function saveMessageBody($filename, $params = null)
     {
-        // Check state of file and raise an error properly
-        if (file_exists($filename) && !is_writable($filename)) {
-            return self::raiseError('File is not writable: ' . $filename);
+        if (!is_resource($filename)) {
+            // Check state of file and raise an error properly
+            if (!file_exists($filename) || !is_writable($filename)) {
+                return self::raiseError('File is not writable: ' . $filename);
+            }
+
+            if (!($fh = fopen($filename, 'ab'))) {
+                return self::raiseError('Unable to open file: ' . $filename);
+            }
+        }
+        else {
+            $fh = $filename;
         }
 
         // Temporarily reset magic_quotes_runtime and read file contents
@@ -795,12 +805,16 @@ class Mail_mime
             @ini_set('magic_quotes_runtime', 0);
         }
 
-        if (!($fh = fopen($filename, 'ab'))) {
-            return self::raiseError('Unable to open file: ' . $filename);
+        // Write the rest of the message into file
+        $res = $this->get($params, $fh, true);
+
+        if (!is_resource($filename)) {
+            fclose($fh);
         }
 
-        // Write the rest of the message into file
-        $res = $this->get($params, $filename, true);
+        if ($magic_quote_setting) {
+            @ini_set('magic_quotes_runtime', $magic_quote_setting);
+        }
 
         return $res ? $res : true;
     }
@@ -809,12 +823,12 @@ class Mail_mime
      * Builds the multipart message from the list ($this->parts) and
      * returns the mime content.
      *
-     * @param array    $params    Build parameters that change the way the email
-     *                            is built. Should be associative. See $_build_params.
-     * @param resource $filename  Output file where to save the message instead of
-     *                            returning it
-     * @param boolean  $skip_head True if you want to return/save only the message
-     *                            without headers
+     * @param array   $params    Build parameters that change the way the email
+     *                           is built. Should be associative. See $_build_params.
+     * @param mixed   $filename  Output filename or file pointer where to save
+     *                           the message instead of returning it
+     * @param boolean $skip_head True if you want to return/save only the message
+     *                           without headers
      *
      * @return mixed The MIME message content string, null or PEAR error object
      */
