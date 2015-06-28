@@ -15,7 +15,7 @@ if (PEAR::isError($opts)) {
 }
 
 PEAR::setErrorHandling(PEAR_ERROR_DIE);
-$mime = &new Mail_Mime;
+$mime = new Mail_mime;
 foreach ($opts[0] as $opt) {
     $param = $opt[1];
     switch ($opt[0]) {
@@ -35,9 +35,9 @@ foreach ($opts[0] as $opt) {
     }
 }
 
-$mbody = $mime->get();
+$mbody   = $mime->get();
 $headers = $mime->headers($headers);
-$mail =& Mail::factory('mail');
+$mail    = Mail::factory('mail');
 $mail->send($to, $headers, $mbody);
 
 function usage($error)
