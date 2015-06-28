@@ -299,11 +299,16 @@ class Mail_mime
 
     /**
      * Adds an image to the list of embedded images.
+     * Images added this way will be added as related parts of the HTML message.
+     *
+     * To correctly match the HTML image with the related attachment
+     * HTML should refer to it by a filename (specified in $file or $name
+     * arguments) or by cid:<content-id> (specified in $content_id arg).
      *
      * @param string $file       The image file name OR image data itself
      * @param string $c_type     The content type
-     * @param string $name       The filename of the image.
-     *                           Only used if $file is the image data.
+     * @param string $name       The filename of the image. Used to find
+     *                           the image in HTML content.
      * @param bool   $isfile     Whether $file is a filename or not.
      *                           Defaults to true
      * @param string $content_id Desired Content-ID of MIME part
@@ -329,7 +334,8 @@ class Mail_mime
                     return $filedata;
                 }
             }
-            $filename = ($name ? $name : $file);
+
+            $filename = $name ? $name : $file;
         } else {
             $filedata = $file;
             $filename = $name;
