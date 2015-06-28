@@ -349,10 +349,11 @@ class Mail_mimePart
     }
 
     /**
-     * Encodes and saves the email into file. File must exist.
-     * Data will be appended to the file.
+     * Encodes and saves the email into file or stream.
+     * Data will be appended to the file/stream.
      *
-     * @param string  $filename  Output file location
+     * @param mixed   $filename  Existing file location
+     *                           or file pointer resource
      * @param string  $boundary  Pre-defined boundary string
      * @param boolean $skip_head True if you don't want to save headers
      *
@@ -362,14 +363,19 @@ class Mail_mimePart
      */
     public function encodeToFile($filename, $boundary = null, $skip_head = false)
     {
-        if (file_exists($filename) && !is_writable($filename)) {
-            $err = self::raiseError('File is not writeable: ' . $filename);
-            return $err;
-        }
+        if (!is_resource($filename)) {
+            if (file_exists($filename) && !is_writable($filename)) {
+                $err = self::raiseError('File is not writeable: ' . $filename);
+                return $err;
+            }
 
-        if (!($fh = fopen($filename, 'ab'))) {
-            $err = self::raiseError('Unable to open file: ' . $filename);
-            return $err;
+            if (!($fh = fopen($filename, 'ab'))) {
+                $err = self::raiseError('Unable to open file: ' . $filename);
+                return $err;
+            }
+        }
+        else {
+            $fh = $filename;
         }
 
         // Temporarily reset magic_quotes_runtime for file reads and writes
@@ -379,7 +385,9 @@ class Mail_mimePart
 
         $res = $this->encodePartToFile($fh, $boundary, $skip_head);
 
-        fclose($fh);
+        if (!is_resource($filename)) {
+            fclose($fh);
+        }
 
         if ($magic_quote_setting) {
             @ini_set('magic_quotes_runtime', $magic_quote_setting);
