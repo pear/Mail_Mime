@@ -224,7 +224,7 @@ class Mail_mime
      *                       the existing body, else the old body is
      *                       overwritten
      *
-     * @return mixed         True on success or PEAR_Error object
+     * @return mixed True on success or PEAR_Error object
      */
     public function setTXTBody($data, $isfile = false, $append = false)
     {
@@ -269,7 +269,7 @@ class Mail_mime
      * @param bool   $isfile A flag that determines whether $data is a
      *                       filename, or a string(false, default)
      *
-     * @return bool          True on success
+     * @return bool True on success
      */
     public function setHTMLBody($data, $isfile = false)
     {
@@ -379,7 +379,7 @@ class Mail_mime
      * @param array  $add_headers Additional part headers. Array keys can be in form
      *                            of <header_name>:<parameter_name>
      *
-     * @return mixed              True on success or PEAR_Error object
+     * @return mixed True on success or PEAR_Error object
      */
     public function addAttachment($file,
         $c_type      = 'application/octet-stream',
@@ -456,7 +456,7 @@ class Mail_mime
      *
      * @param string $file_name Path of file to process
      *
-     * @return string           Contents of $file_name
+     * @return string Contents of $file_name
      */
     protected function file2str($file_name)
     {
@@ -475,7 +475,9 @@ class Mail_mime
         if ($magic_quote_setting = get_magic_quotes_runtime()) {
             @ini_set('magic_quotes_runtime', 0);
         }
+
         $cont = file_get_contents($file_name);
+
         if ($magic_quote_setting) {
             @ini_set('magic_quotes_runtime', $magic_quote_setting);
         }
@@ -547,8 +549,7 @@ class Mail_mime
         $params['eol']          = $this->build_params['eol'];
 
         // Create empty multipart/mixed Mail_mimePart object to return
-        $ret = new Mail_mimePart('', $params);
-        return $ret;
+        return new Mail_mimePart('', $params);
     }
 
     /**
@@ -644,7 +645,7 @@ class Mail_mime
         $params['encoding']     = $value['encoding'];
         $params['content_type'] = $value['c_type'];
         $params['body_file']    = $value['body_file'];
-        $params['disposition']  = isset($value['disposition']) ? 
+        $params['disposition']  = isset($value['disposition']) ?
                                   $value['disposition'] : 'attachment';
 
         // content charset
@@ -681,7 +682,7 @@ class Mail_mime
      * Returns the complete e-mail, ready to send using an alternative
      * mail delivery method. Note that only the mailpart that is made
      * with Mail_Mime is created. This means that,
-     * YOU WILL HAVE NO TO: HEADERS UNLESS YOU SET IT YOURSELF 
+     * YOU WILL HAVE NO TO: HEADERS UNLESS YOU SET IT YOURSELF
      * using the $headers parameter!
      *
      * @param string $separation The separation between these two parts.
@@ -795,8 +796,7 @@ class Mail_mime
             if (!($fh = fopen($filename, 'ab'))) {
                 return self::raiseError('Unable to open file: ' . $filename);
             }
-        }
-        else {
+        } else {
             $fh = $filename;
         }
 
@@ -847,8 +847,9 @@ class Mail_mime
             } else {
                 $domainID = '@localhost';
             }
+
             foreach ($this->html_images as $i => $img) {
-                $cid = $this->html_images[$i]['cid']; 
+                $cid = $this->html_images[$i]['cid'];
                 if (!preg_match('#'.preg_quote($domainID).'$#', $cid)) {
                     $this->html_images[$i]['cid'] = $cid . $domainID;
                 }
@@ -857,15 +858,16 @@ class Mail_mime
 
         if (count($this->html_images) && isset($this->htmlbody)) {
             foreach ($this->html_images as $key => $value) {
-                $regex   = array();
-                $regex[] = '#(\s)((?i)src|background|href(?-i))\s*=\s*(["\']?)' .
-                            preg_quote($value['name'], '#') . '\3#';
-                $regex[] = '#(?i)url(?-i)\(\s*(["\']?)' .
-                            preg_quote($value['name'], '#') . '\1\s*\)#';
+                $rval  = preg_quote($value['name'], '#');
+                $regex = array(
+                    '#(\s)((?i)src|background|href(?-i))\s*=\s*(["\']?)' . $rval . '\3#',
+                    '#(?i)url(?-i)\(\s*(["\']?)' . $rval . '\1\s*\)#',
+                );
 
-                $rep   = array();
-                $rep[] = '\1\2=\3cid:' . $value['cid'] .'\3';
-                $rep[] = 'url(\1cid:' . $value['cid'] . '\1)';
+                $rep = array(
+                    '\1\2=\3cid:' . $value['cid'] .'\3',
+                    'url(\1cid:' . $value['cid'] . '\1)',
+                );
 
                 $this->htmlbody = preg_replace($regex, $rep, $this->htmlbody);
                 $this->html_images[$key]['name']
@@ -1131,6 +1133,7 @@ class Mail_mime
         // add parameters
         $token_regexp = '#([^\x21\x23-\x27\x2A\x2B\x2D'
             . '\x2E\x30-\x39\x41-\x5A\x5E-\x7E])#';
+
         if (is_array($params)) {
             foreach ($params as $name => $value) {
                 if ($name == 'boundary') {
@@ -1146,7 +1149,7 @@ class Mail_mime
         }
 
         // add required boundary parameter if not defined
-        if (preg_match('/^multipart\//i', $type)) {
+        if (stripos($type, 'multipart/') === 0) {
             if (empty($this->build_params['boundary'])) {
                 $this->build_params['boundary'] = '=_' . md5(rand() . microtime());
             }
@@ -1245,10 +1248,10 @@ class Mail_mime
      */
     public function encodeRecipients($recipients)
     {
-        $input  = array("To" => $recipients);
+        $input  = array('To' => $recipients);
         $retval = $this->encodeHeaders($input);
 
-        return $retval["To"] ;
+        return $retval['To'] ;
     }
 
     /**
@@ -1294,7 +1297,7 @@ class Mail_mime
      * @param string $charset  Character set name
      * @param string $encoding Encoding name (base64 or quoted-printable)
      *
-     * @return string          Encoded header data (without a name)
+     * @return string Encoded header data (without a name)
      * @since 1.5.3
      */
     public function encodeHeader($name, $value, $charset, $encoding)
@@ -1328,10 +1331,10 @@ class Mail_mime
      */
     protected function contentHeaders()
     {
-        $attachments = count($this->parts)                 ? true : false;
-        $html_images = count($this->html_images)           ? true : false;
-        $html        = strlen($this->htmlbody)             ? true : false;
-        $text        = (!$html && strlen($this->txtbody))  ? true : false;
+        $attachments = count($this->parts)                ? true : false;
+        $html_images = count($this->html_images)          ? true : false;
+        $html        = strlen($this->htmlbody)            ? true : false;
+        $text        = (!$html && strlen($this->txtbody)) ? true : false;
         $headers     = array();
 
         // See get()
