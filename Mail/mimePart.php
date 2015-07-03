@@ -934,7 +934,7 @@ class Mail_mimePart
      *
      * @return array String tokens array
      */
-    protected function explodeQuotedString($delimiter, $string)
+    protected static function explodeQuotedString($delimiter, $string)
     {
         $result = array();
         $strlen = strlen($string);
