@@ -16,7 +16,8 @@
             "Mail": "./"
         }
     },
-    "description": "More info available on: http://pear.php.net/package/Mail_Mime",
+    "description": "Mail_Mime provides classes to create MIME messages",
+    "homepage": "http://pear.php.net/package/Mail_Mime",
     "include-path": [
         "./"
     ],
@@ -29,8 +30,5 @@
     "type": "library",
     "require": {
         "pear/pear-core-minimal": "*"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "*"
     }
 }
