@@ -26,23 +26,19 @@ using RFC2047 and/or RFC2231.</description>
   <email>alec@php.net</email>
   <active>yes</active>
  </lead>
- <date>2015-07-05</date>
- <time>12:50:00</time>
+ <date></date>
+ <time></time>
  <version>
-  <release>1.9.0RC1</release>
+  <release>1.9.0</release>
   <api>2.0.0</api>
  </version>
  <stability>
-  <release>beta</release>
-  <api>beta</api>
+  <release>stable</release>
+  <api>stable</api>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
-* Drop PHP4 support, Fix warnings on PHP7 [alec]
-* Request #20564: Added possibility to unset headers [alec]
-* Request #20563: Added isMultipart() method [alec]
-* Request #20565: Accept also a file pointer in Mail_mimePart::encodeToFile(),
-                  Mail_mime::get() and Mail_mime::saveMessageBody() [alec]
+* Bug #20921: Make Mail_mimePart::encodeHeaderValue() a static method [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -784,6 +780,26 @@ Bugs Fixed:
 * Fixed Bug #20273: Incorrect handling of HTAB in encodeHeader() [alec]
 * Fixed Bug #20226: Mail_mimePart::encodeHeader does not encode ISO-2022-JP string [alec]
 * Fixed Bug #20222: Broken Compatybility with PHP4 [alec]
+   </notes>
+  </release>
+  <release>
+   <date>2015-07-05</date>
+   <time>12:50:00</time>
+   <version>
+    <release>1.9.0RC1</release>
+    <api>2.0.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+   <notes>
+* Drop PHP4 support, Fix warnings on PHP7 [alec]
+* Request #20564: Added possibility to unset headers [alec]
+* Request #20563: Added isMultipart() method [alec]
+* Request #20565: Accept also a file pointer in Mail_mimePart::encodeToFile(),
+                  Mail_mime::get() and Mail_mime::saveMessageBody() [alec]
    </notes>
   </release>
  </changelog>
