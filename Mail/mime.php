@@ -97,6 +97,13 @@ class Mail_mime
     protected $htmlbody;
 
     /**
+     * Contains the text/calendar part of the email
+     *
+     * @var string
+     */
+    protected $calbody;
+
+    /**
      * list of the attached images
      *
      * @var array
@@ -132,16 +139,23 @@ class Mail_mime
         // What encoding to use for html
         // Options: 7bit, 8bit, base64, or quoted-printable
         'html_encoding' => 'quoted-printable',
+        // What encoding to use for calendar part
+        // Options: 7bit, 8bit, base64, or quoted-printable
+        'calendar_encoding' => 'quoted-printable',
         // The character set to use for html
         'html_charset'  => 'ISO-8859-1',
         // The character set to use for text
         'text_charset'  => 'ISO-8859-1',
+        // The character set to use for calendar part
+        'calendar_charset'  => 'UTF-8',
         // The character set to use for headers
         'head_charset'  => 'ISO-8859-1',
         // End-of-line sequence
         'eol'           => "\r\n",
         // Delay attachment files IO until building the message
-        'delay_file_io' => false
+        'delay_file_io' => false,
+        // Default calendar method
+        'calendar_method' => 'request',
     );
 
 
@@ -204,8 +218,7 @@ class Mail_mime
      * text/plain part that emails clients who don't support
      * html should show.
      *
-     * @param string $data   Either a string or
-     *                       the file name with the contents
+     * @param string $data   Either a string or the file name with the contents
      * @param bool   $isfile If true the first param should be treated
      *                       as a file name, else as a string (default)
      * @param bool   $append If true the text or file is appended to
@@ -216,26 +229,7 @@ class Mail_mime
      */
     public function setTXTBody($data, $isfile = false, $append = false)
     {
-        if (!$isfile) {
-            if (!$append) {
-                $this->txtbody = $data;
-            } else {
-                $this->txtbody .= $data;
-            }
-        } else {
-            $cont = $this->file2str($data);
-            if (self::isError($cont)) {
-                return $cont;
-            }
-
-            if (!$append) {
-                $this->txtbody = $cont;
-            } else {
-                $this->txtbody .= $cont;
-            }
-        }
-
-        return true;
+        return $this->setBody('txtbody', $data, $isfile, $append);
     }
 
     /**
@@ -252,26 +246,15 @@ class Mail_mime
     /**
      * Adds a html part to the mail.
      *
-     * @param string $data   Either a string or the file name with the
-     *                       contents
+     * @param string $data   Either a string or the file name with the contents
      * @param bool   $isfile A flag that determines whether $data is a
      *                       filename, or a string(false, default)
      *
-     * @return bool True on success
+     * @return bool True on success or PEAR_Error object
      */
     public function setHTMLBody($data, $isfile = false)
     {
-        if (!$isfile) {
-            $this->htmlbody = $data;
-        } else {
-            $cont = $this->file2str($data);
-            if (self::isError($cont)) {
-                return $cont;
-            }
-            $this->htmlbody = $cont;
-        }
-
-        return true;
+        return $this->setBody('htmlbody', $data, $isfile);
     }
 
     /**
@@ -283,6 +266,45 @@ class Mail_mime
     public function getHTMLBody()
     {
         return $this->htmlbody;
+    }
+
+    /**
+     * Function to set a body of text/calendar part (not attachment)
+     *
+     * @param string $data     Either a string or the file name with the contents
+     * @param bool   $isfile   If true the first param should be treated
+     *                         as a file name, else as a string (default)
+     * @param bool   $append   If true the text or file is appended to
+     *                         the existing body, else the old body is
+     *                         overwritten
+     * @param string $method   iCalendar object method
+     * @param string $charset  iCalendar character set
+     * @param string $encoding Transfer encoding
+     *
+     * @return mixed True on success or PEAR_Error object
+     * @since 1.9.0
+     */
+    public function setCalendarBody($data, $isfile = false, $append = false,
+        $method = 'request', $charset = 'UTF-8', $encoding = 'quoted-printable'
+    ) {
+        $result = $this->setBody('calbody', $data, $isfile, $append);
+
+        if ($result === true) {
+            $this->build_params['calendar_method']  = $method;
+            $this->build_params['calendar_charset'] = $charset;
+            $this->build_params['calendar_encoding'] = $encoding;
+        }
+    }
+
+    /**
+     * Get body of calendar part
+     *
+     * @return string Calendar part body
+     * @since 1.9.0
+     */
+    public function getCalendarBody()
+    {
+        return $this->calbody;
     }
 
     /**
@@ -438,6 +460,7 @@ class Mail_mime
      * Checks if the current message has many parts
      *
      * @return bool True if the message has many parts, False otherwise.
+     * @since 1.9.0
      */
     public function isMultipart()
     {
@@ -483,26 +506,14 @@ class Mail_mime
      * Adds a text subpart to the mimePart object and
      * returns it during the build process.
      *
-     * @param mixed  $obj  The object to add the part to, or
-     *                     anything else if a new object is to be created.
-     * @param string $text The text to add.
+     * @param mixed $obj The object to add the part to, or
+     *                   anything else if a new object is to be created.
      *
      * @return object The text mimePart object
      */
-    protected function addTextPart($obj = null, $text = '')
+    protected function addTextPart($obj = null)
     {
-        $params['content_type'] = 'text/plain';
-        $params['encoding']     = $this->build_params['text_encoding'];
-        $params['charset']      = $this->build_params['text_charset'];
-        $params['eol']          = $this->build_params['eol'];
-
-        if (is_object($obj)) {
-            $ret = $obj->addSubpart($text, $params);
-        } else {
-            $ret = new Mail_mimePart($text, $params);
-        }
-
-        return $ret;
+        return $this->addBodyPart($obj, $this->txtbody, 'text/plain', 'text');
     }
 
     /**
@@ -516,18 +527,23 @@ class Mail_mime
      */
     protected function addHtmlPart($obj = null)
     {
-        $params['content_type'] = 'text/html';
-        $params['encoding']     = $this->build_params['html_encoding'];
-        $params['charset']      = $this->build_params['html_charset'];
-        $params['eol']          = $this->build_params['eol'];
+        return $this->addBodyPart($obj, $this->htmlbody, 'text/html', 'html');
+    }
 
-        if (is_object($obj)) {
-            $ret = $obj->addSubpart($this->htmlbody, $params);
-        } else {
-            $ret = new Mail_mimePart($this->htmlbody, $params);
-        }
+    /**
+     * Adds a calendar subpart to the mimePart object and
+     * returns it during the build process.
+     *
+     * @param mixed $obj The object to add the part to, or
+     *                   anything else if a new object is to be created.
+     *
+     * @return object The text mimePart object
+     */
+    protected function addCalendarPart($obj = null)
+    {
+        $ctype = 'text/calendar; method='. $this->build_params['calendar_method'];
 
-        return $ret;
+        return $this->addBodyPart($obj, $this->calbody, $ctype, 'calendar');
     }
 
     /**
@@ -871,15 +887,31 @@ class Mail_mime
 
         $this->checkParams();
 
-        $null        = -1;
         $attachments = count($this->parts) > 0;
         $html_images = count($this->html_images) > 0;
         $html        = strlen($this->htmlbody) > 0;
-        $text        = !$html && strlen($this->txtbody);
+        $calendar    = strlen($this->calbody) > 0;
+        $has_text    = strlen($this->txtbody) > 0;
+        $text        = !$html && $has_text;
 
         switch (true) {
+        case $calendar && !$attachments && !$text && !$html:
+            $message = $this->addCalendarPart();
+            break;
+
+        case $calendar && !$attachments:
+            $message = $this->addAlternativePart();
+            if ($has_text) {
+                $this->addTextPart($message);
+            }
+            if ($html) {
+                $this->addHtmlPart($message);
+            }
+            $this->addCalendarPart($message);
+            break;
+
         case $text && !$attachments:
-            $message = $this->addTextPart($null, $this->txtbody);
+            $message = $this->addTextPart();
             break;
 
         case !$text && !$html && $attachments:
@@ -891,7 +923,7 @@ class Mail_mime
 
         case $text && $attachments:
             $message = $this->addMixedPart();
-            $this->addTextPart($message, $this->txtbody);
+            $this->addTextPart($message);
             for ($i = 0; $i < count($this->parts); $i++) {
                 $this->addAttachmentPart($message, $this->parts[$i]);
             }
@@ -899,11 +931,11 @@ class Mail_mime
 
         case $html && !$attachments && !$html_images:
             if (isset($this->txtbody)) {
-                $message = $this->addAlternativePart($null);
-                $this->addTextPart($message, $this->txtbody);
+                $message = $this->addAlternativePart();
+                $this->addTextPart($message);
                 $this->addHtmlPart($message);
             } else {
-                $message = $this->addHtmlPart($null);
+                $message = $this->addHtmlPart();
             }
             break;
 
@@ -914,8 +946,8 @@ class Mail_mime
             //       * html
             //       * image...
             if (isset($this->txtbody)) {
-                $message = $this->addAlternativePart($null);
-                $this->addTextPart($message, $this->txtbody);
+                $message = $this->addAlternativePart();
+                $this->addTextPart($message);
 
                 $ht = $this->addRelatedPart($message);
                 $this->addHtmlPart($ht);
@@ -926,7 +958,7 @@ class Mail_mime
                 // * Content-Type: multipart/related;
                 //    * html
                 //    * image...
-                $message = $this->addRelatedPart($null);
+                $message = $this->addRelatedPart();
                 $this->addHtmlPart($message);
                 for ($i = 0; $i < count($this->html_images); $i++) {
                     $this->addHtmlImagePart($message, $this->html_images[$i]);
@@ -939,10 +971,10 @@ class Mail_mime
             //        * text
             //        * html
             //    * image...
-            $message = $this->addRelatedPart($null);
+            $message = $this->addRelatedPart();
             if (isset($this->txtbody)) {
                 $alt = $this->addAlternativePart($message);
-                $this->addTextPart($alt, $this->txtbody);
+                $this->addTextPart($alt);
                 $this->addHtmlPart($alt);
             } else {
                 $this->addHtmlPart($message);
@@ -957,7 +989,7 @@ class Mail_mime
             $message = $this->addMixedPart();
             if (isset($this->txtbody)) {
                 $alt = $this->addAlternativePart($message);
-                $this->addTextPart($alt, $this->txtbody);
+                $this->addTextPart($alt);
                 $this->addHtmlPart($alt);
             } else {
                 $this->addHtmlPart($message);
@@ -971,7 +1003,7 @@ class Mail_mime
             $message = $this->addMixedPart();
             if (isset($this->txtbody)) {
                 $alt = $this->addAlternativePart($message);
-                $this->addTextPart($alt, $this->txtbody);
+                $this->addTextPart($alt);
                 $rel = $this->addRelatedPart($alt);
             } else {
                 $rel = $this->addRelatedPart($message);
@@ -1327,14 +1359,24 @@ class Mail_mime
      */
     protected function contentHeaders()
     {
-        $attachments = count($this->parts)                ? true : false;
-        $html_images = count($this->html_images)          ? true : false;
-        $html        = strlen($this->htmlbody)            ? true : false;
-        $text        = (!$html && strlen($this->txtbody)) ? true : false;
+        $attachments = count($this->parts) > 0;
+        $html_images = count($this->html_images) > 0;
+        $html        = strlen($this->htmlbody) > 0;
+        $calendar    = strlen($this->calbody) > 0;
+        $has_text    = strlen($this->txtbody) > 0;
+        $text        = !$html && $has_text;
         $headers     = array();
 
         // See get()
         switch (true) {
+        case $calendar && !$attachments && !$html && !$has_text:
+            $headers['Content-Type'] = 'text/calendar';
+            break;
+
+        case $calendar && !$attachments:
+            $headers['Content-Type'] = 'multipart/alternative';
+            break;
+
         case $text && !$attachments:
             $headers['Content-Type'] = 'text/plain';
             break;
@@ -1346,16 +1388,16 @@ class Mail_mime
             $headers['Content-Type'] = 'multipart/mixed';
             break;
 
-        case $html && !$attachments && !$html_images && isset($this->txtbody):
-        case $html && !$attachments && $html_images && isset($this->txtbody):
+        case $html && !$attachments && !$html_images && $has_text:
+        case $html && !$attachments && $html_images && $has_text:
             $headers['Content-Type'] = 'multipart/alternative';
             break;
 
-        case $html && !$attachments && !$html_images && !isset($this->txtbody):
+        case $html && !$attachments && !$html_images && !$has_text:
             $headers['Content-Type'] = 'text/html';
             break;
 
-        case $html && !$attachments && $html_images && !isset($this->txtbody):
+        case $html && !$attachments && $html_images && !$has_text:
             $headers['Content-Type'] = 'multipart/related';
             break;
 
@@ -1390,6 +1432,21 @@ class Mail_mime
             }
             $headers['Content-Transfer-Encoding']
                 = $this->build_params['html_encoding'];
+        }
+        else if ($headers['Content-Type'] == 'text/calendar') {
+            // single-part message: add charset and encoding
+            if ($this->build_params['calendar_charset']) {
+                $charset = 'charset=' . $this->build_params['calendar_charset'];
+                $headers['Content-Type'] .= "; $charset";
+            }
+
+            if ($this->build_params['calendar_method']) {
+                $method = 'method=' . $this->build_params['calendar_method'];
+                $headers['Content-Type'] .= "; $method";
+            }
+
+            $headers['Content-Transfer-Encoding']
+                = $this->build_params['calendar_encoding'];
         } else {
             // multipart message: and boundary
             if (!empty($this->build_params['boundary'])) {
@@ -1422,12 +1479,17 @@ class Mail_mime
             = strtolower($this->build_params['text_encoding']);
         $this->build_params['html_encoding']
             = strtolower($this->build_params['html_encoding']);
+        $this->build_params['calendar_encoding']
+            = strtolower($this->build_params['calendar_encoding']);
 
         if (!in_array($this->build_params['text_encoding'], $encodings)) {
             $this->build_params['text_encoding'] = '7bit';
         }
         if (!in_array($this->build_params['html_encoding'], $encodings)) {
             $this->build_params['html_encoding'] = '7bit';
+        }
+        if (!in_array($this->build_params['calendar_encoding'], $encodings)) {
+            $this->build_params['calendar_encoding'] = '7bit';
         }
 
         // text body
@@ -1444,6 +1506,78 @@ class Mail_mime
         ) {
             $this->build_params['html_encoding'] = 'quoted-printable';
         }
+        // calendar body
+        if ($this->build_params['calendar_encoding'] == '7bit'
+            && !preg_match('/ascii/i', $this->build_params['calendar_charset'])
+            && preg_match('/[^\x00-\x7F]/', $this->calbody)
+        ) {
+            $this->build_params['calendar_encoding'] = 'quoted-printable';
+        }
+    }
+
+    /**
+     * Set body of specified message part
+     *
+     * @param string $type   One of: txtbody, calbody, htmlbody
+     * @param string $data   Either a string or the file name with the contents
+     * @param bool   $isfile If true the first param should be treated
+     *                       as a file name, else as a string (default)
+     * @param bool   $append If true the text or file is appended to
+     *                       the existing body, else the old body is
+     *                       overwritten
+     *
+     * @return mixed True on success or PEAR_Error object
+     */
+    protected function setBody($type, $data, $isfile = false, $append = false)
+    {
+        if (!$isfile) {
+            if (!$append) {
+                $this->{$type} = $data;
+            } else {
+                $this->{$type} .= $data;
+            }
+        } else {
+            $cont = $this->file2str($data);
+            if (self::isError($cont)) {
+                return $cont;
+            }
+
+            if (!$append) {
+                $this->{$type} = $cont;
+            } else {
+                $this->{$type} .= $cont;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Adds a subpart to the mimePart object and
+     * returns it during the build process.
+     *
+     * @param mixed  $obj   The object to add the part to, or
+     *                      anything else if a new object is to be created.
+     * @param string $body  Part body
+     * @param string $ctype Part content type
+     * @param string $type  Internal part type
+     *
+     * @return object The mimePart object
+     */
+    protected function addBodyPart($obj, $body, $ctype, $type)
+    {
+        $params['content_type'] = $ctype;
+        $params['encoding']     = $this->build_params[$type . '_encoding'];
+        $params['charset']      = $this->build_params[$type . '_charset'];
+        $params['eol']          = $this->build_params['eol'];
+
+        if (is_object($obj)) {
+            $ret = $obj->addSubpart($body, $params);
+        } else {
+            $ret = new Mail_mimePart($body, $params);
+        }
+
+        return $ret;
     }
 
     /**

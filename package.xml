@@ -40,6 +40,7 @@ using RFC2047 and/or RFC2231.</description>
  <notes>
 * Bug #20921: Make Mail_mimePart::encodeHeaderValue() a static method [alec]
 * Bug #20931: Really remove unset headers [alec]
+* Request #18772: Added methods for creating text/calendar messages [alec]
  </notes>
  <contents>
   <dir name="/">
