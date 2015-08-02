@@ -9,5 +9,6 @@ $mime = new Mail_mime;
 $mime->setSubject('test');
 
 $headers = $mime->headers(array('Subject' => null), true);
-echo $headers['Subject'];
+echo array_key_exists('Subject', $headers) ? '1' : '0';
 --EXPECT--
+0

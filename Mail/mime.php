@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The Mail_Mime class is used to create MIME E-mail messages
  *
@@ -7,7 +8,7 @@
  * contain plain-text bodies, HTML bodies, attachments, inline
  * images and specific headers.
  *
- * Compatible with PHP version 5
+ * Compatible with PHP >= 5
  *
  * LICENSE: This LICENSE is in the BSD license style.
  * Copyright (c) 2002-2003, Richard Heyes <richard@phpguru.org>
@@ -58,20 +59,7 @@
  */
 
 
-/**
- * require PEAR
- *
- * This package depends on PEAR to raise errors.
- */
 require_once 'PEAR.php';
-
-/**
- * require Mail_mimePart
- *
- * Mail_mimePart contains the code required to
- * create all the different parts a mail can
- * consist of.
- */
 require_once 'Mail/mimePart.php';
 
 
@@ -1289,6 +1277,8 @@ class Mail_mime
                     $hdr_name, $hdr_value,
                     $build_params['head_charset'], $build_params['head_encoding']
                 );
+            } else {
+                unset($input[$hdr_name]);
             }
         }
 
