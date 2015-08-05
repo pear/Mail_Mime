@@ -26,11 +26,11 @@ using RFC2047 and/or RFC2231.</description>
   <email>alec@php.net</email>
   <active>yes</active>
  </lead>
- <date></date>
- <time></time>
+ <date>2015-08-06</date>
+ <time>12:00:00</time>
  <version>
   <release>1.9.0</release>
-  <api>2.0.0</api>
+  <api>1.9.0</api>
  </version>
  <stability>
   <release>stable</release>
@@ -81,6 +81,7 @@ using RFC2047 and/or RFC2231.</description>
     <file baseinstalldir="Mail" name="test_Bug_17025.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_17175.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_18083.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_18772.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_19497.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_20226.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_20273.phpt" role="test" />
