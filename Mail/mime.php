@@ -104,6 +104,13 @@ class Mail_mime
     protected $calbody;
 
     /**
+     * Crypt_GPG instance to encrypt or sign email with
+     *
+     * @var Crypt_GPG
+     */
+    protected $gpg;
+
+    /**
      * list of the attached images
      *
      * @var array
@@ -307,6 +314,11 @@ class Mail_mime
     public function getCalendarBody()
     {
         return $this->calbody;
+    }
+
+    public function setGPG(Crypt_GPG $gpg)
+    {
+        $this->gpg = $gpg;
     }
 
     /**
@@ -1050,6 +1062,7 @@ class Mail_mime
             if (self::isError($headers)) {
                 return $headers;
             }
+            //FIXME: GPG
             $this->headers = array_merge($this->headers, $headers);
             return null;
         } else {
@@ -1057,6 +1070,10 @@ class Mail_mime
             if (self::isError($output)) {
                 return $output;
             }
+            if ($this->gpg !== null) {
+                $output = $this->applyGPG($output);
+            }
+
             $this->headers = array_merge($this->headers, $output['headers']);
             return $output['body'];
         }
@@ -1136,9 +1153,12 @@ class Mail_mime
             $headers = array('Received' => $received) + $headers;
         }
 
-        $ret = '';
-        $eol = $this->build_params['eol'];
+        return $this->flattenHeaders($headers, $this->build_params['eol']);
+    }
 
+    protected static function flattenHeaders($headers, $eol)
+    {
+        $ret = '';
         foreach ($headers as $key => $val) {
             if (is_array($val)) {
                 foreach ($val as $value) {
@@ -1592,6 +1612,46 @@ class Mail_mime
         }
 
         return $ret;
+    }
+
+    protected function applyGPG($output)
+    {
+        $headers = $output['headers'];
+        $body    = $output['body'];
+
+        if ($this->gpg->hasSignKeys()) {
+            //TODO: sign
+        } else if ($this->gpg->hasEncryptKeys()) {
+            $eol = $this->build_params['eol'];
+            $content = static::flattenHeaders($headers, $eol) . $eol . $body;
+            $data = $this->gpg->encrypt($content);
+
+            $message = new Mail_mimePart(
+                '',
+                array(
+                    'content_type' => 'multipart/encrypted'
+                        . '; protocol="application/pgp-encrypted"',
+                    'eol' => $eol,
+                )
+            );
+            $message->addSubpart(
+                'Version: 1' . $eol,
+                array(
+                    'content_type' => 'application/pgp-encrypted',
+                    'eol' => $eol,
+                )
+            );
+            $message->addSubpart(
+                $data,
+                array(
+                    'content_type' => 'application/octet-stream',
+                    'eol' => $eol,
+                )
+            );
+            $output = $message->encode(null, false);
+        }
+
+        return $output;
     }
 
     /**
