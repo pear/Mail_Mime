@@ -1619,12 +1619,16 @@ class Mail_mime
         $headers = $output['headers'];
         $body    = $output['body'];
 
-        if ($this->gpg->hasSignKeys()) {
-            //TODO: sign
-        } else if ($this->gpg->hasEncryptKeys()) {
+        if ($this->gpg->hasEncryptKeys()) {
             $eol = $this->build_params['eol'];
             $content = static::flattenHeaders($headers, $eol) . $eol . $body;
-            $data = $this->gpg->encrypt($content);
+            if ($this->gpg->hasSignKeys()) {
+                //encrypt + sign
+                $data = $this->gpg->encryptAndSign($content);
+            } else {
+                //encrypt only
+                $data = $this->gpg->encrypt($content);
+            }
 
             $message = new Mail_mimePart(
                 '',
@@ -1649,6 +1653,8 @@ class Mail_mime
                 )
             );
             $output = $message->encode(null, false);
+        } else if ($this->gpg->hasSignKeys()) {
+            //TODO: signing only
         }
 
         return $output;
