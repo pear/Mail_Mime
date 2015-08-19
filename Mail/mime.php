@@ -1614,6 +1614,21 @@ class Mail_mime
         return $ret;
     }
 
+    /**
+     * Encrypt and/or sign the e-mail contents.
+     * Uses the Crypt_GPG object set via setGPG().
+     *
+     * This method implements
+     * - RFC 2015 - MIME Security with Pretty Good Privacy (PGP)
+     * - RFC 1847 - Security Multiparts for MIME:
+     *              Multipart/Signed and Multipart/Encrypted
+     *
+     * @param array $output Result of Mail_mimePart::encode() with
+     *                      "headers" and "body" keys.
+     *
+     * @return array Result of Mail_mimePart::encode() with "headers" and
+     *               "body" keys containing the encrypted/signed data
+     */
     protected function applyGPG($output)
     {
         $headers = $output['headers'];
