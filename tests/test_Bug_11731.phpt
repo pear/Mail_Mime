@@ -11,7 +11,7 @@ $params   = Array(
     'content_type' => 'text/plain',
     'encoding'     => 'quoted-printable',
 );    
-$mimePart =& new Mail_mimePart($text, $params);
+$mimePart = new Mail_mimePart($text, $params);
 $encoded  =  $mimePart->encode();
 echo $encoded['body'];
     
