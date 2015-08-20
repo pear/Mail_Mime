@@ -1072,6 +1072,9 @@ class Mail_mime
             }
             if ($this->gpg !== null) {
                 $output = $this->applyGPG($output);
+                if (self::isError($output)) {
+                    return $output;
+                }
             }
 
             $this->headers = array_merge($this->headers, $output['headers']);
@@ -1633,10 +1636,10 @@ class Mail_mime
     {
         $headers = $output['headers'];
         $body    = $output['body'];
+        $eol     = $this->build_params['eol'];
+        $content = static::flattenHeaders($headers, $eol) . $eol . $body;
 
         if ($this->gpg->hasEncryptKeys()) {
-            $eol = $this->build_params['eol'];
-            $content = static::flattenHeaders($headers, $eol) . $eol . $body;
             if ($this->gpg->hasSignKeys()) {
                 //encrypt + sign
                 $data = $this->gpg->encryptAndSign($content);
@@ -1669,7 +1672,48 @@ class Mail_mime
             );
             $output = $message->encode(null, false);
         } else if ($this->gpg->hasSignKeys()) {
-            //TODO: signing only
+            //signing only, no encryption
+            $headersNoContentType = $headers;
+            unset($headersNoContentType['Content-Type']);
+
+            $signature = $this->gpg->sign(
+                $content,
+                Crypt_GPG::SIGN_MODE_DETACHED,
+                Crypt_GPG::ARMOR_ASCII,
+                Crypt_GPG::TEXT_NORMALIZED
+            );
+
+            $sigInfo = $this->gpg->getLastSignatureInfo();
+            if ($sigInfo === null) {
+                return self::raiseError('Failed to fetch signature information');
+            }
+            $micalg = 'pgp-' . $sigInfo->getHashAlgorithmName();
+
+            $message = new Mail_mimePart(
+                '',
+                array(
+                    'content_type' => 'multipart/signed'
+                        . ';protocol="application/pgp-signature"'
+                        . ';micalg=' . $micalg,
+                    'eol' => $eol,
+                )
+            );
+            $message->addSubpart(
+                $body,
+                array(
+                    'content_type' => $headers['Content-Type'],
+                    'headers' => $headersNoContentType,
+                    'eol' => $eol,
+                )
+            );
+            $message->addSubpart(
+                $signature,
+                array(
+                    'content_type' => 'application/pgp-signature',
+                    'eol' => $eol,
+                )
+            );
+            $output = $message->encode(null, false);
         }
 
         return $output;
