@@ -316,6 +316,16 @@ class Mail_mime
         return $this->calbody;
     }
 
+    /**
+     * Set the Crypt_GPG object used for encrypting and signing the mail.
+     *
+     * To activate encryption, at least one encryption key has to be added.
+     * To activate signing, at least one signing key has to be added.
+     *
+     * @param Crypt_GPG $gpg Configured GPG object
+     *
+     * @return void
+     */
     public function setGPG(Crypt_GPG $gpg)
     {
         $this->gpg = $gpg;
@@ -1062,7 +1072,7 @@ class Mail_mime
             if (self::isError($headers)) {
                 return $headers;
             }
-            //FIXME: GPG
+            //FIXME: GPG support for $filename
             $this->headers = array_merge($this->headers, $headers);
             return null;
         } else {
@@ -1159,6 +1169,15 @@ class Mail_mime
         return $this->flattenHeaders($headers, $this->build_params['eol']);
     }
 
+    /**
+     * Convert an array of headers to a string
+     *
+     * @param array  $headers Key-value pairs; header name as key.
+     *                        Value may be a string or an array.
+     * @param string $eol     End-of-line character, e.g. "\n"
+     *
+     * @return string A string with all headers
+     */
     protected static function flattenHeaders($headers, $eol)
     {
         $ret = '';
@@ -1622,15 +1641,17 @@ class Mail_mime
      * Uses the Crypt_GPG object set via setGPG().
      *
      * This method implements
-     * - RFC 2015 - MIME Security with Pretty Good Privacy (PGP)
      * - RFC 1847 - Security Multiparts for MIME:
      *              Multipart/Signed and Multipart/Encrypted
+     * - RFC 2015 - MIME Security with Pretty Good Privacy (PGP)
+     * - RFC 3156 - MIME Security with OpenPGP
      *
      * @param array $output Result of Mail_mimePart::encode() with
      *                      "headers" and "body" keys.
      *
      * @return array Result of Mail_mimePart::encode() with "headers" and
-     *               "body" keys containing the encrypted/signed data
+     *               "body" keys containing the encrypted/signed data.
+     *               A PEAR_Error object may also be raised.
      */
     protected function applyGPG($output)
     {
