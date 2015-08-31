@@ -165,6 +165,8 @@ class Mail_mime
         'calendar_method' => 'request',
         // multipart part preamble (RFC2046 5.1.1)
         'preamble' => '',
+        //MIME boundary for GPG parts
+        'boundary_gpg' => null,
     );
 
 
@@ -1166,7 +1168,7 @@ class Mail_mime
             $headers = array('Received' => $received) + $headers;
         }
 
-        return $this->flattenHeaders($headers, $this->build_params['eol']);
+        return self::flattenHeaders($headers, $this->build_params['eol']);
     }
 
     /**
@@ -1178,7 +1180,7 @@ class Mail_mime
      *
      * @return string A string with all headers
      */
-    protected static function flattenHeaders($headers, $eol)
+    protected static function flattenHeaders($headers, $eol = "\n")
     {
         $ret = '';
         foreach ($headers as $key => $val) {
@@ -1658,7 +1660,7 @@ class Mail_mime
         $headers = $output['headers'];
         $body    = $output['body'];
         $eol     = $this->build_params['eol'];
-        $content = static::flattenHeaders($headers, $eol) . $eol . $body;
+        $content = self::flattenHeaders($headers, $eol) . $eol . $body;
 
         if ($this->gpg->hasEncryptKeys()) {
             if ($this->gpg->hasSignKeys()) {
@@ -1691,7 +1693,7 @@ class Mail_mime
                     'eol' => $eol,
                 )
             );
-            $output = $message->encode(null, false);
+            $output = $message->encode($this->build_params['boundary_gpg'], false);
         } else if ($this->gpg->hasSignKeys()) {
             //signing only, no encryption
             $headersNoContentType = $headers;
@@ -1734,7 +1736,7 @@ class Mail_mime
                     'eol' => $eol,
                 )
             );
-            $output = $message->encode(null, false);
+            $output = $message->encode($this->build_params['boundary_gpg'], false);
         }
 
         return $output;
