@@ -124,6 +124,13 @@ class Mail_mimePart
     protected $body_file;
 
     /**
+     * The short text of multipart part preamble (RFC2046 5.1.1)
+     *
+     * @var string
+     */
+    protected $preamble;
+
+    /**
      * The end-of-line sequence
      *
      * @var string
