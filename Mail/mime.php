@@ -156,6 +156,8 @@ class Mail_mime
         'delay_file_io' => false,
         // Default calendar method
         'calendar_method' => 'request',
+        // multipart part preamble (RFC2046 5.1.1)
+        'preamble' => '',
     );
 
 
@@ -369,8 +371,8 @@ class Mail_mime
     /**
      * Adds a file to the list of attachments.
      *
-     * @param string $file        The file name of the file to attach
-     *                            or the file contents itself
+     * @param mixed  $file        The file name or the file contents itself,
+     *                            it can be also Mail_mimePart object
      * @param string $c_type      The content type
      * @param string $name        The filename of the attachment
      *                            Only use if $file is the contents
@@ -412,6 +414,11 @@ class Mail_mime
         $h_charset   = null,
         $add_headers = array()
     ) {
+        if ($file instanceof Mail_mimePart) {
+            $this->parts[] = $file;
+            return true;
+        }
+
         $bodyfile = null;
 
         if ($isfile) {
@@ -551,9 +558,11 @@ class Mail_mime
      * the initial content-type and returns it during the
      * build process.
      *
+     * @param array $params Additional part parameters
+     *
      * @return object The multipart/mixed mimePart object
      */
-    protected function addMixedPart()
+    protected function addMixedPart($params = array())
     {
         $params['content_type'] = 'multipart/mixed';
         $params['eol']          = $this->build_params['eol'];
@@ -644,12 +653,16 @@ class Mail_mime
      * and returns it during the build process.
      *
      * @param object $obj   The mimePart to add the image to
-     * @param array  $value The attachment information
+     * @param mixed  $value The attachment information array or Mail_mimePart object
      *
      * @return object The image mimePart object
      */
     protected function addAttachmentPart($obj, $value)
     {
+        if ($value instanceof Mail_mimePart) {
+            return $obj->addSubpart($value);
+        }
+
         $params['eol']          = $this->build_params['eol'];
         $params['filename']     = $value['name'];
         $params['encoding']     = $value['encoding'];
@@ -893,6 +906,7 @@ class Mail_mime
         $calendar    = strlen($this->calbody) > 0;
         $has_text    = strlen($this->txtbody) > 0;
         $text        = !$html && $has_text;
+        $mixed_params = array('preamble' => $this->build_params['preamble']);
 
         switch (true) {
         case $calendar && !$attachments && !$text && !$html:
@@ -900,7 +914,7 @@ class Mail_mime
             break;
 
         case $calendar && !$attachments:
-            $message = $this->addAlternativePart();
+            $message = $this->addAlternativePart($mixed_params);
             if ($has_text) {
                 $this->addTextPart($message);
             }
@@ -915,14 +929,14 @@ class Mail_mime
             break;
 
         case !$text && !$html && $attachments:
-            $message = $this->addMixedPart();
+            $message = $this->addMixedPart($mixed_params);
             for ($i = 0; $i < count($this->parts); $i++) {
                 $this->addAttachmentPart($message, $this->parts[$i]);
             }
             break;
 
         case $text && $attachments:
-            $message = $this->addMixedPart();
+            $message = $this->addMixedPart($mixed_params);
             $this->addTextPart($message);
             for ($i = 0; $i < count($this->parts); $i++) {
                 $this->addAttachmentPart($message, $this->parts[$i]);
@@ -986,7 +1000,7 @@ class Mail_mime
             break;
 
         case $html && $attachments && !$html_images:
-            $message = $this->addMixedPart();
+            $message = $this->addMixedPart($mixed_params);
             if (isset($this->txtbody)) {
                 $alt = $this->addAlternativePart($message);
                 $this->addTextPart($alt);
@@ -1000,7 +1014,7 @@ class Mail_mime
             break;
 
         case $html && $attachments && $html_images:
-            $message = $this->addMixedPart();
+            $message = $this->addMixedPart($mixed_params);
             if (isset($this->txtbody)) {
                 $alt = $this->addAlternativePart($message);
                 $this->addTextPart($alt);
@@ -1141,7 +1155,7 @@ class Mail_mime
     /**
      * Sets message Content-Type header.
      * Use it to build messages with various content-types e.g. miltipart/raport
-     * not supported by _contentHeaders() function.
+     * not supported by contentHeaders() function.
      *
      * @param string $type   Type name
      * @param array  $params Hash array of header parameters

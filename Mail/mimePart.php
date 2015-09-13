@@ -158,6 +158,7 @@ class Mail_mimePart
      *     headers           - Hash array with additional part headers. Array keys can be
      *                         in form of <header_name>:<parameter_name>
      *     body_file         - Location of file with part's body (instead of $body)
+     *     preamble          - short text of multipart part preamble (RFC2046 5.1.1)
      */
     public function __construct($body = '', $params = array())
     {
@@ -189,6 +190,10 @@ class Mail_mimePart
 
             case 'body_file':
                 $this->body_file = $value;
+                break;
+
+            case 'preamble':
+                $this->preamble = $value;
                 break;
 
             // for backward compatibility
@@ -225,7 +230,6 @@ class Mail_mimePart
         $h_charset  = !empty($params['headers_charset']) ? $params['headers_charset'] : 'US-ASCII';
         $h_language = !empty($params['language']) ? $params['language'] : null;
         $h_encoding = !empty($params['name_encoding']) ? $params['name_encoding'] : null;
-
 
         if (!empty($params['filename'])) {
             $headers['Content-Type'] .= ';' . $this->eol;
@@ -306,7 +310,11 @@ class Mail_mimePart
 
             $this->headers['Content-Type'] .= ";$eol boundary=\"$boundary\"";
 
-            $encoded['body'] = ''; 
+            $encoded['body'] = '';
+
+            if ($this->preamble) {
+                $encoded['body'] .= $this->preamble . $eol . $eol;
+            }
 
             for ($i = 0; $i < count($this->subparts); $i++) {
                 $encoded['body'] .= '--' . $boundary . $eol;
@@ -321,7 +329,6 @@ class Mail_mimePart
             }
 
             $encoded['body'] .= '--' . $boundary . '--' . $eol;
-
         } else if ($this->body) {
             $encoded['body'] = $this->getEncodedData($this->body, $this->encoding);
         } else if ($this->body_file) {
@@ -423,6 +430,11 @@ class Mail_mimePart
         }
 
         if (count($this->subparts)) {
+            if ($this->preamble) {
+                fwrite($fh, $f_eol . $this->preamble . $eol);
+                $f_eol = $eol;
+            }
+
             for ($i = 0; $i < count($this->subparts); $i++) {
                 fwrite($fh, $f_eol . '--' . $boundary . $eol);
                 $res = $this->subparts[$i]->encodePartToFile($fh);
@@ -433,9 +445,9 @@ class Mail_mimePart
             }
 
             fwrite($fh, $eol . '--' . $boundary . '--' . $eol);
-
         } else if ($this->body) {
-            fwrite($fh, $f_eol . $this->getEncodedData($this->body, $this->encoding));
+            fwrite($fh, $f_eol);
+            fwrite($fh, $this->getEncodedData($this->body, $this->encoding));
         } else if ($this->body_file) {
             fwrite($fh, $f_eol);
             $res = $this->getEncodedDataFromFile(
@@ -453,15 +465,21 @@ class Mail_mimePart
      * Adds a subpart to current mime part and returns
      * a reference to it
      *
-     * @param string $body   The body of the subpart, if any.
-     * @param array  $params The parameters for the subpart, same
-     *                       as the $params argument for constructor.
+     * @param mixed $body   The body of the subpart or Mail_mimePart object
+     * @param array $params The parameters for the subpart, same
+     *                      as the $params argument for constructor
      *
      * @return Mail_mimePart A reference to the part you just added.
      */
-    public function addSubpart($body, $params)
+    public function addSubpart($body, $params = null)
     {
-        $this->subparts[] = $part = new Mail_mimePart($body, $params);
+        if ($body instanceof Mail_mimePart) {
+            $part = $body;
+        } else {
+            $part = new Mail_mimePart($body, $params);
+        }
+
+        $this->subparts[] = $part;
 
         return $part;
     }

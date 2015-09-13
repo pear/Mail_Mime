@@ -26,11 +26,11 @@ using RFC2047 and/or RFC2231.</description>
   <email>alec@php.net</email>
   <active>yes</active>
  </lead>
- <date>2015-08-06</date>
+ <date>2015-09-13</date>
  <time>12:00:00</time>
  <version>
-  <release>1.9.0</release>
-  <api>1.9.0</api>
+  <release>1.10.0</release>
+  <api>1.10.0</api>
  </version>
  <stability>
   <release>stable</release>
@@ -38,9 +38,8 @@ using RFC2047 and/or RFC2231.</description>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
-* Bug #20921: Make Mail_mimePart::encodeHeaderValue() a static method [alec]
-* Bug #20931: Really remove unset headers [alec]
-* Request #18772: Added methods for creating text/calendar messages [alec]
+* Add possibility to add externally created Mail_mimePart objects as attachments [alec]
+* Add possibility to set preamble text for multipart messages [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -803,6 +802,24 @@ Bugs Fixed:
 * Request #20563: Added isMultipart() method [alec]
 * Request #20565: Accept also a file pointer in Mail_mimePart::encodeToFile(),
                   Mail_mime::get() and Mail_mime::saveMessageBody() [alec]
+   </notes>
+  </release>
+  <release>
+   <date>2015-08-06</date>
+   <time>12:00:00</time>
+   <version>
+    <release>1.9.0</release>
+    <api>1.9.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+   <notes>
+* Bug #20921: Make Mail_mimePart::encodeHeaderValue() a static method [alec]
+* Bug #20931: Really remove unset headers [alec]
+* Request #18772: Added methods for creating text/calendar messages [alec]
    </notes>
   </release>
  </changelog>
