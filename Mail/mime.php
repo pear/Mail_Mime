@@ -899,138 +899,7 @@ class Mail_mime
         }
 
         $this->checkParams();
-
-        $attachments = count($this->parts) > 0;
-        $html_images = count($this->html_images) > 0;
-        $html        = strlen($this->htmlbody) > 0;
-        $calendar    = strlen($this->calbody) > 0;
-        $has_text    = strlen($this->txtbody) > 0;
-        $text        = !$html && $has_text;
-        $mixed_params = array('preamble' => $this->build_params['preamble']);
-
-        switch (true) {
-        case $calendar && !$attachments && !$text && !$html:
-            $message = $this->addCalendarPart();
-            break;
-
-        case $calendar && !$attachments:
-            $message = $this->addAlternativePart($mixed_params);
-            if ($has_text) {
-                $this->addTextPart($message);
-            }
-            if ($html) {
-                $this->addHtmlPart($message);
-            }
-            $this->addCalendarPart($message);
-            break;
-
-        case $text && !$attachments:
-            $message = $this->addTextPart();
-            break;
-
-        case !$text && !$html && $attachments:
-            $message = $this->addMixedPart($mixed_params);
-            for ($i = 0; $i < count($this->parts); $i++) {
-                $this->addAttachmentPart($message, $this->parts[$i]);
-            }
-            break;
-
-        case $text && $attachments:
-            $message = $this->addMixedPart($mixed_params);
-            $this->addTextPart($message);
-            for ($i = 0; $i < count($this->parts); $i++) {
-                $this->addAttachmentPart($message, $this->parts[$i]);
-            }
-            break;
-
-        case $html && !$attachments && !$html_images:
-            if (isset($this->txtbody)) {
-                $message = $this->addAlternativePart();
-                $this->addTextPart($message);
-                $this->addHtmlPart($message);
-            } else {
-                $message = $this->addHtmlPart();
-            }
-            break;
-
-        case $html && !$attachments && $html_images:
-            // * Content-Type: multipart/alternative;
-            //    * text
-            //    * Content-Type: multipart/related;
-            //       * html
-            //       * image...
-            if (isset($this->txtbody)) {
-                $message = $this->addAlternativePart();
-                $this->addTextPart($message);
-
-                $ht = $this->addRelatedPart($message);
-                $this->addHtmlPart($ht);
-                for ($i = 0; $i < count($this->html_images); $i++) {
-                    $this->addHtmlImagePart($ht, $this->html_images[$i]);
-                }
-            } else {
-                // * Content-Type: multipart/related;
-                //    * html
-                //    * image...
-                $message = $this->addRelatedPart();
-                $this->addHtmlPart($message);
-                for ($i = 0; $i < count($this->html_images); $i++) {
-                    $this->addHtmlImagePart($message, $this->html_images[$i]);
-                }
-            }
-            /*
-            // #13444, #9725: the code below was a non-RFC compliant hack
-            // * Content-Type: multipart/related;
-            //    * Content-Type: multipart/alternative;
-            //        * text
-            //        * html
-            //    * image...
-            $message = $this->addRelatedPart();
-            if (isset($this->txtbody)) {
-                $alt = $this->addAlternativePart($message);
-                $this->addTextPart($alt);
-                $this->addHtmlPart($alt);
-            } else {
-                $this->addHtmlPart($message);
-            }
-            for ($i = 0; $i < count($this->html_images); $i++) {
-                $this->addHtmlImagePart($message, $this->html_images[$i]);
-            }
-            */
-            break;
-
-        case $html && $attachments && !$html_images:
-            $message = $this->addMixedPart($mixed_params);
-            if (isset($this->txtbody)) {
-                $alt = $this->addAlternativePart($message);
-                $this->addTextPart($alt);
-                $this->addHtmlPart($alt);
-            } else {
-                $this->addHtmlPart($message);
-            }
-            for ($i = 0; $i < count($this->parts); $i++) {
-                $this->addAttachmentPart($message, $this->parts[$i]);
-            }
-            break;
-
-        case $html && $attachments && $html_images:
-            $message = $this->addMixedPart($mixed_params);
-            if (isset($this->txtbody)) {
-                $alt = $this->addAlternativePart($message);
-                $this->addTextPart($alt);
-                $rel = $this->addRelatedPart($alt);
-            } else {
-                $rel = $this->addRelatedPart($message);
-            }
-            $this->addHtmlPart($rel);
-            for ($i = 0; $i < count($this->html_images); $i++) {
-                $this->addHtmlImagePart($rel, $this->html_images[$i]);
-            }
-            for ($i = 0; $i < count($this->parts); $i++) {
-                $this->addAttachmentPart($message, $this->parts[$i]);
-            }
-            break;
-        }
+        $message = $this->buildBodyPart();
 
         if (!isset($message)) {
             return null;
@@ -1060,6 +929,110 @@ class Mail_mime
             $this->headers = array_merge($this->headers, $output['headers']);
             return $output['body'];
         }
+    }
+
+    /**
+     * Builds the main body MIME part for the email body. It will add a mixed part
+     * if attachments are found.  If no attachments are found  it will return an
+     * alternative part if several body texts are found (text, html, calendar),
+     * or a single part if only one body text is found.
+     *
+     * @return Mail_mimePart|null The corresponding part for the body or null.
+     *
+     * @see buildAlternativeParts
+     * @see buildHtmlParts
+     */
+    private function buildBodyPart()
+    {
+        $attachments  = count($this->parts) > 0;
+        $mixed_params = array('preamble' => $this->build_params['preamble']);
+        $message      = null;
+
+        if ($attachments) {
+            $message = $this->addMixedPart($mixed_params);
+            $this->buildAlternativeParts($message, null);
+            for ($i = 0; $i < count($this->parts); $i++) {
+                $this->addAttachmentPart($message, $this->parts[$i]);
+            }
+        } else {
+            $message = $this->buildAlternativeParts(null, $mixed_params);
+        }
+
+        return $message;
+    }
+
+    /**
+     * Builds a single text, html, or calendar part only if one of them is found.
+     * If two or more parts are found, then an alternative part containing them is built.
+     *
+     * @param $parent_part  Mail_mimePart|null  The parent mime part to add
+     *                                          the part or null
+     * @param $mixed_params array|null          The needed params to create the
+     *                                          part when no parent_part is
+     *                                          received.
+     *
+     * @return null|object The main part built inside the method.  I will be an
+     *                     alternative part or text, html, or calendar part.
+     *                     Null if no body texts are found.
+     */
+    private function buildAlternativeParts($parent_part, $mixed_params)
+    {
+        $html               = strlen($this->htmlbody) > 0;
+        $calendar           = strlen($this->calbody) > 0;
+        $has_text           = strlen($this->txtbody) > 0;
+        $alternatives_count =  $html + $calendar + $has_text;
+
+        if ($alternatives_count > 1) {
+            $alt_part = $this->addAlternativePart($parent_part ?: $mixed_params);
+        } else {
+            $alt_part = null;
+        }
+
+        $dest_part = $alt_part ?: $parent_part;
+        $part = null;
+
+        if ($has_text) {
+            $part = $this->addTextPart($dest_part);
+        }
+        if ($html) {
+            $part = $this->buildHtmlParts($dest_part);
+        }
+        if ($calendar) {
+            $part = $this->addCalendarPart($dest_part);
+        }
+
+        return $dest_part ?: $part;
+    }
+
+    /**
+     * Builds html part as a single part or inside a related part with the html
+     * images thar were found.
+     *
+     * @param Mail_mimePart|null $parent_part The object to add the part to,
+     *                                        or anything else if a new object
+     *                                        is to be created.
+     *
+     * @return Mail_mimePart|null The created part or null if no htmlbody found.
+     */
+    private function buildHtmlParts($parent_part)
+    {
+        if (!$this->htmlbody) {
+            return null;
+        }
+
+        $count_html_images = count($this->html_images);
+        if ($count_html_images > 0) {
+            $part = $this->addRelatedPart($parent_part);
+            $this->addHtmlPart($part);
+        } else {
+            $part = $this->addHtmlPart($parent_part);
+        }
+
+        for ($i = 0; $i < $count_html_images; $i++) {
+            $this->addHtmlImagePart($part, $this->html_images[$i]);
+        }
+
+        return $part;
     }
 
     /**
@@ -1373,46 +1346,38 @@ class Mail_mime
      */
     protected function contentHeaders()
     {
-        $attachments = count($this->parts) > 0;
-        $html_images = count($this->html_images) > 0;
-        $html        = strlen($this->htmlbody) > 0;
-        $calendar    = strlen($this->calbody) > 0;
-        $has_text    = strlen($this->txtbody) > 0;
-        $text        = !$html && $has_text;
-        $headers     = array();
+        $attachments      = count($this->parts) > 0;
+        $html_images      = count($this->html_images) > 0;
+        $html             = strlen($this->htmlbody) > 0;
+        $calendar         = strlen($this->calbody) > 0;
+        $has_text         = strlen($this->txtbody) > 0;
+        $has_alternatives = ($html + $calendar + $has_text) > 1;
+        $headers          = array();
 
         // See get()
         switch (true) {
-        case $calendar && !$attachments && !$html && !$has_text:
-            $headers['Content-Type'] = 'text/calendar';
-            break;
-
-        case $calendar && !$attachments:
-            $headers['Content-Type'] = 'multipart/alternative';
-            break;
-
-        case $text && !$attachments:
+        case $has_text && !$attachments && !$has_alternatives:
             $headers['Content-Type'] = 'text/plain';
             break;
 
-        case !$text && !$html && $attachments:
-        case $text && $attachments:
-        case $html && $attachments && !$html_images:
-        case $html && $attachments && $html_images:
-            $headers['Content-Type'] = 'multipart/mixed';
-            break;
-
-        case $html && !$attachments && !$html_images && $has_text:
-        case $html && !$attachments && $html_images && $has_text:
-            $headers['Content-Type'] = 'multipart/alternative';
-            break;
-
-        case $html && !$attachments && !$html_images && !$has_text:
+        case $html && !$html_images && !$attachments && !$has_alternatives:
             $headers['Content-Type'] = 'text/html';
             break;
 
-        case $html && !$attachments && $html_images && !$has_text:
-            $headers['Content-Type'] = 'multipart/related';
+        case $html && $html_images && !$attachments && !$has_alternatives:
+            $headers['Content-Type'] = 'multiplart/related';
+            break;
+
+        case $calendar && !$attachments && !$has_alternatives:
+            $headers['Content-Type'] = 'text/calendar';
+            break;
+
+        case $has_alternatives && !$attachments:
+            $headers['Content-Type'] = 'multipart/alternative';
+            break;
+
+        case $attachments:
+            $headers['Content-Type'] = 'multipart/mixed';
             break;
 
         default:
