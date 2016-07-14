@@ -1544,23 +1544,17 @@ class Mail_mime
      */
     protected function setBody($type, $data, $isfile = false, $append = false)
     {
-        if (!$isfile) {
-            if (!$append) {
-                $this->{$type} = $data;
-            } else {
-                $this->{$type} .= $data;
+        if ($isfile) {
+            $data = $this->file2str($data);
+            if (self::isError($data)) {
+                return $data;
             }
-        } else {
-            $cont = $this->file2str($data);
-            if (self::isError($cont)) {
-                return $cont;
-            }
+        }
 
-            if (!$append) {
-                $this->{$type} = $cont;
-            } else {
-                $this->{$type} .= $cont;
-            }
+        if (!$append) {
+            $this->{$type} = $data;
+        } else {
+            $this->{$type} .= $data;
         }
 
         return true;
