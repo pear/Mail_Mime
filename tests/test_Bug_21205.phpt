@@ -1,5 +1,5 @@
 --TEST--
-foo
+Bug #21205  Handling ISO-2022-JP headers
 --SKIPIF--
 --FILE--
 <?php
