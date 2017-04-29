@@ -888,10 +888,11 @@ class Mail_mimePart
                             if ($word[0] == '"' && $word[strlen($word)-1] == '"') {
                                 // de-quote quoted-string, encoding changes
                                 // string to atom
-                                $search = array("\\\"", "\\\\");
-                                $replace = array("\"", "\\");
-                                $word = str_replace($search, $replace, $word);
                                 $word = substr($word, 1, -1);
+                                $word = mb_convert_encoding($word, 'UTF-8', $charset);
+                                $temp = preg_replace('/\\\\([\\\\"])/', '$1', $word);
+                                $word = ($temp !== NULL) ? $temp : $word;
+                                $word = mb_convert_encoding($word, $charset, 'UTF-8');
                             }
                             // find length of last line
                             if (($pos = strrpos($value, $eol)) !== false) {
@@ -930,10 +931,11 @@ class Mail_mimePart
                 if ($value[0] == '"' && $value[strlen($value)-1] == '"') {
                     // de-quote quoted-string, encoding changes
                     // string to atom
-                    $search = array("\\\"", "\\\\");
-                    $replace = array("\"", "\\");
-                    $value = str_replace($search, $replace, $value);
                     $value = substr($value, 1, -1);
+                    $value = mb_convert_encoding($value, 'UTF-8', $charset);
+                    $temp = preg_replace('/\\\\([\\\\"])/', '$1', $value);
+                    $value = ($temp !== NULL) ? $temp : $value;
+                    $value = mb_convert_encoding($value, $charset, 'UTF-8');
                 }
                 $value = Mail_mimePart::encodeHeaderValue(
                     $value, $charset, $encoding, strlen($name) + 2, $eol
