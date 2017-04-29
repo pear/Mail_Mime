@@ -849,11 +849,16 @@ class Mail_mimePart
             $charset = 'ISO-8859-1';
         }
 
+        $mb = function_exists('mb_convert_encoding');
+
         // Structured header (make sure addr-spec inside is not encoded)
         if (!empty($separator)) {
             // Simple e-mail address regexp
             $email_regexp = '([^\s<]+|("[^\r\n"]+"))@\S+';
 
+            if ($mb) {
+                $value = mb_convert_encoding($value, 'UTF-8', $charset);
+            }
             $parts = Mail_mimePart::explodeQuotedString("[\t$separator]", $value);
             $value = '';
 
@@ -889,16 +894,17 @@ class Mail_mimePart
                                 // de-quote quoted-string, encoding changes
                                 // string to atom
                                 $word = substr($word, 1, -1);
-                                $word = mb_convert_encoding($word, 'UTF-8', $charset);
                                 $temp = preg_replace('/\\\\([\\\\"])/', '$1', $word);
                                 $word = ($temp !== NULL) ? $temp : $word;
-                                $word = mb_convert_encoding($word, $charset, 'UTF-8');
                             }
                             // find length of last line
                             if (($pos = strrpos($value, $eol)) !== false) {
                                 $last_len = strlen($value) - $pos;
                             } else {
                                 $last_len = strlen($value);
+                            }
+                            if ($mb) {
+                                $word = mb_convert_encoding($word, $charset, 'UTF-8');
                             }
                             $word = Mail_mimePart::encodeHeaderValue(
                                 $word, $charset, $encoding, $last_len, $eol
@@ -932,10 +938,14 @@ class Mail_mimePart
                     // de-quote quoted-string, encoding changes
                     // string to atom
                     $value = substr($value, 1, -1);
-                    $value = mb_convert_encoding($value, 'UTF-8', $charset);
+                    if ($mb) {
+                        $value = mb_convert_encoding($value, 'UTF-8', $charset);
+                    }
                     $temp = preg_replace('/\\\\([\\\\"])/', '$1', $value);
                     $value = ($temp !== NULL) ? $temp : $value;
-                    $value = mb_convert_encoding($value, $charset, 'UTF-8');
+                    if ($mb) {
+                        $value = mb_convert_encoding($value, $charset, 'UTF-8');
+                    }
                 }
                 $value = Mail_mimePart::encodeHeaderValue(
                     $value, $charset, $encoding, strlen($name) + 2, $eol
