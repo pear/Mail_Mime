@@ -13,8 +13,10 @@ if (!extension_loaded('mbstring')){
 ini_set('mbstring.language',            'Neutral');
 // this isn't working because this option has PHP_INI_SYSTEM mode
 ini_set('mbstring.func_overload',       6);
-ini_set('mbstring.internal_encoding',   'UTF-8');
-ini_set('mbstring.http_output',         'UTF-8');
+if (version_compare(PHP_VERSION, '5.6.0') < 0){
+    ini_set('mbstring.internal_encoding',   'UTF-8');
+    ini_set('mbstring.http_output',         'UTF-8');
+}
 
 include("Mail/mimePart.php");
 // string is UTF-8 encoded
