@@ -963,18 +963,20 @@ class Mail_mimePart
     {
         $result = array();
         $strlen = strlen($string);
+        $quoted_string = '"(?:[^"\\\\]|\\\\.)*"';
 
-        for ($q=$p=$i=0; $i < $strlen; $i++) {
-            if ($string[$i] == "\""
-                && (empty($string[$i-1]) || $string[$i-1] != "\\")
-            ) {
-                $q = $q ? false : true;
-            } else if (!$q && preg_match("/$delimiter/", $string[$i])) {
+        for ($p=$i=0; $i < $strlen; $i++) {
+            if ($string[$i] === '"') {
+                $r = preg_match("/$quoted_string/", $string, $matches, 0, $i);
+                if (!$r || empty($matches[0])) {
+                    break;
+                }
+                $i += strlen($matches[0]) - 1;
+            } else if (preg_match("/$delimiter/", $string[$i])) {
                 $result[] = substr($string, $p, $i - $p);
                 $p = $i + 1;
             }
         }
-
         $result[] = substr($string, $p);
         return $result;
     }
