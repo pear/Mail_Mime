@@ -1,6 +1,13 @@
 --TEST--
 Bug #21205  Handling ISO-2022-JP headers
 --SKIPIF--
+<?php
+include "PEAR.php";
+if (!extension_loaded('mbstring')){
+    if (!PEAR::loadExtension('mbstring')){
+        print('SKIP could not load mbstring module');
+    }
+}
 --FILE--
 <?php
 require_once('Mail/mimePart.php');

@@ -849,7 +849,7 @@ class Mail_mimePart
             $charset = 'ISO-8859-1';
         }
 
-        $mb = function_exists('mb_convert_encoding');
+        $mb = ($charset != 'UTF-8') && function_exists('mb_convert_encoding');
 
         // Structured header (make sure addr-spec inside is not encoded)
         if (!empty($separator)) {
@@ -894,8 +894,7 @@ class Mail_mimePart
                                 // de-quote quoted-string, encoding changes
                                 // string to atom
                                 $word = substr($word, 1, -1);
-                                $temp = preg_replace('/\\\\([\\\\"])/', '$1', $word);
-                                $word = ($temp !== NULL) ? $temp : $word;
+                                $word = preg_replace('/\\\\([\\\\"])/', '$1', $word);
                             }
                             // find length of last line
                             if (($pos = strrpos($value, $eol)) !== false) {
@@ -941,8 +940,7 @@ class Mail_mimePart
                     if ($mb) {
                         $value = mb_convert_encoding($value, 'UTF-8', $charset);
                     }
-                    $temp = preg_replace('/\\\\([\\\\"])/', '$1', $value);
-                    $value = ($temp !== NULL) ? $temp : $value;
+                    $value = preg_replace('/\\\\([\\\\"])/', '$1', $value);
                     if ($mb) {
                         $value = mb_convert_encoding($value, $charset, 'UTF-8');
                     }
