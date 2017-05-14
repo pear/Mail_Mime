@@ -849,11 +849,16 @@ class Mail_mimePart
             $charset = 'ISO-8859-1';
         }
 
+        $mb = ($charset != 'UTF-8') && function_exists('mb_convert_encoding');
+
         // Structured header (make sure addr-spec inside is not encoded)
         if (!empty($separator)) {
             // Simple e-mail address regexp
             $email_regexp = '([^\s<]+|("[^\r\n"]+"))@\S+';
 
+            if ($mb) {
+                $value = mb_convert_encoding($value, 'UTF-8', $charset);
+            }
             $parts = Mail_mimePart::explodeQuotedString("[\t$separator]", $value);
             $value = '';
 
@@ -888,16 +893,17 @@ class Mail_mimePart
                             if ($word[0] == '"' && $word[strlen($word)-1] == '"') {
                                 // de-quote quoted-string, encoding changes
                                 // string to atom
-                                $search = array("\\\"", "\\\\");
-                                $replace = array("\"", "\\");
-                                $word = str_replace($search, $replace, $word);
                                 $word = substr($word, 1, -1);
+                                $word = preg_replace('/\\\\([\\\\"])/', '$1', $word);
                             }
                             // find length of last line
                             if (($pos = strrpos($value, $eol)) !== false) {
                                 $last_len = strlen($value) - $pos;
                             } else {
                                 $last_len = strlen($value);
+                            }
+                            if ($mb) {
+                                $word = mb_convert_encoding($word, $charset, 'UTF-8');
                             }
                             $word = Mail_mimePart::encodeHeaderValue(
                                 $word, $charset, $encoding, $last_len, $eol
@@ -930,10 +936,14 @@ class Mail_mimePart
                 if ($value[0] == '"' && $value[strlen($value)-1] == '"') {
                     // de-quote quoted-string, encoding changes
                     // string to atom
-                    $search = array("\\\"", "\\\\");
-                    $replace = array("\"", "\\");
-                    $value = str_replace($search, $replace, $value);
                     $value = substr($value, 1, -1);
+                    if ($mb) {
+                        $value = mb_convert_encoding($value, 'UTF-8', $charset);
+                    }
+                    $value = preg_replace('/\\\\([\\\\"])/', '$1', $value);
+                    if ($mb) {
+                        $value = mb_convert_encoding($value, $charset, 'UTF-8');
+                    }
                 }
                 $value = Mail_mimePart::encodeHeaderValue(
                     $value, $charset, $encoding, strlen($name) + 2, $eol
