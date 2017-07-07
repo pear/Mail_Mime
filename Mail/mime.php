@@ -181,9 +181,7 @@ class Mail_mime
 
         // Update build parameters
         if (!empty($params) && is_array($params)) {
-            while (list($key, $value) = each($params)) {
-                $this->build_params[$key] = $value;
-            }
+            $this->build_params = array_merge($this->build_params, $params);
         }
     }
 
@@ -857,10 +855,8 @@ class Mail_mime
      */
     public function get($params = null, $filename = null, $skip_head = false)
     {
-        if (isset($params)) {
-            while (list($key, $value) = each($params)) {
-                $this->build_params[$key] = $value;
-            }
+        if (!empty($params) && is_array($params)) {
+            $this->build_params = array_merge($this->build_params, $params);
         }
 
         if (isset($this->headers['From'])) {
