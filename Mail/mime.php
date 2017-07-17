@@ -104,6 +104,13 @@ class Mail_mime
     protected $calbody;
 
     /**
+     * Crypt_GPG instance to encrypt or sign email with
+     *
+     * @var Crypt_GPG
+     */
+    protected $gpg;
+
+    /**
      * list of the attached images
      *
      * @var array
@@ -158,6 +165,8 @@ class Mail_mime
         'calendar_method' => 'request',
         // multipart part preamble (RFC2046 5.1.1)
         'preamble' => '',
+        //MIME boundary for GPG parts
+        'boundary_gpg' => null,
     );
 
 
@@ -305,6 +314,21 @@ class Mail_mime
     public function getCalendarBody()
     {
         return $this->calbody;
+    }
+
+    /**
+     * Set the Crypt_GPG object used for encrypting and signing the mail.
+     *
+     * To activate encryption, at least one encryption key has to be added.
+     * To activate signing, at least one signing key has to be added.
+     *
+     * @param Crypt_GPG $gpg Configured GPG object
+     *
+     * @return void
+     */
+    public function setGPG(Crypt_GPG $gpg)
+    {
+        $this->gpg = $gpg;
     }
 
     /**
@@ -1046,6 +1070,7 @@ class Mail_mime
             if (self::isError($headers)) {
                 return $headers;
             }
+            //FIXME: GPG support for $filename
             $this->headers = array_merge($this->headers, $headers);
             return null;
         } else {
@@ -1053,6 +1078,13 @@ class Mail_mime
             if (self::isError($output)) {
                 return $output;
             }
+            if ($this->gpg !== null) {
+                $output = $this->applyGPG($output);
+                if (self::isError($output)) {
+                    return $output;
+                }
+            }
+
             $this->headers = array_merge($this->headers, $output['headers']);
             return $output['body'];
         }
@@ -1132,9 +1164,21 @@ class Mail_mime
             $headers = array('Received' => $received) + $headers;
         }
 
-        $ret = '';
-        $eol = $this->build_params['eol'];
+        return self::flattenHeaders($headers, $this->build_params['eol']);
+    }
 
+    /**
+     * Convert an array of headers to a string
+     *
+     * @param array  $headers Key-value pairs; header name as key.
+     *                        Value may be a string or an array.
+     * @param string $eol     End-of-line character, e.g. "\n"
+     *
+     * @return string A string with all headers
+     */
+    protected static function flattenHeaders($headers, $eol = "\n")
+    {
+        $ret = '';
         foreach ($headers as $key => $val) {
             if (is_array($val)) {
                 foreach ($val as $value) {
@@ -1582,6 +1626,110 @@ class Mail_mime
         }
 
         return $ret;
+    }
+
+    /**
+     * Encrypt and/or sign the e-mail contents.
+     * Uses the Crypt_GPG object set via setGPG().
+     *
+     * This method implements
+     * - RFC 1847 - Security Multiparts for MIME:
+     *              Multipart/Signed and Multipart/Encrypted
+     * - RFC 2015 - MIME Security with Pretty Good Privacy (PGP)
+     * - RFC 3156 - MIME Security with OpenPGP
+     *
+     * @param array $output Result of Mail_mimePart::encode() with
+     *                      "headers" and "body" keys.
+     *
+     * @return array Result of Mail_mimePart::encode() with "headers" and
+     *               "body" keys containing the encrypted/signed data.
+     *               A PEAR_Error object may also be raised.
+     */
+    protected function applyGPG($output)
+    {
+        $headers = $output['headers'];
+        $body    = $output['body'];
+        $eol     = $this->build_params['eol'];
+        $content = self::flattenHeaders($headers, $eol) . $eol . $body;
+
+        if ($this->gpg->hasEncryptKeys()) {
+            if ($this->gpg->hasSignKeys()) {
+                //encrypt + sign
+                $data = $this->gpg->encryptAndSign($content);
+            } else {
+                //encrypt only
+                $data = $this->gpg->encrypt($content);
+            }
+
+            $message = new Mail_mimePart(
+                '',
+                array(
+                    'content_type' => 'multipart/encrypted'
+                        . '; protocol="application/pgp-encrypted"',
+                    'eol' => $eol,
+                )
+            );
+            $message->addSubpart(
+                'Version: 1' . $eol,
+                array(
+                    'content_type' => 'application/pgp-encrypted',
+                    'eol' => $eol,
+                )
+            );
+            $message->addSubpart(
+                $data,
+                array(
+                    'content_type' => 'application/octet-stream',
+                    'eol' => $eol,
+                )
+            );
+            $output = $message->encode($this->build_params['boundary_gpg'], false);
+        } else if ($this->gpg->hasSignKeys()) {
+            //signing only, no encryption
+            $headersNoContentType = $headers;
+            unset($headersNoContentType['Content-Type']);
+
+            $signature = $this->gpg->sign(
+                $content,
+                Crypt_GPG::SIGN_MODE_DETACHED,
+                Crypt_GPG::ARMOR_ASCII,
+                Crypt_GPG::TEXT_NORMALIZED
+            );
+
+            $sigInfo = $this->gpg->getLastSignatureInfo();
+            if ($sigInfo === null) {
+                return self::raiseError('Failed to fetch signature information');
+            }
+            $micalg = 'pgp-' . $sigInfo->getHashAlgorithmName();
+
+            $message = new Mail_mimePart(
+                '',
+                array(
+                    'content_type' => 'multipart/signed'
+                        . ';protocol="application/pgp-signature"'
+                        . ';micalg=' . $micalg,
+                    'eol' => $eol,
+                )
+            );
+            $message->addSubpart(
+                $body,
+                array(
+                    'content_type' => $headers['Content-Type'],
+                    'headers' => $headersNoContentType,
+                    'eol' => $eol,
+                )
+            );
+            $message->addSubpart(
+                $signature,
+                array(
+                    'content_type' => 'application/pgp-signature',
+                    'eol' => $eol,
+                )
+            );
+            $output = $message->encode($this->build_params['boundary_gpg'], false);
+        }
+
+        return $output;
     }
 
     /**
