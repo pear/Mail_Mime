@@ -90,6 +90,7 @@ using RFC2047 and/or RFC2231.</description>
     <file baseinstalldir="Mail" name="test_Bug_21098.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_21205.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_21206.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_21255.phpt" role="test" />
    </dir> <!-- /tests -->
    <dir name="Mail">
      <file baseinstalldir="/" name="mime.php" role="php" />

@@ -1163,19 +1163,16 @@ class Mail_mime
     {
         $header = $type;
 
-        $eol = !empty($this->build_params['eol'])
-            ? $this->build_params['eol'] : "\r\n";
+        $eol = !empty($this->build_params['eol']) ? $this->build_params['eol'] : "\r\n";
 
         // add parameters
-        $token_regexp = '#([^\x21\x23-\x27\x2A\x2B\x2D'
-            . '\x2E\x30-\x39\x41-\x5A\x5E-\x7E])#';
+        $token_regexp = '#([^\x21\x23-\x27\x2A\x2B\x2D\x2E\x30-\x39\x41-\x5A\x5E-\x7E])#';
 
         if (is_array($params)) {
             foreach ($params as $name => $value) {
                 if ($name == 'boundary') {
                     $this->build_params['boundary'] = $value;
-                }
-                if (!preg_match($token_regexp, $value)) {
+                } else if (!preg_match($token_regexp, $value)) {
                     $header .= ";$eol $name=$value";
                 } else {
                     $value = addcslashes($value, '\\"');
