@@ -340,7 +340,7 @@ class Mail_mimePart
             $encoded['body'] = $this->getEncodedData($this->body, $this->encoding);
         } else if ($this->body_file) {
             // Temporarily reset magic_quotes_runtime for file reads and writes
-            if ($magic_quote_setting = get_magic_quotes_runtime()) {
+            if ($magic_quote_setting = @get_magic_quotes_runtime()) {
                 @ini_set('magic_quotes_runtime', 0);
             }
             $body = $this->getEncodedDataFromFile($this->body_file, $this->encoding);
@@ -392,7 +392,7 @@ class Mail_mimePart
         }
 
         // Temporarily reset magic_quotes_runtime for file reads and writes
-        if ($magic_quote_setting = get_magic_quotes_runtime()) {
+        if ($magic_quote_setting = @get_magic_quotes_runtime()) {
             @ini_set('magic_quotes_runtime', 0);
         }
 

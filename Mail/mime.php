@@ -494,7 +494,7 @@ class Mail_mime
         }
 
         // Temporarily reset magic_quotes_runtime and read file contents
-        if ($magic_quote_setting = get_magic_quotes_runtime()) {
+        if ($magic_quote_setting = @get_magic_quotes_runtime()) {
             @ini_set('magic_quotes_runtime', 0);
         }
 
@@ -769,7 +769,7 @@ class Mail_mime
         }
 
         // Temporarily reset magic_quotes_runtime and read file contents
-        if ($magic_quote_setting = get_magic_quotes_runtime()) {
+        if ($magic_quote_setting = @get_magic_quotes_runtime()) {
             @ini_set('magic_quotes_runtime', 0);
         }
 
@@ -822,7 +822,7 @@ class Mail_mime
         }
 
         // Temporarily reset magic_quotes_runtime and read file contents
-        if ($magic_quote_setting = get_magic_quotes_runtime()) {
+        if ($magic_quote_setting = @get_magic_quotes_runtime()) {
             @ini_set('magic_quotes_runtime', 0);
         }
 
