@@ -1,5 +1,5 @@
 language: php
-dist: trusty
+dist: precise
 sudo: false
 matrix:
   fast_finish: true
