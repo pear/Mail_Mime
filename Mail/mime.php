@@ -500,7 +500,7 @@ class Mail_mime
 
         $cont = file_get_contents($file_name);
 
-        if ($magic_quotes) {
+        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
             @ini_set('magic_quotes_runtime', $magic_quotes);
         }
 
@@ -785,7 +785,7 @@ class Mail_mime
 
         fclose($fh);
 
-        if ($magic_quotes) {
+        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
             @ini_set('magic_quotes_runtime', $magic_quotes);
         }
 
@@ -833,7 +833,7 @@ class Mail_mime
             fclose($fh);
         }
 
-        if ($magic_quotes) {
+        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
             @ini_set('magic_quotes_runtime', $magic_quotes);
         }
 
