@@ -500,7 +500,7 @@ class Mail_mime
 
         $cont = file_get_contents($file_name);
 
-        if ($magic_quotes) {
+        if (isset($magic_quotes)) {
             @ini_set('magic_quotes_runtime', $magic_quotes);
         }
 
@@ -785,14 +785,14 @@ class Mail_mime
 
         fclose($fh);
 
-        if ($magic_quotes) {
+        if (isset($magic_quotes)) {
             @ini_set('magic_quotes_runtime', $magic_quotes);
         }
 
         // Write the rest of the message into file
         $res = $this->get($params, $filename);
 
-        return $res ? $res : true;
+        return $res ?: true;
     }
 
     /**
@@ -833,11 +833,11 @@ class Mail_mime
             fclose($fh);
         }
 
-        if ($magic_quotes) {
+        if (isset($magic_quotes)) {
             @ini_set('magic_quotes_runtime', $magic_quotes);
         }
 
-        return $res ? $res : true;
+        return $res ?: true;
     }
 
     /**

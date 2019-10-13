@@ -344,7 +344,7 @@ class Mail_mimePart
                 $magic_quotes = @ini_set('magic_quotes_runtime', 0);
             }
             $body = $this->getEncodedDataFromFile($this->body_file, $this->encoding);
-            if ($magic_quotes) {
+            if (isset($magic_quotes)) {
                 @ini_set('magic_quotes_runtime', $magic_quotes);
             }
 
@@ -402,7 +402,7 @@ class Mail_mimePart
             fclose($fh);
         }
 
-        if ($magic_quotes) {
+        if (isset($magic_quotes)) {
             @ini_set('magic_quotes_runtime', $magic_quotes);
         }
 
