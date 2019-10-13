@@ -26,10 +26,10 @@ using RFC2047 and/or RFC2231.</description>
   <email>alec@php.net</email>
   <active>yes</active>
  </lead>
- <date>2019-09-25</date>
- <time>08:00:00</time>
+ <date>2019-10-13</date>
+ <time>11:00:00</time>
  <version>
-  <release>1.10.3</release>
+  <release>1.10.4</release>
   <api>1.10.0</api>
  </version>
  <stability>
@@ -38,7 +38,7 @@ using RFC2047 and/or RFC2231.</description>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
-* Fix deprecation warning for get_magic_quotes_runtime() use on PHP 7.4 [alec]
+* Fix E_STRICT errors introduced in the previous release [alec]
  </notes>
  <contents>
   <dir name="/">
@@ -89,6 +89,7 @@ using RFC2047 and/or RFC2231.</description>
     <file baseinstalldir="Mail" name="test_Bug_21205.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_21206.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_21255.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_GH16.phpt" role="test" />
    </dir> <!-- /tests -->
    <dir name="Mail">
      <file baseinstalldir="/" name="mime.php" role="php" />
@@ -875,6 +876,22 @@ Bugs Fixed:
    <notes>
 * Fix Bug #21255: Boundary gets added twice when using setContentType() [alec]
 * PHP 7.2 compatibility fixes [alec]
+   </notes>
+  </release>
+  <release>
+   <date>2019-09-25</date>
+   <time>08:00:00</time>
+   <version>
+    <release>1.10.3</release>
+    <api>1.10.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+   <notes>
+* Fix deprecation warning for get_magic_quotes_runtime() use on PHP 7.4 [alec]
    </notes>
   </release>
  </changelog>
