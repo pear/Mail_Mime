@@ -20,13 +20,20 @@ touch($temp_filename);
 $msg = $mime->saveMessage($temp_filename);
 echo file_get_contents($temp_filename);
 
+$temp_filename = __DIR__ . "/output3.tmp";
+$mimePart = new Mail_mimePart('abc', array(
+        'content_type' => 'text/plain',
+        'encoding'     => 'quoted-printable',
+));
+$mimePart->encodeToFile($temp_filename);
+echo file_get_contents($temp_filename);
+
 ?>
 --CLEAN--
 <?php
-    $temp_filename = __DIR__ . "/output1.tmp";
-    @unlink($temp_filename);
-    $temp_filename = __DIR__ . "/output2.tmp";
-    @unlink($temp_filename);
+    for ($i = 1; $i < 4; $i++) {
+        @unlink(__DIR__ . "/output{$i}.tmp");
+    }
 ?>
 --EXPECT--
 --something
@@ -55,3 +62,7 @@ Content-Type: text/html; charset=ISO-8859-1
 
 html
 --something--
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+
+abc
