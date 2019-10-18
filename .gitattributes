@@ -1,0 +1,5 @@
+scripts/ export-ignore
+tests/ export-ignore
+.gitignore export-ignore
+.travis.yml export-ignore
+package.xml export-ignore
