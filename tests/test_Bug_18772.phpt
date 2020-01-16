@@ -21,17 +21,16 @@ $msg = $mime->getMessage();
 echo preg_replace('/=_[0-9a-z]+/', '*', $msg);
 --EXPECT--
 MIME-Version: 1.0
-Content-Type: text/calendar; method=request; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
 Subject: test
+Content-Type: text/calendar; charset=UTF-8; method=request
+Content-Transfer-Encoding: quoted-printable
 
 VCALENDAR
 ---
 MIME-Version: 1.0
+Subject: test
 Content-Type: multipart/alternative;
  boundary="*"
-Content-Transfer-Encoding: quoted-printable
-Subject: test
 
 --*
 Content-Transfer-Encoding: quoted-printable

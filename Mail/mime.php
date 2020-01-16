@@ -1076,14 +1076,6 @@ class Mail_mime
         // Add mime version header
         $headers['MIME-Version'] = '1.0';
 
-        // Content-Type and Content-Transfer-Encoding headers should already
-        // be present if get() was called, but we'll re-set them to make sure
-        // we got them when called before get() or something in the message
-        // has been changed after get() [#14780]
-        if (!$skip_content) {
-            $headers += $this->contentHeaders();
-        }
-
         if (!empty($xtra_headers)) {
             $headers = array_merge($headers, $xtra_headers);
         }
@@ -1093,6 +1085,14 @@ class Mail_mime
         } else {
             $this->headers = array_merge($headers, $this->headers);
         }
+
+        // Always reset Content-Type/Content-Transfer-Encoding headers
+        // In case the message structure changed in meantime
+        unset($this->headers['Content-Type']);
+        unset($this->headers['Content-Transfer-Encoding']);
+        unset($this->headers['Content-Disposition']);
+
+        $this->headers = array_merge($this->headers, $this->contentHeaders());
 
         $headers = $this->headers;
 
@@ -1104,8 +1104,7 @@ class Mail_mime
             $headers['Content-Type'] = $this->build_params['ctype'];
         }
 
-        $encodedHeaders = $this->encodeHeaders($headers);
-        return $encodedHeaders;
+        return $this->encodeHeaders($headers);
     }
 
     /**

@@ -47,6 +47,7 @@ using RFC2047 and/or RFC2231.</description>
    </dir> <!-- /scripts -->
    <dir name="tests">
     <file baseinstalldir="Mail" name="class-filename.phpt" role="test" />
+    <file baseinstalldir="Mail" name="content_transfer_encoding.phpt" role="test" />
     <file baseinstalldir="Mail" name="encoding_case.phpt" role="test" />
     <file baseinstalldir="Mail" name="headers_with_mbstring.phpt" role="test" />
     <file baseinstalldir="Mail" name="headers_without_mbstring.phpt" role="test" />
