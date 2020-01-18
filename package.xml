@@ -86,6 +86,7 @@ using RFC2047 and/or RFC2231.</description>
     <file baseinstalldir="Mail" name="test_Bug_20273.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_20563.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_20564.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_21027.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_21098.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_21205.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_21206.phpt" role="test" />
