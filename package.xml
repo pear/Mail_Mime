@@ -26,10 +26,10 @@ using RFC2047 and/or RFC2231.</description>
   <email>alec@php.net</email>
   <active>yes</active>
  </lead>
- <date>2019-10-13</date>
- <time>11:00:00</time>
+ <date>2020-01-24</date>
+ <time>19:00:00</time>
  <version>
-  <release>1.10.4</release>
+  <release>1.10.5</release>
   <api>1.10.0</api>
  </version>
  <stability>
@@ -38,7 +38,8 @@ using RFC2047 and/or RFC2231.</description>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
-* Fix E_STRICT errors introduced in the previous release [alec]
+* Make sure to not set Content-Transfer-Encoding on multipart messages [alec]
+* Added support for calendar invitations with attachments/html/images [jacalben]
  </notes>
  <contents>
   <dir name="/">
@@ -895,6 +896,22 @@ Bugs Fixed:
    <notes>
 * Fix deprecation warning for get_magic_quotes_runtime() use on PHP 7.4 [alec]
    </notes>
+  </release>
+  <release>
+ <date>2019-10-13</date>
+ <time>11:00:00</time>
+ <version>
+  <release>1.10.4</release>
+  <api>1.10.0</api>
+ </version>
+ <stability>
+  <release>stable</release>
+  <api>stable</api>
+ </stability>
+ <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+ <notes>
+* Fix E_STRICT errors introduced in the previous release [alec]
+ </notes>
   </release>
  </changelog>
 </package>
