@@ -43,9 +43,6 @@ using RFC2047 and/or RFC2231.</description>
  </notes>
  <contents>
   <dir name="/">
-   <dir name="scripts">
-    <file baseinstalldir="Mail" name="phail.php" role="doc" />
-   </dir> <!-- /scripts -->
    <dir name="tests">
     <file baseinstalldir="Mail" name="class-filename.phpt" role="test" />
     <file baseinstalldir="Mail" name="content_transfer_encoding.phpt" role="test" />
