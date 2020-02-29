@@ -98,6 +98,16 @@ printHeaderContentType($headers);
 printPartsStartAndEnd($body);
 print("\n");
 
+print "TEST: html + inline images\n";
+$mime = new Mail_mime();
+$mime->setHTMLBody($htmlBody);
+$mime->addHTMLImage("aaaaaaaaaa", 'image/gif', 'image.gif', false, 'contentid');
+$headers = $mime->headers();
+$body = $mime->get();
+printHeaderContentType($headers);
+printPartsStartAndEnd($body);
+print("\n");
+
 print("TEST: txt, html and attachment\n");
 $mime = new Mail_mime();
 $mime->setTXTBody($txtBody);
@@ -196,6 +206,12 @@ TEST: html + attachments
 Content-Type: multipart/mixed
     Content-Type: text/html
     Content-Type: application/ics
+End part
+
+TEST: html + inline images
+Content-Type: multipart/related
+    Content-Type: text/html
+    Content-Type: image/gif
 End part
 
 TEST: txt, html and attachment

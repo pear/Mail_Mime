@@ -1368,7 +1368,7 @@ class Mail_mime
             break;
 
         case $html && $html_images && !$attachments && !$has_alternatives:
-            $headers['Content-Type'] = 'multiplart/related';
+            $headers['Content-Type'] = 'multipart/related';
             break;
 
         case $calendar && !$attachments && !$has_alternatives:
