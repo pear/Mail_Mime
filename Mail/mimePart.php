@@ -145,27 +145,26 @@ class Mail_mimePart
      *
      * @param string $body   The body of the mime part if any.
      * @param array  $params An associative array of optional parameters:
-     *     content_type      - The content type for this part eg multipart/mixed
-     *     encoding          - The encoding to use, 7bit, 8bit,
-     *                         base64, or quoted-printable
-     *     charset           - Content character set
-     *     cid               - Content ID to apply
-     *     disposition       - Content disposition, inline or attachment
-     *     filename          - Filename parameter for content disposition
-     *     description       - Content description
-     *     name_encoding     - Encoding of the attachment name (Content-Type)
-     *                         By default filenames are encoded using RFC2231
-     *                         Here you can set RFC2047 encoding (quoted-printable
-     *                         or base64) instead
-     *     filename_encoding - Encoding of the attachment filename (Content-Disposition)
-     *                         See 'name_encoding'
-     *     headers_charset   - Charset of the headers e.g. filename, description.
-     *                         If not set, 'charset' will be used
-     *     eol               - End of line sequence. Default: "\r\n"
-     *     headers           - Hash array with additional part headers. Array keys
-     *                         can be in form of <header_name>:<parameter_name>
-     *     body_file         - Location of file with part's body (instead of $body)
-     *     preamble          - short text of multipart part preamble (RFC2046 5.1.1)
+     *                       - content_type: The content type for this part eg multipart/mixed
+     *                       - encoding:  The encoding to use, 7bit, 8bit, base64, or quoted-printable
+     *                       - charset: Content character set
+     *                       - cid: Content ID to apply
+     *                       - disposition: Content disposition, inline or attachment
+     *                       - filename: Filename parameter for content disposition
+     *                       - description: Content description
+     *                       - name_encoding: Encoding of the attachment name (Content-Type)
+     *                       By default filenames are encoded using RFC2231
+     *                       Here you can set RFC2047 encoding (quoted-printable
+     *                       or base64) instead
+     *                       - filename_encoding: Encoding of the attachment filename (Content-Disposition)
+     *                       See 'name_encoding'
+     *                       - headers_charset: Charset of the headers e.g. filename, description.
+     *                       If not set, 'charset' will be used
+     *                       - eol: End of line sequence. Default: "\r\n"
+     *                       - headers: Hash array with additional part headers. Array keys
+     *                       can be in form of <header_name>:<parameter_name>
+     *                       - body_file: Location of file with part's body (instead of $body)
+     *                       - preamble: short text of multipart part preamble (RFC2046 5.1.1)
      */
     public function __construct($body = '', $params = array())
     {
