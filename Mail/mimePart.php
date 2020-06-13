@@ -819,17 +819,19 @@ class Mail_mimePart
      * Replace ISO-2022-JP with ISO-2022-JP-MS to convert Windows dependent
      * characters.
      *
-     * @param string $charset original charset
+     * @param string $charset A original charset
      *
-     * @return string charset for mbstring
-     * @since 1.10.5
+     * @return string A charset for mbstring
+     * @since  1.10.8
      */
     protected static function mbstringCharset($charset)
     {
         $mb_charset = $charset;
+
         if ($charset == 'ISO-2022-JP') {
             $mb_charset = 'ISO-2022-JP-MS';
         }
+
         return $mb_charset;
     }
 

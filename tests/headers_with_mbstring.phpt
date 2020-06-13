@@ -50,10 +50,8 @@ foreach ($headers as $header) {
     $charset = isset($header[2]) ? $header[2] : 'UTF-8';
     $hdr = $mime->encodeHeader($header[0], $header[1], $charset, 'base64');
     printf("[%02d] %s: %s\n", $i, $header[0], $hdr);
-    if ($charset == 'UTF-8') {
-        $hdr = $mime->encodeHeader($header[0], $header[1], $charset, 'quoted-printable');
-        printf("[%02d] %s: %s\n", $i, $header[0], $hdr);
-    }
+    $hdr = $mime->encodeHeader($header[0], $header[1], $charset, 'quoted-printable');
+    printf("[%02d] %s: %s\n", $i, $header[0], $hdr);
     $i++;
 }
 ?>
@@ -151,3 +149,5 @@ foreach ($headers as $header) {
 [30] Mail-Reply-To: =?UTF-8?B?w7bDpMO8?= <adresse@adresse.de>
 [30] Mail-Reply-To: =?UTF-8?Q?=C3=B6=C3=A4=C3=BC?= <adresse@adresse.de>
 [31] Subject: =?ISO-2022-JP?B?GyRCLWo7M3l1OSk2SBsoQg==?=
+[31] Subject: =?ISO-2022-JP?Q?=24B-j=28B=24B=3B3=28B=24Byu=28B?=
+ =?ISO-2022-JP?Q?=24B9=29=28B=24B6H=28B?=
