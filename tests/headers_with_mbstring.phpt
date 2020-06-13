@@ -42,14 +42,18 @@ array('From', "Doe<test@domain.com>"),
 array('From', "\"John Doe\"<test@domain.com>"),
 array('Mail-Reply-To', 'adresse@adresse.de <addresse@adresse>'),
 array('Mail-Reply-To', '"öäü" <adresse@adresse.de>'),
+array('Subject', mb_convert_encoding('㈱山﨑工業', 'ISO-2022-JP-MS', 'UTF-8'), 'ISO-2022-JP'),
 );
 
 $i = 1;
 foreach ($headers as $header) {
-    $hdr = $mime->encodeHeader($header[0], $header[1], 'UTF-8', 'base64');
+    $charset = isset($header[2]) ? $header[2] : 'UTF-8';
+    $hdr = $mime->encodeHeader($header[0], $header[1], $charset, 'base64');
     printf("[%02d] %s: %s\n", $i, $header[0], $hdr);
-    $hdr = $mime->encodeHeader($header[0], $header[1], 'UTF-8', 'quoted-printable');
-    printf("[%02d] %s: %s\n", $i, $header[0], $hdr);
+    if ($charset == 'UTF-8') {
+        $hdr = $mime->encodeHeader($header[0], $header[1], $charset, 'quoted-printable');
+        printf("[%02d] %s: %s\n", $i, $header[0], $hdr);
+    }
     $i++;
 }
 ?>
@@ -146,3 +150,4 @@ foreach ($headers as $header) {
 [29] Mail-Reply-To: "adresse@adresse.de" <addresse@adresse>
 [30] Mail-Reply-To: =?UTF-8?B?w7bDpMO8?= <adresse@adresse.de>
 [30] Mail-Reply-To: =?UTF-8?Q?=C3=B6=C3=A4=C3=BC?= <adresse@adresse.de>
+[31] Subject: =?ISO-2022-JP?B?GyRCLWo7M3l1OSk2SBsoQg==?=
