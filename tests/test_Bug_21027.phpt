@@ -29,7 +29,7 @@ END:VEVENT
 END:VCALENDAR';
 
 function printPartsStartAndEnd($body) {
-    $matches  = [];
+    $matches  = array();
     preg_match_all('/--(=_[a-z0-9]+)--|Content-Type: ([^;\r\n]+)/', $body, $matches);
     $tab = "    ";
     foreach ($matches[0] as $match){
@@ -46,7 +46,7 @@ function printPartsStartAndEnd($body) {
 }
 
 function printHeaderContentType($headers) {
-    $headerContentType = [];
+    $headerContentType = array();
     preg_match('/([^;\r\n]+)/', $headers['Content-Type'], $headerContentType);
     printf("Content-Type: %s\n", $headerContentType[0]);
 }
