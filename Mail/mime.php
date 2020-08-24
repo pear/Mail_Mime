@@ -792,7 +792,7 @@ class Mail_mime
         // Write the rest of the message into file
         $res = $this->get($params, $filename);
 
-        return $res ? $res : true;
+        return $res ?: true;
     }
 
     /**
@@ -837,7 +837,7 @@ class Mail_mime
             @ini_set('magic_quotes_runtime', $magic_quotes);
         }
 
-        return $res ? $res : true;
+        return $res ?: true;
     }
 
     /**
@@ -987,12 +987,12 @@ class Mail_mime
         $alternatives_count = $html + $calendar + $has_text;
 
         if ($alternatives_count > 1) {
-            $alt_part = $this->addAlternativePart($parent_part ? $parent_part : $mixed_params);
+            $alt_part = $this->addAlternativePart($parent_part ?: $mixed_params);
         } else {
             $alt_part = null;
         }
 
-        $dest_part = $alt_part ? $alt_part : $parent_part;
+        $dest_part = $alt_part ?: $parent_part;
         $part = null;
 
         if ($has_text) {
@@ -1007,7 +1007,7 @@ class Mail_mime
             $part = $this->addCalendarPart($dest_part);
         }
 
-        return $dest_part ? $dest_part : $part;
+        return $dest_part ?: $part;
     }
 
     /**
