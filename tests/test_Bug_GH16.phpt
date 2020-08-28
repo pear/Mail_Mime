@@ -10,17 +10,17 @@ $mime->setHTMLBody('html');
 $mime->setTXTBody('text');
 $mime->setContentType('multipart/alternative', array('boundary' => 'something'));
 
-$temp_filename = __DIR__ . "/output1.tmp";
+$temp_filename = dirname(__FILE__) . "/output1.tmp";
 touch($temp_filename);
 $msg = $mime->saveMessageBody($temp_filename);
 echo file_get_contents($temp_filename);
 
-$temp_filename = __DIR__ . "/output2.tmp";
+$temp_filename = dirname(__FILE__) . "/output2.tmp";
 touch($temp_filename);
 $msg = $mime->saveMessage($temp_filename);
 echo file_get_contents($temp_filename);
 
-$temp_filename = __DIR__ . "/output3.tmp";
+$temp_filename = dirname(__FILE__) . "/output3.tmp";
 $mimePart = new Mail_mimePart('abc', array(
         'content_type' => 'text/plain',
         'encoding'     => 'quoted-printable',
@@ -32,7 +32,7 @@ echo file_get_contents($temp_filename);
 --CLEAN--
 <?php
     for ($i = 1; $i < 4; $i++) {
-        @unlink(__DIR__ . "/output{$i}.tmp");
+        @unlink(dirname(__FILE__) . "/output{$i}.tmp");
     }
 ?>
 --EXPECT--
