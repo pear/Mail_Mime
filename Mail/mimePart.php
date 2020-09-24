@@ -638,7 +638,7 @@ class Mail_mimePart
                 } elseif (($dec == 61) || ($dec < 32) || ($dec > 126)) {
                     $char = $escape . sprintf('%02X', $dec);
                 } elseif (($dec == 46) && (($newline == '')
-                    || ((strlen($newline) + strlen("=2E")) >= $line_max
+                    || ((strlen($newline) + strlen(".")) >= $line_max
                     && isset($line[$i])))
                 ) {
                     // Bug #9722: convert full-stop at bol,
