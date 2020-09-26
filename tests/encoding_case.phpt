@@ -8,5 +8,6 @@ require_once('Mail/mimePart.php');
 print Mail_mimePart::quotedPrintableEncode($test, 7);
 ?>
 --EXPECT--
-Here's=09
+Here's=
+=09
 a tab
