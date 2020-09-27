@@ -26,7 +26,12 @@ function debug_print($text, $begin=False, $end=False, $special_chars=True, $brea
         $input = substr($text, 0, $i);
         $output = Mail_mimePart::quotedPrintableEncode($input, $break);
 
-        printf("input: %02d: %s\n", strlen($input), $input);
+        if ($special_chars) {
+            $input_vis = str_replace("\t", '\t', str_replace("\n", '\n', str_replace("\r", '\r', $input)));
+        } else {
+            $input_vis = $input;
+        }
+        printf("input: %02d: %s\n", strlen($input), $input_vis);
 
         $lines = explode("\r\n", $output);
         for($j=0; $j < count($lines); $j++) {
@@ -50,8 +55,8 @@ debug_print($text, 74);
 $text = '123456789.12';
 debug_print($text, 10, False, False, 10);
 
-$text = "\tHere's\t\na tab.";
-debug_print($text, False, False, False, 8);
+$text = "\tHere's\t\na tab.\n";
+debug_print($text, False, False, True, 8);
 
 --EXPECT--
 input: 74: 12345678901234567890123456789012345678901234567890123456789012345678901234
@@ -90,9 +95,9 @@ input: 12: 123456789.12
 output:10: 123456789=
 output:05: =2E12
 ---
-input: 15: 	Here's	
-a tab.
-output:08: 	Here's=
-output:03: =09
-output:06: a tab.
+input: 16: \tHere's\t\na tab.\n
+output:08: \tHere's=\r\n
+output:03: =09\r\n
+output:06: a tab.\r\n
+output:00: 
 ---
