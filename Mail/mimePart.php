@@ -636,9 +636,11 @@ class Mail_mimePart
                 } elseif ($dec == 9 && isset($line[$i])) {
                     ; // Do nothing if a TAB is not on eol
                 } elseif (($dec == 61) || ($dec < 32) || ($dec > 126)) {
+                    // Escape unprintable chars
                     $char = $escape . sprintf('%02X', $dec);
                 } elseif (($dec == 46) && (($newline == '')
-                    || ((strlen($newline) + strlen("=2E")) >= $line_max))
+                    || ((strlen($newline) + strlen(".=")) > $line_max
+                    && isset($line[$i])))
                 ) {
                     // Bug #9722: convert full-stop at bol,
                     // some Windows servers need this, won't break anything (cipri)
@@ -647,10 +649,12 @@ class Mail_mimePart
                     $char = '=2E';
                 }
 
-                // Note, when changing this line, also change the ($dec == 46)
-                // check line, as it mimics this line due to Bug #11731
                 // EOL is not counted
-                if ((strlen($newline) + strlen($char)) >= $line_max) {
+                if ((strlen($newline) + strlen($char) == $line_max)
+                    && !isset($line[$i])
+                ) {
+                    ; // no soft break is needed if we're the last char
+                } elseif ((strlen($newline) + strlen($char)) >= $line_max) {
                     // soft line break; " =\r\n" is okay
                     $output  .= $newline . $escape . $eol;
                     $newline  = '';
