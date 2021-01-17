@@ -8,7 +8,7 @@
  * of mime mail.
  * This class however allows full control over the email.
  *
- * Compatible with PHP version 5 and 7
+ * Compatible with PHP version 5, 7 and 8
  *
  * LICENSE: This LICENSE is in the BSD license style.
  * Copyright (c) 2002-2003, Richard Heyes <richard@phpguru.org>
