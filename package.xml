@@ -93,6 +93,7 @@ using RFC2047 and/or RFC2231.</description>
     <file baseinstalldir="Mail" name="test_Bug_21255.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_GH16.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_GH19.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_GH26.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_linebreak_dot.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_linebreak_larger_76.phpt" role="test" />
    </dir> <!-- /tests -->

@@ -885,7 +885,7 @@ class Mail_mimePart
         // Structured header (make sure addr-spec inside is not encoded)
         if (!empty($separator)) {
             // Simple e-mail address regexp
-            $email_regexp = '([^\s<]+|("[^\r\n"]+"))@\S+';
+            $email_regexp = '([^\s<]+|("[^\r\n"]+"))@[^\s"]+';
 
             if ($mb) {
                 $value = mb_convert_encoding($value, 'UTF-8', $mb_charset);
