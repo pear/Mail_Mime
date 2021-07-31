@@ -34,4 +34,11 @@ jobs:
             pear version
 
       - name: Execute tests
-        run: pear run-tests --showdiff tests/*.phpt
+        run: pear run-tests tests/*.phpt
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@master
+        if: failure()
+        with:
+          name: Diffs
+          path: tests/*.diff
