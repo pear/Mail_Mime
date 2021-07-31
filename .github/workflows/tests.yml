@@ -27,6 +27,7 @@ jobs:
           coverage: none
 
       - name: Install PEAR
+        if: matrix.php < 7.4
         run: |
             sudo apt-get update
             sudo apt-get install php-pear
