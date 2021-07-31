@@ -31,6 +31,7 @@ jobs:
         run: |
             sudo apt-get update
             sudo apt-get install php-pear
+            pear version
 
       - name: Execute tests
         run: pear run-tests --showdiff tests/*.phpt
