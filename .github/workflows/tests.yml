@@ -27,7 +27,9 @@ jobs:
           coverage: none
 
       - name: Install PEAR
-        run: sudo apt-get install php-pear
+        run: |
+            sudo apt-get update
+            sudo apt-get install php-pear
 
       - name: Execute tests
         run: pear run-tests tests/
@@ -36,7 +38,7 @@ jobs:
         uses: actions/upload-artifact@master
         if: failure()
         with:
-          name: Logs
+          name: Errors
           path: |
             tests/*.diff
             tests/*.out
