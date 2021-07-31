@@ -33,11 +33,4 @@ jobs:
             sudo apt-get install php-pear
 
       - name: Execute tests
-        run: pear run-tests tests/
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@master
-        if: failure()
-        with:
-          name: Diffs
-          path: tests/*.diff
+        run: pear run-tests -d tests/*.phpt

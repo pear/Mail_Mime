@@ -6,7 +6,6 @@ Bug #2364   Tabs in Mail_mimePart::quotedPrintableEncode()
 $test = "Here's\t\na tab\n";
 require_once('Mail/mimePart.php');
 print Mail_mimePart::quotedPrintableEncode($test, 7);
-echo phpversion();
 ?>
 --EXPECT--
 Here's=
