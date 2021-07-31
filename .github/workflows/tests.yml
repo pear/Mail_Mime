@@ -39,7 +39,5 @@ jobs:
         uses: actions/upload-artifact@master
         if: failure()
         with:
-          name: Errors
-          path: |
-            tests/*.diff
-            tests/*.out
+          name: Diffs
+          path: tests/*.diff

@@ -2,7 +2,6 @@
 Test class filename (bug #24)
 --SKIPIF--
 <?php
-echo phpversion();
 echo "skip This will be broken until Mail_Mime2";
 ?>
 --FILE--
