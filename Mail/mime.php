@@ -87,21 +87,21 @@ class Mail_mime
      *
      * @var string
      */
-    protected $txtbody;
+    protected $txtbody = '';
 
     /**
      * Contains the html part of the email
      *
      * @var string
      */
-    protected $htmlbody;
+    protected $htmlbody = '';
 
     /**
      * Contains the text/calendar part of the email
      *
      * @var string
      */
-    protected $calbody;
+    protected $calbody = '';
 
     /**
      * List of the attached images
@@ -875,7 +875,7 @@ class Mail_mime
             }
         }
 
-        if (count($this->html_images) && isset($this->htmlbody)) {
+        if (count($this->html_images) && strlen($this->htmlbody) > 0) {
             foreach ($this->html_images as $key => $value) {
                 $rval  = preg_quote($value['name'], '#');
                 $regex = array(
