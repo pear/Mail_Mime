@@ -33,4 +33,4 @@ jobs:
             sudo apt-get install php-pear
 
       - name: Execute tests
-        run: pear run-tests -d tests/*.phpt
+        run: pear run-tests --showdiff tests/*.phpt
