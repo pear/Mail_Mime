@@ -26,10 +26,10 @@ using RFC2047 and/or RFC2231.</description>
   <email>alec@php.net</email>
   <active>yes</active>
  </lead>
- <date>2021-01-17</date>
- <time>09:25:00</time>
+ <date>2021-09-05</date>
+ <time>10:25:00</time>
  <version>
-  <release>1.10.10</release>
+  <release>1.10.11</release>
   <api>1.10.0</api>
  </version>
  <stability>
@@ -38,9 +38,9 @@ using RFC2047 and/or RFC2231.</description>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
-* Compatibility fixes for PHP 5.2 and 5.3 [alec]
-* Corrected soft line breaks handling to be RFC compliant [ixs]
-* Corrected line breaks for lines ending in dots and length more than 74 [ixs]
+* Fix PHP 8.1: strlen(): Passing null to parameter #1 ($string) of type string is deprecated [alec]
+* Fix encoding recipient names with @ character and no space between name and address [alec]
+* Fix the license label in composer.json [jnkowa-gfk]
  </notes>
  <contents>
   <dir name="/">
@@ -996,6 +996,24 @@ Bugs Fixed:
    <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
    <notes>
 * Added a workaround for an opcache bug on OpenSuse 15.1 [alec]
+   </notes>
+  </release>
+  <release>
+   <date>2021-01-17</date>
+   <time>09:25:00</time>
+   <version>
+    <release>1.10.10</release>
+    <api>1.10.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+   <notes>
+* Compatibility fixes for PHP 5.2 and 5.3 [alec]
+* Corrected soft line breaks handling to be RFC compliant [ixs]
+* Corrected line breaks for lines ending in dots and length more than 74 [ixs]
    </notes>
   </release>
  </changelog>
