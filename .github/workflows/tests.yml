@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: ["5.3", "5.4", "5.5", "5.6", "7.0", "7.1", "7.2", "7.3", "7.4", "8.0", "8.1", "8.2"]
+        php: ["5.6", "7.0", "7.1", "7.2", "7.3", "7.4", "8.0", "8.1", "8.2"]
 
     name: PHP ${{ matrix.php }}/Linux
 
@@ -25,13 +25,6 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: none
-
-      - name: Install PEAR
-        if: matrix.php < 5.6
-        run: |
-            sudo apt-get update
-            sudo apt-get --fix-broken install php-pear
-            pear version
 
       - name: Execute tests
         run: pear run-tests tests/*.phpt
