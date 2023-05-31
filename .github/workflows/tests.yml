@@ -26,6 +26,13 @@ jobs:
           php-version: ${{ matrix.php }}
           coverage: none
 
+      - name: Install PEAR
+        if: matrix.php < 5.6
+        run: |
+            # sudo apt-get update
+            sudo apt-get install php-pear
+            pear version
+
       - name: Execute tests
         run: pear run-tests tests/*.phpt
 
