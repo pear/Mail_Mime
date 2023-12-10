@@ -483,6 +483,9 @@ class Mail_mime
     protected function file2str($file_name)
     {
         // Check state of file and raise an error properly
+        if (!is_string($file_name)) {
+            return self::raiseError('Invalid or empty file name');
+        }
         if (!file_exists($file_name)) {
             return self::raiseError('File not found: ' . $file_name);
         }
