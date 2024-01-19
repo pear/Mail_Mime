@@ -302,11 +302,11 @@ class Mail_mimePart
      *
      * @param string $boundary Pre-defined boundary string
      *
-     * @return An associative array containing two elements,
-     *         body and headers. The headers element is itself
-     *         an indexed array. On error returns PEAR error object.
+     * @return array An associative array containing two elements,
+     *               body and headers. The headers element is itself
+     *               an indexed array. On error returns PEAR error object.
      */
-    public function encode($boundary=null)
+    public function encode($boundary = null)
     {
         $encoded =& $this->encoded;
 
