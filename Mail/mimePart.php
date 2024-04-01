@@ -302,9 +302,9 @@ class Mail_mimePart
      *
      * @param string $boundary Pre-defined boundary string
      *
-     * @return array An associative array containing two elements,
-     *               body and headers. The headers element is itself
-     *               an indexed array. On error returns PEAR error object.
+     * @return PEAR_Error|array An associative array containing two elements,
+     *                          body and headers. The headers element is itself
+     *                          an indexed array. On error returns PEAR error object.
      */
     public function encode($boundary = null)
     {
@@ -370,8 +370,8 @@ class Mail_mimePart
      * @param string $boundary  Pre-defined boundary string
      * @param bool   $skip_head True if you don't want to save headers
      *
-     * @return array An associative array containing message headers
-     *               or PEAR error object
+     * @return PEAR_Error|array An associative array containing message headers
+     *                          or PEAR error object
      * @since  1.6.0
      */
     public function encodeToFile($filename, $boundary = null, $skip_head = false)
@@ -415,7 +415,7 @@ class Mail_mimePart
      * @param string $boundary  Pre-defined boundary string
      * @param bool   $skip_head True if you don't want to save headers
      *
-     * @return array True on sucess or PEAR error object
+     * @return PEAR_Error|true True on sucess or PEAR error object
      */
     protected function encodePartToFile($fh, $boundary = null, $skip_head = false)
     {
@@ -526,7 +526,7 @@ class Mail_mimePart
      * @param resource $fh       Output file handle. If set, data will be
      *                           stored into it instead of returning it
      *
-     * @return string Encoded data or PEAR error object
+     * @return PEAR_Error|string|null Encoded data or PEAR error object
      */
     protected function getEncodedDataFromFile($filename, $encoding, $fh = null)
     {
@@ -592,6 +592,8 @@ class Mail_mimePart
         if (!$fh) {
             return $data;
         }
+
+        return null;
     }
 
     /**
@@ -606,17 +608,8 @@ class Mail_mimePart
      */
     public static function quotedPrintableEncode($input , $line_max = 76, $eol = "\r\n")
     {
-        /*
-        // imap_8bit() is extremely fast, but doesn't handle properly some characters
-        if (function_exists('imap_8bit') && $line_max == 76) {
-            $input = preg_replace('/\r?\n/', "\r\n", $input);
-            $input = imap_8bit($input);
-            if ($eol != "\r\n") {
-                $input = str_replace("\r\n", $eol, $input);
-            }
-            return $input;
-        }
-        */
+        // Note: imap_8bit() is fast, but doesn't handle properly some characters
+
         $lines  = preg_split("/\r?\n/", $input);
         $escape = '=';
         $output = '';
@@ -744,8 +737,7 @@ class Mail_mimePart
             $headCount++;
         }
 
-        $headers = implode(';' . $this->eol, $headers);
-        return $headers;
+        return implode(';' . $this->eol, $headers);
     }
 
     /**
@@ -1015,7 +1007,7 @@ class Mail_mimePart
         $strlen = strlen($string);
         $quoted_string = '"(?:[^"\\\\]|\\\\.)*"';
 
-        for ($p=$i=0; $i < $strlen; $i++) {
+        for ($p = $i = 0; $i < $strlen; $i++) {
             if ($string[$i] === '"') {
                 $r = preg_match("/$quoted_string/", $string, $matches, 0, $i);
                 if (!$r || empty($matches[0])) {
@@ -1027,7 +1019,9 @@ class Mail_mimePart
                 $p = $i + 1;
             }
         }
+
         $result[] = substr($string, $p);
+
         return $result;
     }
 
@@ -1174,7 +1168,7 @@ class Mail_mimePart
     public static function encodeMB($str, $charset, $encoding, $prefix_len=0, $eol="\r\n")
     {
         if (!function_exists('mb_substr') || !function_exists('mb_strlen')) {
-            return;
+            return '';
         }
 
         $encoding = $encoding == 'base64' ? 'B' : 'Q';

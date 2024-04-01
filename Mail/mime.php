@@ -225,7 +225,7 @@ class Mail_mime
      *                       the existing body, else the old body is
      *                       overwritten
      *
-     * @return mixed True on success or PEAR_Error object
+     * @return PEAR_Error|true True on success or PEAR_Error object
      */
     public function setTXTBody($data, $isfile = false, $append = false)
     {
@@ -250,7 +250,7 @@ class Mail_mime
      * @param bool   $isfile A flag that determines whether $data is a
      *                       filename, or a string(false, default)
      *
-     * @return bool True on success or PEAR_Error object
+     * @return PEAR_Error|true True on success or PEAR_Error object
      */
     public function setHTMLBody($data, $isfile = false)
     {
@@ -281,7 +281,7 @@ class Mail_mime
      * @param string $charset  iCalendar character set
      * @param string $encoding Transfer encoding
      *
-     * @return mixed True on success or PEAR_Error object
+     * @return PEAR_Error|true True on success or PEAR_Error object
      * @since  1.9.0
      */
     public function setCalendarBody($data, $isfile = false, $append = false,
@@ -294,6 +294,8 @@ class Mail_mime
             $this->build_params['calendar_charset'] = $charset;
             $this->build_params['calendar_encoding'] = $encoding;
         }
+
+        return $result;
     }
 
     /**
@@ -324,7 +326,7 @@ class Mail_mime
      * @param string $content_id Desired Content-ID of MIME part
      *                           Defaults to generated unique ID
      *
-     * @return bool True on success
+     * @return PEAR_Error|true True on success, PEAR_Error otherwise
      */
     public function addHTMLImage($file,
         $c_type = 'application/octet-stream',
@@ -395,7 +397,7 @@ class Mail_mime
      * @param array  $add_headers Additional part headers. Array keys can be in form
      *                            of <header_name>:<parameter_name>
      *
-     * @return mixed True on success or PEAR_Error object
+     * @return PEAR_Error|true True on success or PEAR_Error object
      */
     public function addAttachment($file,
         $c_type      = 'application/octet-stream',
@@ -478,7 +480,7 @@ class Mail_mime
      *
      * @param string $file_name Path of file to process
      *
-     * @return string Contents of $file_name
+     * @return PEAR_Error|string Contents of $file_name
      */
     protected function file2str($file_name)
     {
@@ -717,7 +719,7 @@ class Mail_mime
      *                           See that function for more info.
      * @param bool   $overwrite  Overwrite the existing headers with new.
      *
-     * @return mixed The complete e-mail or PEAR error object
+     * @return PEAR_Error|string The complete e-mail or PEAR error object
      */
     public function getMessage($separation = null, $params = null, $headers = null,
         $overwrite = false
@@ -742,7 +744,7 @@ class Mail_mime
      * @param array $params The Build parameters passed to the
      *                      get() method. See get() for more info.
      *
-     * @return mixed The e-mail body or PEAR error object
+     * @return PEAR_Error|string|null The e-mail body or PEAR error object
      * @since  1.6.0
      */
     public function getMessageBody($params = null)
@@ -761,7 +763,7 @@ class Mail_mime
      *                          See that function for more info.
      * @param bool   $overwrite Overwrite the existing headers with new.
      *
-     * @return mixed True or PEAR error object
+     * @return PEAR_Error|true True or PEAR error object
      * @since  1.6.0
      */
     public function saveMessage($filename, $params = null, $headers = null, $overwrite = false)
@@ -806,7 +808,7 @@ class Mail_mime
      * @param array $params   The Build parameters passed to the
      *                        get() method. See get() for more info.
      *
-     * @return mixed True or PEAR error object
+     * @return PEAR_Error|true True or PEAR error object
      * @since  1.6.0
      */
     public function saveMessageBody($filename, $params = null)
@@ -854,7 +856,7 @@ class Mail_mime
      * @param bool  $skip_head True if you want to return/save only the message
      *                         without headers
      *
-     * @return mixed The MIME message content string, null or PEAR error object
+     * @return PEAR_Error|string|null The MIME message content string, null or PEAR error object
      */
     public function get($params = null, $filename = null, $skip_head = false)
     {
@@ -1513,7 +1515,7 @@ class Mail_mime
      *                       the existing body, else the old body is
      *                       overwritten
      *
-     * @return mixed True on success or PEAR_Error object
+     * @return PEAR_Error|true True on success or PEAR_Error object
      */
     protected function setBody($type, $data, $isfile = false, $append = false)
     {
