@@ -27,7 +27,7 @@ jobs:
           coverage: none
 
       - name: Update PEAR
-        if: ${{ matrix.php == "8.5" }}
+        if: ${{ matrix.php == '8.5' }}
         run: pear update-channels && pear upgrade --force PEAR
 
       - name: Execute tests
