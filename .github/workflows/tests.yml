@@ -25,7 +25,10 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: none
-          ini-values: display_startup_errors=off
+
+      - name: Update PEAR
+        if: ${{ matrix.php == "8.5" }}
+        run: pear update-channels && pear upgrade --force PEAR
 
       - name: Execute tests
         run: pear run-tests tests/*.phpt
