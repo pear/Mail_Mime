@@ -28,7 +28,7 @@ jobs:
 
       - name: Update PEAR
         if: ${{ matrix.php == '8.5' }}
-        run: pear update-channels && pear upgrade --force PEAR
+        run: sudo pear update-channels && sudo pear upgrade --force PEAR
 
       - name: Execute tests
         run: pear run-tests tests/*.phpt
