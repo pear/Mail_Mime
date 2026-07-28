@@ -757,6 +757,13 @@ class Mail_mimePart
         // WARNING: RFC 2047 says: "An 'encoded-word' MUST NOT be used in
         // parameter of a MIME Content-Type or Content-Disposition field",
         // but... it's supported by many clients/servers
+
+        // Limit the charset length so the encoded-word prefix always leaves
+        // room to fit a value chunk within RFC 2047's 75-character limit.
+        if (strlen($charset) > 48) {
+            $charset = substr($charset, 0, 48);
+        }
+
         $quoted = '';
 
         if ($encoding == 'base64') {
@@ -768,9 +775,13 @@ class Mail_mimePart
             $add_len = strlen($prefix . $suffix) + strlen($name) + 6;
             $len = $add_len + strlen($value);
 
-            while ($len > $maxLength) { 
+            while ($len > $maxLength) {
                 // We can cut base64-encoded string every 4 characters
                 $real_len = floor(($maxLength - $add_len) / 4) * 4;
+                if ($real_len < 4) {
+                    break;
+                }
+
                 $_quote = substr($value, 0, $real_len);
                 $value = substr($value, $real_len);
 
@@ -793,8 +804,10 @@ class Mail_mimePart
             while ($len > $maxLength) {
                 $length = $maxLength - $add_len;
                 // don't break any encoded letters
-                if (preg_match("/^(.{0,$length}[^\=][^\=])/", $value, $matches)) {
+                if ($length > 0 && preg_match("/^(.{0,$length}[^\=][^\=])/", $value, $matches)) {
                     $_quote = $matches[1];
+                } else {
+                    break;
                 }
 
                 $quoted .= $prefix . $_quote . $suffix . $this->eol . ' ';
