@@ -1209,22 +1209,30 @@ class Mail_mimePart
                 $chunk = base64_encode($chunk);
                 $chunk_len = strlen($chunk);
 
-                if ($line_length + $chunk_len == $maxLength || $i == $length) {
+                if ($line_length + $chunk_len > $maxLength && $prev) {
+                    // Chunk does not fit, flush the previous one and re-cut.
+                    // Must run before the $i == $length test below, or the
+                    // last chunk may exceed RFC 2047's 75-character limit.
+                    if ($result) {
+                        $result .= "\n";
+                    }
+                    $result .= $prev;
+                    $prev        = '';
+                    $line_length = 0;
+                    $start       = $i - 1;
+                    $chunk       = mb_substr($str, $start, $i-$start, $mb_charset);
+                    $chunk       = base64_encode($chunk);
+                    $chunk_len   = strlen($chunk);
+                }
+
+                if ($i == $length || $line_length + $chunk_len == $maxLength) {
                     if ($result) {
                         $result .= "\n";
                     }
                     $result .= $chunk;
+                    $prev        = '';
                     $line_length = 0;
-                    $start = $i;
-                } else if ($line_length + $chunk_len > $maxLength) {
-                    if ($result) {
-                        $result .= "\n";
-                    }
-                    if ($prev) {
-                        $result .= $prev;
-                    }
-                    $line_length = 0;
-                    $start = $i - 1;
+                    $start       = $i;
                 } else {
                     $prev = $chunk;
                 }
