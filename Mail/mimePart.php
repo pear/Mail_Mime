@@ -82,6 +82,20 @@ require_once 'PEAR.php';
 class Mail_mimePart
 {
     /**
+     * Maximum length of a charset name inside an encoded-word.
+     *
+     * Caps the "=?<charset>?B?" prefix so that a value chunk always fits
+     * within RFC 2047's 75-character limit. Without it an over-long charset
+     * name leaves no room for the value and the encoders cannot make progress.
+     * The longest charset name mbstring recognises is 23 characters, so a
+     * valid name is never truncated.
+     *
+     * @internal
+     * @var int
+     */
+    const MAX_CHARSET_LENGTH = 48;
+
+    /**
      * The encoding type of this part
      *
      * @var string
@@ -760,8 +774,8 @@ class Mail_mimePart
 
         // Limit the charset length so the encoded-word prefix always leaves
         // room to fit a value chunk within RFC 2047's 75-character limit.
-        if (strlen($charset) > 48) {
-            $charset = substr($charset, 0, 48);
+        if (strlen($charset) > self::MAX_CHARSET_LENGTH) {
+            $charset = substr($charset, 0, self::MAX_CHARSET_LENGTH);
         }
 
         $quoted = '';
@@ -1057,6 +1071,12 @@ class Mail_mimePart
             return $result;
         }
 
+        // Limit the charset length so the encoded-word prefix always leaves
+        // room to fit a value chunk within RFC 2047's 75-character limit.
+        if (strlen($charset) > self::MAX_CHARSET_LENGTH) {
+            $charset = substr($charset, 0, self::MAX_CHARSET_LENGTH);
+        }
+
         // Generate the header using the specified params and dynamicly
         // determine the maximum length of such strings.
         // 75 is the value specified in the RFC.
@@ -1065,6 +1085,16 @@ class Mail_mimePart
         $suffix = '?=';
         $maxLength = 75 - strlen($prefix . $suffix);
         $maxLength1stLine = $maxLength - $prefix_len;
+
+        // Never allow a non-positive chunk length: substr() would return the
+        // input unchanged (and preg_match() would get an invalid pattern), so
+        // the loops below would never consume the value.
+        if ($maxLength < 4) {
+            $maxLength = 4;
+        }
+        if ($maxLength1stLine < 4) {
+            $maxLength1stLine = $maxLength;
+        }
 
         if ($encoding == 'B') {
             // Base64 encode the entire string
