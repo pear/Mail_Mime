@@ -1126,9 +1126,13 @@ class Mail_mimePart
             $value = Mail_mimePart::encodeQP($value);
 
             // This regexp will break QP-encoded text at every $maxLength
-            // but will not break any encoded letters.
-            $reg1st = "|(.{0,$maxLength1stLine}[^\=][^\=])|";
-            $reg2nd = "|(.{0,$maxLength}[^\=][^\=])|";
+            // but will not break any encoded letters. The two trailing atoms
+            // match one character each, so the repetition has to stop two
+            // characters short for the whole match to stay within the limit.
+            $reg1stLen = $maxLength1stLine - 2;
+            $reg2ndLen = $maxLength - 2;
+            $reg1st = "|(.{0,$reg1stLen}[^\=][^\=])|";
+            $reg2nd = "|(.{0,$reg2ndLen}[^\=][^\=])|";
 
             if (strlen($value) > $maxLength1stLine) {
                 // Begin with the regexp for the first line.
