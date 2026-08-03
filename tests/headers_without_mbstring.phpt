@@ -1,5 +1,7 @@
 --TEST--
 Multi-test for headers encoding using base64 and quoted-printable
+--INI--
+disable_functions=mb_substr,mb_strlen
 --SKIPIF--
 <?php
 if (function_exists('mb_substr') && function_exists('mb_strlen')) {
