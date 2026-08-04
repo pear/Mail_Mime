@@ -1,5 +1,7 @@
 --TEST--
 Multi-test for headers encoding using base64 and quoted-printable
+--INI--
+disable_functions=mb_substr,mb_strlen
 --SKIPIF--
 <?php
 if (function_exists('mb_substr') && function_exists('mb_strlen')) {
@@ -68,9 +70,8 @@ foreach ($headers as $header) {
 [06] Cc: "Frank Do" <adresse@adresse.de>, "James Clark" <james@domain.com>
 [07] Cc: <adresse@adresse.de>, =?UTF-8?B?S3XFm21pZGVyc2tpIEphbiBLcnp5c3p0b2Yg?=
  =?UTF-8?B?SmFudXN6IETFgnVnYSBuYXp3YQ==?= <cris@domain.com>
-[07] Cc: <adresse@adresse.de>,
- =?UTF-8?Q?Ku=C5=9Bmiderski_Jan_Krzysztof_Janusz_D?=
- =?UTF-8?Q?=C5=82uga_nazwa?= <cris@domain.com>
+[07] Cc: <adresse@adresse.de>, =?UTF-8?Q?Ku=C5=9Bmiderski_Jan_Krzysztof_Janusz?=
+ =?UTF-8?Q?_D=C5=82uga_nazwa?= <cris@domain.com>
 [08] From: "adresse@adresse.de" <addresse@adresse>
 [08] From: "adresse@adresse.de" <addresse@adresse>
 [09] From: "adresse@adresse.de" <addresse@adresse>
@@ -119,18 +120,18 @@ foreach ($headers as $header) {
  =?UTF-8?B?ciBTw7xwZXIgZ3LDtnNlIHRvbGxlIGdyw7zDn2Ugdm9uIG1pciBTw7xwZXIg?=
  =?UTF-8?B?Z3LDtnNlIHRvbGxlIGdyw7zDn2Ugdm9uIG1pciBTw7xwZXIgZ3LDtnNlIHRv?=
  =?UTF-8?B?bGxlIGdyw7zDn2Ugdm9uIG1pciEhIT8=?=
-[21] Subject: =?UTF-8?Q?TEST_S=C3=BCper_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe_von_mir?=
- =?UTF-8?Q?_S=C3=BCper_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe_von_mir_S=C3=BCper_g?=
- =?UTF-8?Q?r=C3=B6se_tolle_gr=C3=BC=C3=9Fe_von_mir_S=C3=BCper_gr=C3=B6se_tol?=
- =?UTF-8?Q?le_gr=C3=BC=C3=9Fe_von_mir_S=C3=BCper_gr=C3=B6se_tolle_gr=C3=BC?=
- =?UTF-8?Q?=C3=9Fe_von_mir_S=C3=BCper_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe_von_m?=
- =?UTF-8?Q?ir_S=C3=BCper_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe_von_mir_S=C3=BCper?=
- =?UTF-8?Q?_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe_von_mir_S=C3=BCper_gr=C3=B6se_t?=
- =?UTF-8?Q?olle_gr=C3=BC=C3=9Fe_von_mir!!!=3F?=
+[21] Subject: =?UTF-8?Q?TEST_S=C3=BCper_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe_von_m?=
+ =?UTF-8?Q?ir_S=C3=BCper_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe_von_mir_S=C3=BCp?=
+ =?UTF-8?Q?er_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe_von_mir_S=C3=BCper_gr=C3=B6?=
+ =?UTF-8?Q?se_tolle_gr=C3=BC=C3=9Fe_von_mir_S=C3=BCper_gr=C3=B6se_tolle_gr?=
+ =?UTF-8?Q?=C3=BC=C3=9Fe_von_mir_S=C3=BCper_gr=C3=B6se_tolle_gr=C3=BC=C3?=
+ =?UTF-8?Q?=9Fe_von_mir_S=C3=BCper_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe_von_mi?=
+ =?UTF-8?Q?r_S=C3=BCper_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe_von_mir_S=C3=BCpe?=
+ =?UTF-8?Q?r_gr=C3=B6se_tolle_gr=C3=BC=C3=9Fe_von_mir!!!=3F?=
 [22] Subject: =?UTF-8?B?VXBkYXRlOiBNaWNyb3NvZnQgV2luZG93cy1Ub29sIHp1bSBFbnRm?=
  =?UTF-8?B?ZXJuZW4gYsO2c2FydGlnZXIgU29mdHdhcmUgMy42?=
-[22] Subject: =?UTF-8?Q?Update=3A_Microsoft_Windows-Tool_zum_Entfernen_b=C3=B6sa?=
- =?UTF-8?Q?rtiger_Software_3=2E6?=
+[22] Subject: =?UTF-8?Q?Update=3A_Microsoft_Windows-Tool_zum_Entfernen_b=C3=B6?=
+ =?UTF-8?Q?sartiger_Software_3=2E6?=
 [23] From: =?UTF-8?B?dGVzdEBuw6BtZQ==?= <user@domain.com>
 [23] From: =?UTF-8?Q?test=40n=C3=A0me?= <user@domain.com>
 [24] From: Test <"test test"@domain.com>
