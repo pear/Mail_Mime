@@ -3,7 +3,7 @@ Multi-test for headers encoding using base64 and quoted-printable
 --SKIPIF--
 <?php
 if (!function_exists('mb_substr') || !function_exists('mb_strlen')) {
-    die "skip mbstring functions not found!";
+    die("skip mbstring functions not found!");
 }
 ?>
 --FILE--
