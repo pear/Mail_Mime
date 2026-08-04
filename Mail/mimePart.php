@@ -96,6 +96,20 @@ class Mail_mimePart
     const MAX_CHARSET_LENGTH = 48;
 
     /**
+     * Characters that must be escaped as =XX inside an RFC 2047 "Q" encoded-word.
+     *
+     * RFC 2047 restricts encoded-text to printable ASCII other than "?" and SPACE,
+     * so this covers the C0 controls (\x00-\x1F), DEL and every 8-bit byte, along
+     * with the printable characters that are not safe inside a phrase. SPACE is
+     * handled separately: encodeQP() rewrites it as "_", which RFC 2047 permits in
+     * place of "=20".
+     *
+     * @internal
+     * @var string
+     */
+    const QP_ESCAPE_REGEXP = '/([\x00-\x1F\x22-\x29\x2C\x2E\x3A-\x40\x5B-\x60\x7B-\xFF])/';
+
+    /**
      * The encoding type of this part
      *
      * @var string
@@ -1190,9 +1204,8 @@ class Mail_mimePart
         // ASCII letters, decimal digits, "!", "*", "+", "-", "/", "=", and "_"
 
         // "=",  "_",  "?" must be encoded
-        $regexp = '/([\x22-\x29\x2C\x2E\x3A-\x40\x5B-\x60\x7B-\x7E\x80-\xFF])/';
         $str = preg_replace_callback(
-            $regexp, array('Mail_mimePart', 'qpReplaceCallback'), $str
+            self::QP_ESCAPE_REGEXP, array('Mail_mimePart', 'qpReplaceCallback'), $str
         );
 
         return str_replace(' ', '_', $str);
@@ -1273,9 +1286,6 @@ class Mail_mimePart
             }
         } else {
             // quoted-printable
-            // see encodeQP()
-            $regexp = '/([\x22-\x29\x2C\x2E\x3A-\x40\x5B-\x60\x7B-\x7E\x80-\xFF])/';
-
             for ($i=0; $i<=$length; $i++) {
                 $char = mb_substr($str, $i, 1, $mb_charset);
                 // RFC recommends underline (instead of =20) in place of the space
@@ -1285,7 +1295,9 @@ class Mail_mimePart
                     $char_len = 1;
                 } else {
                     $char = preg_replace_callback(
-                        $regexp, array('Mail_mimePart', 'qpReplaceCallback'), $char
+                        self::QP_ESCAPE_REGEXP,
+                        array('Mail_mimePart', 'qpReplaceCallback'),
+                        $char
                     );
                     $char_len = strlen($char);
                 }

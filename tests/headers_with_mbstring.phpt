@@ -149,5 +149,5 @@ foreach ($headers as $header) {
 [30] Mail-Reply-To: =?UTF-8?B?w7bDpMO8?= <adresse@adresse.de>
 [30] Mail-Reply-To: =?UTF-8?Q?=C3=B6=C3=A4=C3=BC?= <adresse@adresse.de>
 [31] Subject: =?ISO-2022-JP?B?GyRCLWo7M3l1OSk2SBsoQg==?=
-[31] Subject: =?ISO-2022-JP?Q?=24B-j=28B=24B=3B3=28B=24Byu=28B?=
- =?ISO-2022-JP?Q?=24B9=29=28B=24B6H=28B?=
+[31] Subject: =?ISO-2022-JP?Q?=1B=24B-j=1B=28B=1B=24B=3B3=1B=28B?=
+ =?ISO-2022-JP?Q?=1B=24Byu=1B=28B=1B=24B9=29=1B=28B=1B=24B6H=1B=28B?=
