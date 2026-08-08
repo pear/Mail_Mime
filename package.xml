@@ -26,10 +26,10 @@ using RFC2047 and/or RFC2231.</description>
   <email>alec@php.net</email>
   <active>yes</active>
  </lead>
- <date>2024-03-10</date>
- <time>21:20:00</time>
+ <date>2026-08-08</date>
+ <time>12:00:00</time>
  <version>
-  <release>1.10.12</release>
+  <release>1.10.13</release>
   <api>1.10.0</api>
  </version>
  <stability>
@@ -38,7 +38,13 @@ using RFC2047 and/or RFC2231.</description>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
  <notes>
-* Prevent from "PHP Deprecated: file_exists(): Passing null to parameter #1 ($filename) of type string" [alec]
+* Fix control characters passing unescaped into RFC 2047 encoded-words (#37) [sebastka]
+* Fix syntax error in the headers_with_mbstring.phpt skip condition (#36) [sebastka]
+* Fix/rfc2047 quoted-printable chunk off by two - when not using mbstring (#35) [sebastka]
+* Fix infinite loop and memory exhaustion on an over-long charset name (#34) [sebastka]
+* Fix base64 encoded-words exceeding the RFC 2047 75-character limit (#33) [sebastka]
+* Fix infinite loop and memory exhaustion when folding RFC 2047 params (#32) [sebastka]
+* CI: PHP 8.4 - 8.6 support [alec]
 * PHPDoc improvements [alec]
  </notes>
  <contents>
@@ -50,6 +56,10 @@ using RFC2047 and/or RFC2231.</description>
     <file baseinstalldir="Mail" name="headers_with_mbstring.phpt" role="test" />
     <file baseinstalldir="Mail" name="headers_without_mbstring.phpt" role="test" />
     <file baseinstalldir="Mail" name="qp_encoding_test.phpt" role="test" />
+    <file baseinstalldir="Mail" name="rfc2047_control_chars.phpt" role="test" />
+    <file baseinstalldir="Mail" name="rfc2047_encoded_word_length.phpt" role="test" />
+    <file baseinstalldir="Mail" name="rfc2047_long_charset.phpt" role="test" />
+    <file baseinstalldir="Mail" name="rfc2047_qp_chunk_length.phpt" role="test" />
     <file baseinstalldir="Mail" name="sleep_wakeup_EOL-bug3488-part1.phpt" role="test" />
     <file baseinstalldir="Mail" name="sleep_wakeup_EOL-bug3488-part2.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_3513_1.phpt" role="test" />
@@ -93,6 +103,7 @@ using RFC2047 and/or RFC2231.</description>
     <file baseinstalldir="Mail" name="test_Bug_GH16.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_GH19.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_Bug_GH26.phpt" role="test" />
+    <file baseinstalldir="Mail" name="test_Bug_GH32.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_linebreak_dot.phpt" role="test" />
     <file baseinstalldir="Mail" name="test_linebreak_larger_76.phpt" role="test" />
    </dir> <!-- /tests -->
@@ -1033,5 +1044,22 @@ Bugs Fixed:
 * Fix the license label in composer.json [jnkowa-gfk]
    </notes>
   </release>
+  <release>
+    <date>2024-03-10</date>
+    <time>21:20:00</time>
+    <version>
+      <release>1.10.12</release>
+      <api>1.10.0</api>
+    </version>
+    <stability>
+      <release>stable</release>
+      <api>stable</api>
+    </stability>
+    <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD Style</license>
+    <notes>
+* Prevent from "PHP Deprecated: file_exists(): Passing null to parameter #1 ($filename) of type string" [alec]
+* PHPDoc improvements [alec]
+    </notes>
+   </release>
  </changelog>
 </package>
