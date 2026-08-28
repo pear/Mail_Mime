@@ -1531,7 +1531,7 @@ class Mail_mime
         } else {
             $this->{$type} .= $data;
         }
-
+        $this->{$type} = wordwrap($this->{$type}, 998);
         return true;
     }
 
