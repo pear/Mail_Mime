@@ -541,7 +541,10 @@ class Mail_mimePart
         case '8bit':
         case '7bit':
         default:
-            return $data;
+            // RFC 5322 limits unencoded body lines to 998 characters; unlike
+            // quoted-printable/base64 (wrapped above), 7bit/8bit data passes
+            // through untouched, so wrap it here if it's too long.
+            return wordwrap($data, 998, $this->eol);
         }
     }
 
