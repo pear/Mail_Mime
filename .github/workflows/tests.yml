@@ -27,6 +27,10 @@ jobs:
           coverage: none
           tools: composer:v2
 
+      - name: Setup tests for PHP < 7.4
+        if: matrix.php < 7.4
+        run: composer require --dev 'phpunit/phpunit:^4.8.36 || ^5.7.21 || ^6 || ^7' --no-update
+
       - name: Install dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
