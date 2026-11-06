@@ -7,6 +7,9 @@ mbstring.internal_encoding=UTF-8
 mbstring.http_output=UTF-8
 --SKIPIF--
 <?php
+if (PHP_VERSION_ID >= 80000) {
+    print('SKIP PHP >= 8');
+}
 include "PEAR.php";
 if (!extension_loaded('mbstring')){
     if (!PEAR::loadExtension('mbstring')){

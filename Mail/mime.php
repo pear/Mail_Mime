@@ -1573,7 +1573,7 @@ class Mail_mime
     public static function isError($data)
     {
         // PEAR::isError() is not PHP 5.4 compatible (see Bug #19473)
-        if (is_a($data, 'PEAR_Error')) {
+        if ($data instanceof PEAR_Error) {
             return true;
         }
 
