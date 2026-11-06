@@ -25,13 +25,13 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: none
+          tools: composer:v2
 
-      - name: Update PEAR
-        if: ${{ matrix.php >= '8.5' }}
-        run: sudo pear update-channels && sudo pear upgrade --force PEAR
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
 
       - name: Execute tests
-        run: pear run-tests tests/*.phpt
+        run: vendor/bin/phpunit tests/
 
       - name: Upload artifacts
         uses: actions/upload-artifact@master
