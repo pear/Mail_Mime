@@ -57,9 +57,29 @@ foreach (explode("\r\n", $encoded3['body']) as $line) {
     }
 }
 echo $qpLinesOk ? "quoted-printable still wraps at 76 chars: PASS\n" : "quoted-printable still wraps at 76 chars: FAIL\n";
+
+// Multi-line LF-delimited 7bit data > 998 bytes total whose individual lines
+// are <= 998 chars (e.g. GnuPG ASCII-armored output on Unix when eol is CRLF)
+// must not be wrapped at spaces inside headers/footers.
+$pgp = "-----BEGIN PGP MESSAGE-----\n\n"
+    . chunk_split(str_repeat('A', 1200), 64, "\n")
+    . "=abcd\n-----END PGP MESSAGE-----\n";
+$mimePart4 = new Mail_mimePart($pgp, $params);
+$encoded4  = $mimePart4->encode();
+echo ($encoded4['body'] === $pgp) ? "LF-delimited PGP armor unchanged: PASS\n" : "LF-delimited PGP armor unchanged: FAIL\n";
+
+// Multi-line LF-delimited text where one line exceeds 998 chars: only the
+// over-long line is wrapped while surrounding LF lines stay untouched.
+$mixed     = "header line\n" . $text . "\nfooter line\n";
+$mimePart5 = new Mail_mimePart($mixed, $params);
+$encoded5  = $mimePart5->encode();
+$expected5 = "header line\n" . $encoded['body'] . "\nfooter line\n";
+echo ($encoded5['body'] === $expected5) ? "Mixed LF short and long lines: PASS\n" : "Mixed LF short and long lines: FAIL\n";
 ?>
 --EXPECT--
 All lines <= 998 chars: PASS
 Content preserved: PASS
 Short body unchanged: PASS
 quoted-printable still wraps at 76 chars: PASS
+LF-delimited PGP armor unchanged: PASS
+Mixed LF short and long lines: PASS
