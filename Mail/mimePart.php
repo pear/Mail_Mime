@@ -543,8 +543,21 @@ class Mail_mimePart
         default:
             // RFC 5322 limits unencoded body lines to 998 characters; unlike
             // quoted-printable/base64 (wrapped above), 7bit/8bit data passes
-            // through untouched, so wrap it here if it's too long.
-            return wordwrap($data, 998, $this->eol);
+            // through untouched, so wrap any line exceeding 998 characters.
+            // Note: wordwrap() only recognizes $this->eol as a line break, so
+            // match individual long lines to avoid corrupting LF-delimited
+            // data (e.g. PGP armor) when $this->eol is CRLF.
+            if (strlen($data) > 998) {
+                $result = preg_replace_callback(
+                    '/(*ANYCRLF)^[^\r\n]{999,}/m',
+                    array($this, 'wordwrapReplaceCallback'),
+                    $data
+                );
+                if ($result !== null) {
+                    return $result;
+                }
+            }
+            return $data;
         }
     }
 
@@ -1349,6 +1362,18 @@ class Mail_mimePart
     protected static function encodeReplaceCallback($matches)
     {
         return sprintf('%%%02X', ord($matches[1]));
+    }
+
+    /**
+     * Callback function to wrap lines exceeding RFC 5322's 998-character limit
+     *
+     * @param array $matches Preg_replace's matches array
+     *
+     * @return string Wrapped line
+     */
+    protected function wordwrapReplaceCallback($matches)
+    {
+        return wordwrap($matches[0], 998, $this->eol);
     }
 
     /**
