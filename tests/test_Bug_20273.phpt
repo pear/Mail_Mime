@@ -1,6 +1,7 @@
 --TEST--
 Bug #20273  Mail_mimePart::encodeHeader() and TAB character
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include("Mail/mimePart.php");

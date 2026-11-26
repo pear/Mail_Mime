@@ -1,6 +1,7 @@
 --TEST--
 Bug #3488   Sleep/Wakeup EOL Consistency - Part 1
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 require_once('Mail/mime.php');

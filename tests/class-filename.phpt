@@ -1,5 +1,7 @@
 --TEST--
 Test class filename (bug #24)
+--INI--
+error_reporting=E_ALL
 --SKIPIF--
 <?php
 echo "skip This will be broken until Mail_Mime2";

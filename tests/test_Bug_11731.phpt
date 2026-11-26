@@ -1,6 +1,7 @@
 --TEST--
 Bug #11731  Full stops after soft line breaks are not encoded
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include("Mail/mime.php");

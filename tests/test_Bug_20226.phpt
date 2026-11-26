@@ -1,6 +1,7 @@
 --TEST--
 Bug #20226  Mail_mimePart::encodeHeader() and ISO-2022-JP encoding
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include("Mail/mimePart.php");

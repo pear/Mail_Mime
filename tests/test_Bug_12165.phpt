@@ -1,6 +1,7 @@
 --TEST--
 Bug #12165  Dot at the end of the line disappeared
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include ("Mail/mime.php");

@@ -1,6 +1,7 @@
 --TEST--
 Bug #11381  Domain name is attached to content-id, trailing greater-than sign is not removed
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 $from='Test User <user@from.example.com>';

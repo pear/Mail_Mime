@@ -1,6 +1,7 @@
 --TEST--
 RFC 2047: quoted-printable chunks must not run past the encoded-word limit
 --INI--
+error_reporting=E_ALL
 disable_functions=mb_substr,mb_strlen
 --FILE--
 <?php

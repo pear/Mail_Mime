@@ -1,6 +1,7 @@
 --TEST--
 Bug #7561   Mail_mimePart::quotedPrintableEncode() misbehavior with mbstring overload
 --INI--
+error_reporting=E_ALL
 mbstring.language=Neutral
 mbstring.func_overload=6
 mbstring.internal_encoding=UTF-8

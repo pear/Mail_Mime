@@ -1,6 +1,7 @@
 --TEST--
 Bug #12466  Content-Transfer-Encoding checking
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include("Mail/mime.php");

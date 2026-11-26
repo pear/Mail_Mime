@@ -1,6 +1,7 @@
 --TEST--
 Bug #15320  Charset parameter in Content-Type of mail parts
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include "Mail/mime.php";

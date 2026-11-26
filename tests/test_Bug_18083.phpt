@@ -1,6 +1,7 @@
 --TEST--
 Bug #18083  Separate charset for attachment's content and headers
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include "Mail/mime.php";

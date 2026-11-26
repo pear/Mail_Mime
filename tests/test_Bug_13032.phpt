@@ -1,6 +1,7 @@
 --TEST--
 Bug #13032  Proper (different) boundary for nested parts
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include "Mail/mime.php";

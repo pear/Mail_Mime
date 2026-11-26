@@ -1,6 +1,7 @@
 --TEST--
 Bug #10999  Bad Content-ID(cid) format
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 $from='user@from.example.com';

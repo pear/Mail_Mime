@@ -1,5 +1,7 @@
 --TEST--
 Bug #21205  Handling ISO-2022-JP headers
+--INI--
+error_reporting=E_ALL
 --SKIPIF--
 <?php
 include "PEAR.php";

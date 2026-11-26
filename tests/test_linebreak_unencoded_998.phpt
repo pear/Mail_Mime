@@ -1,9 +1,9 @@
 --TEST--
 Test that 7bit/8bit (unencoded) bodies are wrapped at 998 chars per RFC 5322
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 
 include("Mail/mimePart.php");
 

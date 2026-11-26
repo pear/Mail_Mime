@@ -1,6 +1,7 @@
 --TEST--
 Bug #10816  Unwanted linebreak at the end of output
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 $eol = "#";

@@ -1,6 +1,7 @@
 --TEST--
 Bug GH-32  RFC 2047 param folding must not loop forever when a value cannot be folded
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include "Mail/mime.php";

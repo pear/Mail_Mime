@@ -1,6 +1,7 @@
 --TEST--
 Bug #16539  Headers longer than 998 characters
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include("Mail/mime.php");

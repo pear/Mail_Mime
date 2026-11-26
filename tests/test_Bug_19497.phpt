@@ -1,6 +1,7 @@
 --TEST--
 Bug #19497  Attachment filenames with a slash character
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include "Mail/mime.php";

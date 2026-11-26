@@ -1,6 +1,7 @@
 --TEST--
 Bug #14779  Proper header-body separator for empty attachment
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include "Mail/mime.php";

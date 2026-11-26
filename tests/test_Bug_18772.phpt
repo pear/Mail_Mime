@@ -1,6 +1,7 @@
 --TEST--
 Bug #18772  Text/calendar message
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include "Mail/mime.php";

@@ -1,6 +1,7 @@
 --TEST--
 Bug #12411  RFC2047 encoded attachment filenames
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include "Mail/mime.php";

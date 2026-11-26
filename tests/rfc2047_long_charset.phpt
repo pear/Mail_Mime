@@ -1,6 +1,7 @@
 --TEST--
 RFC 2047: an over-long charset name must not hang encodeHeaderValue()
 --INI--
+error_reporting=E_ALL
 disable_functions=mb_substr,mb_strlen
 memory_limit=64M
 --FILE--

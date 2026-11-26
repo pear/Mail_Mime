@@ -1,6 +1,7 @@
 --TEST--
 Bug #21255  Boundary gets added twice
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include "Mail/mime.php";

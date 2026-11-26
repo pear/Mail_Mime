@@ -1,6 +1,7 @@
 --TEST--
 Bug #3513   Support of RFC2231 in header fields. (ISO-8859-1)
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 require_once('Mail/mime.php');

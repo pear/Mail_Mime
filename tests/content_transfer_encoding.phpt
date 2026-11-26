@@ -1,6 +1,7 @@
 --TEST--
 Test empty Content-Transfer-Encoding on multipart messages
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include "Mail/mime.php";

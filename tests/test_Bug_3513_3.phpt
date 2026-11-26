@@ -1,6 +1,7 @@
 --TEST--
 Bug #3513   Support of RFC2231 in header fields. (ISO-2022-JP)
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 mb_internal_encoding('ISO-2022-JP');

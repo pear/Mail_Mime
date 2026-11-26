@@ -1,5 +1,7 @@
 --TEST--
 Bug #3488   Sleep/Wakeup EOL Consistency - Part 2
+--INI--
+error_reporting=E_ALL
 --SKIPIF--
 if (!is_readable('sleep_wakeup_data')) {
     echo "skip No data. Part 1 must run first.\n";

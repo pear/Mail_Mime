@@ -1,6 +1,7 @@
 --TEST--
 Bug #21098  Handling of empty plain text parts
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include "Mail/mime.php";

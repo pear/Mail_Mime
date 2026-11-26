@@ -1,9 +1,9 @@
 --TEST--
 qp comprehensive test
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 
 include("Mail/mimePart.php");
 

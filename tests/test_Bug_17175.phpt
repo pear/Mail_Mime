@@ -1,6 +1,7 @@
 --TEST--
 Bug #17175  Content-Description support+ecoding
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 require_once('Mail/mime.php');

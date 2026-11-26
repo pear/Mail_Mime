@@ -1,6 +1,7 @@
 --TEST--
 Bug #13962  Multiple header support
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 require_once('Mail/mime.php');

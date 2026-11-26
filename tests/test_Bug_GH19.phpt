@@ -1,6 +1,7 @@
 --TEST--
 Bug GH-19  Test boundary value with different headers()/get() call order
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include "Mail/mime.php";

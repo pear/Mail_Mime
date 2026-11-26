@@ -1,9 +1,9 @@
 --TEST--
 Test for correct linebreaks for lines _longer_ than 76 chars.
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 
 include("Mail/mime.php");
 $text     = '12345678901234567890123456789012345678901234567890123456789012345678901234567890';

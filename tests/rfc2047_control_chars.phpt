@@ -1,5 +1,7 @@
 --TEST--
 RFC 2047: control characters must not appear raw inside an encoded-word
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include("Mail/mimePart.php");

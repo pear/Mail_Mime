@@ -1,6 +1,7 @@
 --TEST--
 Bug #8386   HTML body not correctly encoded if attachments present
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 $eol = "\n#";

@@ -1,5 +1,7 @@
 --TEST--
 RFC 2047 length limits: encoded-word <= 75 chars, header line <= 76 chars
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include("Mail/mimePart.php");

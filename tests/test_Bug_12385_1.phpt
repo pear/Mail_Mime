@@ -1,6 +1,7 @@
 --TEST--
 Bug #12385  Bad regex when replacing css style attachments
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 $from='user@from.example.com';

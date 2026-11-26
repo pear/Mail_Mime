@@ -1,6 +1,7 @@
 --TEST--
 Bug #14529  basename() workaround
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include "Mail/mime.php";

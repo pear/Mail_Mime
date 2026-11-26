@@ -1,6 +1,7 @@
 --TEST--
 Bug #20564  Unsetting headers
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include("Mail/mime.php");

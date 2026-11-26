@@ -1,6 +1,7 @@
 --TEST--
 Bug #21206  Handling quoted strings
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 require_once('Mail/mimePart.php');

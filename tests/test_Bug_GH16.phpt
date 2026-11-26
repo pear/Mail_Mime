@@ -1,6 +1,7 @@
 --TEST--
 Bug GH-16  Test methods that write to a file
---SKIPIF--
+--INI--
+error_reporting=E_ALL & E_DEPRECATED
 --FILE--
 <?php
 include "Mail/mime.php";

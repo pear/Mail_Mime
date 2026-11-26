@@ -1,6 +1,7 @@
 --TEST--
 Bug #10596  Incorrect handling of text and html '0' bodies
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include("Mail/mime.php");

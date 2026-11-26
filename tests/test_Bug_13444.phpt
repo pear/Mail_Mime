@@ -1,6 +1,7 @@
 --TEST--
 Bug #9725   multipart/related & alternative wrong order
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include("Mail/mime.php");

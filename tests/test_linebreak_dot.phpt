@@ -1,10 +1,11 @@
 --TEST--
 Test for correct "." encoding when doing linebreaks
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
-error_reporting(E_ALL); // ignore E_STRICT
 include("Mail/mime.php");
+
 $text     = '0123456789012345678901234567890123456789012345678901234567890123456789012...6';
 $params   = Array(
     'content_type' => 'text/plain',

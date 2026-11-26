@@ -1,6 +1,7 @@
 --TEST--
 Bug #9722   quotedPrintableEncode does not encode dot at start of line on Windows platform
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 include("Mail/mimePart.php");

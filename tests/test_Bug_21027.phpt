@@ -1,6 +1,7 @@
 --TEST--
 Bug #21027  Calendar support along with attachments and html images
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 require_once('Mail/mime.php');

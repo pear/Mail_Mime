@@ -1,6 +1,7 @@
 --TEST--
 Bug #2364   Tabs in Mail_mimePart::quotedPrintableEncode()
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 $test = "Here's\t\na tab\n";

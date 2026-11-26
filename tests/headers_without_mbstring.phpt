@@ -1,6 +1,7 @@
 --TEST--
 Multi-test for headers encoding using base64 and quoted-printable
 --INI--
+error_reporting=E_ALL
 disable_functions=mb_substr,mb_strlen
 --SKIPIF--
 <?php

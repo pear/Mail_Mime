@@ -1,6 +1,7 @@
 --TEST--
 Bug GH-26  Backward slash is getting added in headers
---SKIPIF--
+--INI--
+error_reporting=E_ALL
 --FILE--
 <?php
 
