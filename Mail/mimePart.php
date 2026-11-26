@@ -353,7 +353,7 @@ class Mail_mimePart
             for ($i = 0; $i < count($this->subparts); $i++) {
                 $encoded['body'] .= '--' . $boundary . $eol;
                 $tmp = $this->subparts[$i]->encode();
-                if (is_a($tmp, 'PEAR_Error')) {
+                if ($tmp instanceof PEAR_Error) {
                     return $tmp;
                 }
                 foreach ($tmp['headers'] as $key => $value) {
@@ -375,7 +375,7 @@ class Mail_mimePart
                 @ini_set('magic_quotes_runtime', $magic_quotes);
             }
 
-            if (is_a($body, 'PEAR_Error')) {
+            if ($body instanceof PEAR_Error) {
                 return $body;
             }
             $encoded['body'] = $body;
@@ -433,7 +433,7 @@ class Mail_mimePart
             @ini_set('magic_quotes_runtime', $magic_quotes);
         }
 
-        return is_a($res, 'PEAR_Error') ? $res : $this->headers;
+        return $res instanceof PEAR_Error ? $res : $this->headers;
     }
 
     /**
@@ -472,7 +472,7 @@ class Mail_mimePart
             for ($i = 0; $i < count($this->subparts); $i++) {
                 fwrite($fh, $f_eol . '--' . $boundary . $eol);
                 $res = $this->subparts[$i]->encodePartToFile($fh);
-                if (is_a($res, 'PEAR_Error')) {
+                if ($res instanceof PEAR_Error) {
                     return $res;
                 }
                 $f_eol = $eol;
@@ -487,7 +487,7 @@ class Mail_mimePart
             $res = $this->getEncodedDataFromFile(
                 $this->body_file, $this->encoding, $fh
             );
-            if (is_a($res, 'PEAR_Error')) {
+            if ($res instanceof PEAR_Error) {
                 return $res;
             }
         }
