@@ -1,7 +1,7 @@
 --TEST--
 Bug GH-16  Test methods that write to a file
 --INI--
-error_reporting=E_ALL & E_DEPRECATED
+error_reporting=E_ALL
 --FILE--
 <?php
 include "Mail/mime.php";
